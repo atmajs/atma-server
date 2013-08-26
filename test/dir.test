@@ -1,0 +1,36 @@
+
+
+
+include
+    .inject('/lib/io.js')
+    .done(function(){
+        
+        var dir = new io.Directory('test/');
+        
+        
+        var files = dir.readFiles('*.test').files;
+        
+        assert(files.length > 1, files.length);
+        eq(hasFile(files, 'dir.test'), true);
+        eq(hasFile(files, 'file.test'), true);
+        
+        
+        var all = dir.readFiles('**.test').files;
+        
+        
+        assert(all.length > files.length);
+        eq(hasFile(all, 'json.test'), true);
+    });
+        
+
+function hasFile(files, filename) {
+    
+    for (var i = 0, x, imax = files.length; i < imax; i++){
+        x = files[i];
+        
+        if (x.uri.file === filename)
+            return true;
+    }
+    
+    return false;
+}

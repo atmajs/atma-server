@@ -1,0 +1,17 @@
+{
+    "name": "atma-server",
+    "description": "Server Application",
+    "author": {
+        "name": "Alexander Kit",
+        "email": "alex.kit@atmajs.com"
+    },
+    "version": "0.0.51",
+    "main": "./lib/server.js",
+    "repository": {},
+    "license": "MIT",
+    "dependencies": {
+        "atma-logger": ">0.0.0",
+        "atma-io": ">0.0.0",
+        "atma-libs": ">0.0.0"
+    }
+}
