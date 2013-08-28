@@ -2,52 +2,47 @@ var PageUtils = (function() {
 
 
 	var PageUtils = {
-		getScripts: function(pageID) {
-			var cfg = app.config,
-				scripts = getResources('scripts', cfg.env)
-					.slice();
+		getScripts: Class.Fn.memoize(function(pageID) {
+			var cfg = __app.config,
+				scripts = getResources('scripts', cfg.env).slice();
 
-			var page = cfg.pages[pageID];
-
-			if (page == null) {
-				if (pageID)
-					console.error('[404] Page is not defined', pageID);
-
-				return scripts;
-			}
-
-			if (page.scripts) {
-				var self = getResources('page', cfg.env, page.scripts, page.routes);
-
-				Array
-					.prototype
-					.push
-					.apply(scripts, self);
-			}
-
+			
+			if (pageID) 
+				scripts = scripts.concat(this.getScriptsForPageOnly(pageID));
+			
+			
 			return scripts;
-		},
-		getScriptsForPageOnly: function(pageID) {
-			var cfg = app.config,
+		}),
+		getScriptsForPageOnly: Class.Fn.memoize(function(pageID) {
+			var cfg = __app.config,
 				page = cfg.pages[pageID],
 				scripts = [];
-
-			if (page == null)
-				return scripts;
-
-
-			var _scripts = page.scripts;
-			if (_scripts) {
-
-				scripts = getResources('page', cfg.env, _scripts, page.routes)
-					.slice();
+				
+			if (page == null) {
+				logger.error('<page:scripts> Page not defined', pageID);
+				return null;
 			}
-
+			
+			if (page.scripts) {
+				scripts = scripts.concat(getResources('page', cfg.env, page.scripts, page.routes));
+			}
+			
+			
+			if (page.view && page.view.controller) {
+				var path = cfg.formatPath(
+					this.location.viewController,
+					page.view.controller
+				);
+				
+				scripts.push(path);
+			}
+			
+			
 			return scripts;
-		},
+		}),
 
 		getStyles: function(pageID) {
-			var cfg = app.config,
+			var cfg = __app.config,
 				styles = getResources('styles', cfg.env)
 					.slice();
 
@@ -73,7 +68,7 @@ var PageUtils = (function() {
 		},
 
 		getStylesForPageOnly: function(pageID) {
-			var cfg = app.config,
+			var cfg = __app.config,
 				page = cfg.pages[pageID];
 
 			if (page && page.styles) {
@@ -86,7 +81,7 @@ var PageUtils = (function() {
 		},
 
 		getInclude: function() {
-			var env = app.config.env,
+			var env = __app.config.env,
 				include = {
 					src: '',
 					routes: {},
@@ -110,7 +105,7 @@ var PageUtils = (function() {
 		},
 
 		getIncludeForPageOnly: function(pageID) {
-			var page = app.config.pages[pageID],
+			var page = __app.config.pages[pageID],
 				include = {};
 
 			return page && page.include ? incl_extend(include, page.include) : include;
@@ -119,14 +114,14 @@ var PageUtils = (function() {
 		getTemplate: function(pageData) {
 			var template = pageData.template || this.index.template;
 
-			return app
+			return __app
 				.config
 				.formatPath(this.location.template, template);
 		},
 		getMaster: function(pageData) {
 			var master = pageData.master || this.index.master;
 
-			return app
+			return __app
 				.config
 				.formatPath(this.location.master, master);
 		}

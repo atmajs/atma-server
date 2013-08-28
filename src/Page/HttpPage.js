@@ -1,13 +1,13 @@
-
-include
-	.js('Resources.js')
-	.done(function(resp){
+server.HttpPage = (function(){
 	
-	atma.Page = Class({
+	// import Resources.js	
+
+	
+	var Page = Class({
 		
 		Extends: [
 			Class.Deferred,
-			resp.Resources
+			Resources
 		],
 		
 		template: null,
@@ -103,4 +103,6 @@ include
 		}
 	});
 	
-});
+	
+	return Page;	
+}());

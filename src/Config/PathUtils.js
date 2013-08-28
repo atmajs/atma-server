@@ -1,6 +1,9 @@
 var PathUtils = (function() {
 
 	return {
+		/**
+		 *	Format Path / location as in IncludeJS
+		 */
 		format: function path_format(location, path) {
 			if (path.charCodeAt(0) === 47) {
 				// /

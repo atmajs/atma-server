@@ -1,7 +1,6 @@
 
 (function(){
 
-	// import HandlerFactory.js
 	// import Config/Config.js
 	
 
@@ -16,6 +15,7 @@
 				return new server.Application(proto);
 			}
 			
+			__app = this;
 			
 			this.handlers = new HandlerFactory();
 			
@@ -59,16 +59,20 @@
 						return;
 					}
 					
+					logger(95)
+						.log('<request>', req.url);
+					
 					handler
 						.process(req, res)
 						.done(function(content, statusCode, mimeType, headers){
 							
-							if (statusCode) {
+							if (statusCode) 
 								res.statusCode = statusCode;
-							}
-							if (typeof mimeType === 'string') {
+							
+							if (typeof mimeType === 'string') 
 								res.setHeader('Content-Type', mimeType);
-							}
+							
+							
 							if (headers) {
 								for (var key in headers) {
 									res.setHeader(key, headers[key]);
@@ -91,6 +95,10 @@
 		return function(error) {
 			
 			var cfg = app.config;
+			
+			
+			logger(90)
+				.log('<app.config>', cfg);
 			
 			app
 				.handlers

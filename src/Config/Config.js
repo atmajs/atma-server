@@ -47,6 +47,10 @@ var Config = (function(){
 			
 			passport: {
 				// strategy : data
+			},
+			
+			app: {
+				// generic application configuration
 			}
 		};
 		
@@ -217,5 +221,7 @@ var Config = (function(){
 		};
 	}
 	
+	
+	return Config;
 }());
 

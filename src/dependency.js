@@ -5,14 +5,14 @@ var atma,
 // <assign first>
 
 // atma libs
-if (global.include && global.net && global.net.URI) {
+if (global.include && global.net && global.net.Uri) {
     atma = global;
 }
 if (atma == null && global.atma) {
     atma = global.atma;
 }
 if (atma == null) {
-    require('atma-libs/globals');
+    require('atma-libs/globals-dev');
     atma = global;
 }
 
@@ -39,9 +39,10 @@ if (io == null) {
 var net = atma.net,
     Class = atma.Class,
     ruta = atma.ruta,
+    mask = atma.mask,
+    include = atma.include,
     Routes = ruta.Collection,
     logger = global.logger;
     
     
-var server = {};
     

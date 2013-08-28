@@ -91,7 +91,7 @@ var HandlerFactory = (function(){
 			if (route) {
 				
 				var pageData = route.value;
-				callback(new server.Page(pageData));
+				callback(new server.HttpPage(pageData));
 				
 				return;
 			}
