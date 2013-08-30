@@ -6,6 +6,7 @@ var ConfigUtils = (function(resp){
 	
 	// import PathUtils.js
 	// import PageUtils.js
+	// import IncludeUtils.js
 	
 	var Utils = {
 		page: PageUtils,
@@ -37,7 +38,8 @@ var ConfigUtils = (function(resp){
 			__cfg = cfg;
 			
 			cfg_attach(cfg, Utils);
-		}
+		},
+		prepairIncludes: IncludeUtils.prepair
 	};
 	
 }());

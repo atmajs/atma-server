@@ -43,7 +43,7 @@
 	// import ../src/loader/coffee.js
 	// import ../src/loader/less.js
 	// import ../src/loader/yml.js
-
+	// import ../src/Autoreload/autoreload.js
 	
 	if (exports.atma != null && typeof exports.atma === 'object') {
 		

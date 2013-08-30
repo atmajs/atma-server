@@ -105,6 +105,8 @@ var Config = (function(){
 				+ config.replace(/\//g, '.');
 		});
 		
+		configs
+			.push('/public/build/stats.json::build');
 		
 		include
 			.instance()
@@ -176,6 +178,10 @@ var Config = (function(){
 			if (cfg.env.server.routes)
 				include
 					.routes(cfg.env.server.routes);
+					
+			
+			ConfigUtils.prepairIncludes(cfg.env.server.scripts);
+			ConfigUtils.prepairIncludes(cfg.env.client.scripts);
 			
 			// Prepair PAGES
 			var pages = cfg.pages;

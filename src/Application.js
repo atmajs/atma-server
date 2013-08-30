@@ -35,7 +35,14 @@
 		responder: function(){
 			
 			return responder(this);
-		}
+		},
+		
+		
+		autoreload: function(httpServer){
+			this.autoreloadEnabled = true;
+			Autoreload.listen(httpServer);
+		},
+		autoreloadEnabled: false,
 		
 	});
 	
@@ -53,6 +60,10 @@
 			app
 				.handlers
 				.get(req, function(handler){
+					
+					if (app.autoreloadEnabled) {
+						Autoreload.watch(req.url);
+					}
 					
 					if (handler == null) {
 						next();

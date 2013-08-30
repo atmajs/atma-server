@@ -155,15 +155,26 @@ var PageUtils = (function() {
 		register(env.client.routes);
 		register(env.both.routes);
 
-		if (type === 'page') {
-			register(routes);
-			resolve(pckg);
-			return array;
+		switch (type) {
+			
+			case 'page':
+				register(routes);
+				resolve(pckg);
+				break;
+			
+			case 'debug':
+				resolve(env.client.debug);
+				break;
+			
+			default:
+				// scripts
+				resolve(env.client[type]);
+				resolve(env.both[type]);
+				break;
 		}
+		
 
-		resolve(env.client[type]);
-		resolve(env.both[type]);
-
+		
 		return array;
 	});
 
