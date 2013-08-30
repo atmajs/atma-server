@@ -1,6 +1,9 @@
 var WatcherHandler = (function(){
     
-    var rootFolder = net.Uri.combine(process.cwd(), '/');
+    var rootFolder = net
+        .Uri
+        .combine(process.cwd(), '/')
+        .replace(/\\/g, '/');
     
     var FileWatcher = Class({
         Base: Class.EventEmitter,
@@ -42,6 +45,8 @@ var WatcherHandler = (function(){
         }
     });
     
+   
+    
     var _watchers = {};
     
     return new new Class({
@@ -80,7 +85,15 @@ var WatcherHandler = (function(){
         },
         Self: {
             fileChanged: function(path){
-                this.trigger('fileChange', path, rootFolder);
+                path = path.replace(rootFolder, '');
+                
+                logger.warn('>try reload', path);
+                
+                var that = this;
+                
+                include.bin_tryReload(path, function(){
+                    that.trigger('fileChange', path);
+                });
             }
         },
         

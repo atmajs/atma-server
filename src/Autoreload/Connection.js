@@ -10,10 +10,7 @@ SocketListeners['/browser'] = Class({
         WatcherHandler.bind(this.fileChanged);
     },
     Self: {
-        fileChanged: function(path, root) {
-            logger.log('<socket> file changed', path, root);
-            path = path.replace(root, '');
-    
+        fileChanged: function(path) {
             logger.log('<autoreload> path', path);
             this.socket.emit('filechange', path);
         },

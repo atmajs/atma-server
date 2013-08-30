@@ -73,14 +73,12 @@ var IncludeUtils = (function(){
     }
     
     function cond_match(cond) {
-        logger.log('cond', cond.key, __app.args[cond.key]);
         return __app.args[cond.key];
     }
     
     return {
         prepair: function(pckg){
             incl_prepair(pckg);
-            logger.log(pckg);
         }
     };
 }());
