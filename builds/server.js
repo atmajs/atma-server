@@ -27,6 +27,7 @@
 	
 	// import ../src/dependency.js
 	// import ../src/util/obj.js
+	// import ../src/util/fn.js
 	// import ../src/util/arr.js
 	// import ../src/util/cli.js
 	

@@ -43,9 +43,13 @@ var HandlerFactory = (function(){
 			return this;
 		},
 		
-		get: function(req, callback){
+		get: function(url, callback){
 			
-			var handler = get_handler(this, req.url);
+			if (callback == null) 
+				return;
+			
+			
+			var handler = get_handler(this, url);
 			if (handler) {
 				
 				if (typeof handler === 'string') {
@@ -64,7 +68,7 @@ var HandlerFactory = (function(){
 			}
 			
 			
-			var route = get_service(this, req.url);
+			var route = get_service(this, url);
 			
 			if (route) {
 				
@@ -87,11 +91,24 @@ var HandlerFactory = (function(){
 			}
 			
 			
-			var route = this.pages.get(req.url);
+			var route = this.pages.get(url);
 			if (route) {
 				
-				var pageData = route.value;
-				callback(new server.HttpPage(pageData));
+				var pageData = route.value,
+					controller = __app.config.page.getController(pageData);
+				
+				if (controller == null) {
+					callback(new server.HttpPage(pageData));
+					return;
+				}
+				
+				include
+					.instance()
+					.js(controller + '::Controller')
+					.done(function(resp){
+						
+						callback(new resp.Controller(pageData));
+					});
 				
 				return;
 			}
@@ -123,6 +140,7 @@ var HandlerFactory = (function(){
 		
 		return route;
 	}
+	
 	
 	function handler_path(path, config) {
 		if (path.charCodeAt(0) === 47) {

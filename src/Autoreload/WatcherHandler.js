@@ -87,8 +87,6 @@ var WatcherHandler = (function(){
             fileChanged: function(path){
                 path = path.replace(rootFolder, '');
                 
-                logger.warn('>try reload', path);
-                
                 var that = this;
                 
                 include.bin_tryReload(path, function(){

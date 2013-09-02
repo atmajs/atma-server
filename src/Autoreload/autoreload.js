@@ -46,6 +46,11 @@ var Autoreload = (function(){
         
         listen: function(httpServer){
             WebSocket.listen(httpServer);
+        },
+        
+        fileChanged: function(path){
+            
+            WatcherHandler.fileChanged(path);
         }
     };
     

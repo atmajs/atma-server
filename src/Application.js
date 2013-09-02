@@ -41,6 +41,8 @@
 		autoreload: function(httpServer){
 			this.autoreloadEnabled = true;
 			Autoreload.listen(httpServer);
+			
+			include.cfg('autoreload', Autoreload);
 		},
 		autoreloadEnabled: false,
 		
@@ -59,7 +61,7 @@
 			
 			app
 				.handlers
-				.get(req, function(handler){
+				.get(req.url, function(handler){
 					
 					if (app.autoreloadEnabled) {
 						Autoreload.watch(req.url);
