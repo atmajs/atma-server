@@ -127,9 +127,12 @@ var PageUtils = (function() {
 		},
 		getController: function(pageData){
 			var controller = pageData.controller || this.index.controller;
-			return __app
-				.config
-				.formatPath(this.location.controller, controller);
+			
+			return controller ?
+				__app
+					.config
+					.formatPath(this.location.controller, controller)
+				: null;
 		}
 	};
 

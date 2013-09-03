@@ -51,6 +51,10 @@ var Config = (function(){
 			
 			app: {
 				// generic application configuration
+			},
+			
+			build: {
+				// page: availableResources
 			}
 		};
 		

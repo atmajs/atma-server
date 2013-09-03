@@ -28,6 +28,9 @@
 			this.config = Config(configs, cfg_doneDelegate(this));
 			this.args = cli_arguments();
 			
+			if (this.args.debug !== true) 
+				logger.cfg('color', 'none');
+				
 			return this;
 		},
 		

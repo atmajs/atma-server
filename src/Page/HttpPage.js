@@ -87,8 +87,8 @@ server.HttpPage = (function(){
 			var html = mask.render(this.nodes || template, this.model, this.ctx);
 			
 			if (this.ctx.rewrite) {
-				server
-					.HandlerFactory
+				__app
+					.handlers
 					.get(this.ctx.rewrite, page_rewriteDelegate(this));
 				return;
 			}
