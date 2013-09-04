@@ -42,42 +42,43 @@ var PageUtils = (function() {
 		}),
 
 		getStyles: function(pageID) {
+			
 			var cfg = __app.config,
-				styles = getResources('styles', cfg.env)
-					.slice();
+				styles = getResources('styles', cfg.env).slice();
 
-			var page = cfg.pages[pageID];
-
-			if (page == null) {
-				if (pageID)
-					console.error('[404] Page is not defined', pageID);
-
-				return styles;
-			}
-
-			if (page.styles) {
-				var self = getResources('page', cfg.env, page.styles, page.routes);
-
-				Array
-					.prototype
-					.push
-					.apply(styles, self);
-			}
+			if (pageID) 
+				styles = styles.concat(this.getStylesForPageOnly(pageID));
+		
 
 			return styles;
 		},
 
 		getStylesForPageOnly: function(pageID) {
 			var cfg = __app.config,
-				page = cfg.pages[pageID];
-
-			if (page && page.styles) {
-
-				return getResources('page', cfg.env, page.styles, page.routes)
-					.slice();
+				page = cfg.pages[pageID],
+				styles = [];
+				
+			if (page == null) {
+				logger.error('<page:styles> Page not defined', pageID);
+				return null;
 			}
-
-			return [];
+			
+			if (page.styles) {
+				styles = styles.concat(getResources('page', cfg.env, page.styles, page.routes));
+			}
+			
+			
+			if (page.view && page.view.style) {
+				var path = cfg.formatPath(
+						this.location.viewStyle,
+						page.view.style
+					);
+				
+				styles.push(path);
+			}
+			
+			
+			return styles;
 		},
 
 		getInclude: function() {
