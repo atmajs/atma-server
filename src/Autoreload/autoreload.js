@@ -51,6 +51,13 @@ var Autoreload = (function(){
         fileChanged: function(path){
             
             WatcherHandler.fileChanged(path);
+        },
+        
+        isWatching: function(file){
+            if (typeof file === 'string') 
+                file = new io.File(file);
+            
+            return WatcherHandler.isWatching(file);
         }
     };
     

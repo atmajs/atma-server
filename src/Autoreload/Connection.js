@@ -12,7 +12,8 @@ SocketListeners['/browser'] = Class({
     Self: {
         fileChanged: function(path) {
             logger.log('<autoreload> path', path);
-            this.socket.emit('filechange', path);
+            
+            this.socket.emit('filechange', path);    
         },
         disconnected: function() {
             WatcherHandler.unbind(this.fileChanged);

@@ -16,7 +16,7 @@ var WatcherHandler = (function(){
             fileChanged: function(path){
                 logger.log('<watcher:changed>', path);
                 
-                this.trigger('fileChange', path)
+                this.trigger('fileChange', path, 'filewatcher')
             }
         },
         
@@ -84,11 +84,26 @@ var WatcherHandler = (function(){
             return _watchers[path] != null;
         },
         Self: {
-            fileChanged: function(path){
+            fileChanged: function(path, sender){
                 path = path.replace(rootFolder, '');
                 
-                var that = this;
+                if (sender === 'filewatcher' && include.getResource(path)) {
+                    /**
+                     *  include.autoreload feature also listens for file changes
+                     *  and if the file is in includejs cache, then this function
+                     *  will be called by includejs immediately. This happens
+                     *  while Application enables autoreload via
+                     *   include.cfg('autoreload', {
+                     *      fileChanged: function(path) {
+                     *          Autoreload.fileChanged(path)
+                     *      }
+                     *   });
+                     */
+                    return;
+                }
                 
+                
+                var that = this;
                 include.bin_tryReload(path, function(){
                     that.trigger('fileChange', path);
                 });
