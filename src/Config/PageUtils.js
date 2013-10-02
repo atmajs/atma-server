@@ -109,11 +109,14 @@ var PageUtils = (function() {
 			var page = __app.config.pages[pageID],
 				include = {};
 
-			return page && page.include ? incl_extend(include, page.include) : include;
+			return page && page.include
+				? incl_extend(include, page.include)
+				: include
+				;
 		},
 
 		getTemplate: function(pageData) {
-			var template = pageData.template || this.index.template;
+			var template = pageData.template || pageData.id || this.index.template;
 
 			return __app
 				.config

@@ -17,8 +17,10 @@ server.HttpPage = (function(){
 		/**
 		 *	- data (Object)
 		 *		- template: ? page name
+		 *
+		 *	@TODO pass current route params
 		 */
-		Construct: function(data){
+		Construct: function(data, query){
 			
 			if (this instanceof Page === false) {
 				return page_Create(data);
@@ -28,15 +30,17 @@ server.HttpPage = (function(){
 			
 			this.template = cfg.getTemplate(data) + '::Template';
 			this.master = cfg.getMaster(data) + '::Master';
-			this.route = cfg.route;
+			////-this.route = cfg.route;
+			
 			this.data = data;
+			this.query = query;
 		},
 		
 		process: function(req, res){
 			
-			this.query = ruta
-				.parse(this.route, req.url)
-				.params;
+			////this.query = ruta
+			////	.parse(this.route, req.url)
+			////	.params;
 			
 			this.ctx = {
 				req: req,

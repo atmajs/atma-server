@@ -95,10 +95,11 @@ var HandlerFactory = (function(){
 			if (route) {
 				
 				var pageData = route.value,
+					query = route.current.params,
 					controller = __app.config.page.getController(pageData);
 				
 				if (controller == null) {
-					callback(new server.HttpPage(pageData));
+					callback(new server.HttpPage(pageData, query));
 					return;
 				}
 				
@@ -107,7 +108,7 @@ var HandlerFactory = (function(){
 					.js(controller + '::Controller')
 					.done(function(resp){
 						
-						callback(new resp.Controller(pageData));
+						callback(new resp.Controller(pageData, query));
 					});
 				
 				return;
