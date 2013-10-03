@@ -23,7 +23,8 @@
 	
 	var server = {};
 	
-	var __app;
+	var __app,
+		__cfgDefaults;
 	
 	// import ../src/dependency.js
 	// import ../src/util/obj.js
@@ -46,6 +47,10 @@
 	// import ../src/loader/yml.js
 	// import ../src/Autoreload/autoreload.js
 	
+	__cfgDefaults = [
+			// import cfg-defaults.json
+		][0];
+		
 	if (exports.atma != null && typeof exports.atma === 'object') {
 		
 		obj_extend(exports.atma, server);

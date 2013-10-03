@@ -13,6 +13,10 @@ global.config = {
 			}
 		}
 	},
+	'add-defaults-handler': {
+		action: 'custom',
+		script: 'tools/cfg-defaults.js'
+	},
 	'import': {
 		files: 'builds/**',
 		output: 'lib/'
@@ -34,7 +38,7 @@ global.config = {
 		script: 'tools/publish'
 	},
 
-	'defaults': ['import', 'jshint', 'uglify']
+	'defaults': ['add-defaults-handler','import', 'jshint', 'uglify']
 };
 
 

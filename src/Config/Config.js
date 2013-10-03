@@ -3,7 +3,8 @@ var Config = (function(){
 	
 	// import Utils.js
 	
-	var cfg_attachUtils = ConfigUtils.attach;
+	var cfg_attachUtils = ConfigUtils.attach,
+		cfg_Dir = new io.Directory('server/config/');
 		
 	function Config(configs, callback) {
 		
@@ -58,10 +59,60 @@ var Config = (function(){
 			}
 		};
 		
+		obj_deepExtend(cfg, __cfgDefaults);
 		
 		return cfg_load(cfg, configs, callback);
 		
 	};
+	
+	
+	function obj_deepExtend(target, source){
+		
+		if (Array.isArray(target) && Array.isArray(source)) {
+			for (var i = 0, x, imax = source.length; i < imax; i++){
+				x = source[i];
+				if (target.indexOf(x) === -1) {
+					target.push(x);
+				}
+			}
+			return target;
+		}
+		
+		if (typeof source !== 'object' && typeof target !== 'object') {
+			logger.log('<cfg extend> not an object or type missmatch');
+			return target;
+		}
+		
+		var key, val;
+		for(key in source){
+			val = source[key];
+			
+			if (target[key] == null) {
+				target[key] = val;
+				continue;
+			}
+			
+			if (Array.isArray(val)) {
+				if (Array.isArray(target[key]) === false) {
+					logger.log('<cfg extend> type missmatch', key, val, target[key]);
+					
+					target[key] = val;
+					continue;
+				}
+				obj_deepExtend(target[key], val);
+				continue;
+			}
+			
+			if (typeof val === 'object' && typeof target[key] === 'object') {
+				target[key] = obj_deepExtend(target[key], val);
+				continue;
+			}
+			
+			target[key] = val;
+		}
+		
+		return target;
+	}
 	
 	
 	Config.getList = function(path){
@@ -70,21 +121,22 @@ var Config = (function(){
 			return null;
 		}
 		
-		var uri_config = io
+		cfg_Dir = io
 				.env
 				.currentDir
 				.combine(path)
 				;
 		
 		var configs = new io
-			.Directory(uri_config)
+			.Directory(cfg_Dir)
 			.readFiles('**.yml')
 			.files
 			.map(function(file){
 				return file
 					.uri
-					.toRelativeString(uri_config)
-					.replace('.yml', '');
+					.toRelativeString(cfg_Dir)
+					.replace('.yml', '')
+					;
 			});
 			
 		
@@ -103,9 +155,10 @@ var Config = (function(){
 		}
 		
 		configs = configs.map(function(config){
-			return '/server/config/'
-				+ config
-				+ '.yml::'
+			return cfg_Dir
+				.combine(config + '.yml')
+				.toString()
+				+ '::'
 				+ config.replace(/\//g, '.');
 		});
 		
@@ -123,7 +176,7 @@ var Config = (function(){
 	
 	function cfg_parseDelegate(cfg, callback) {
 		
-		function obj_extend(obj, value, namespace) {
+		function cfg_extend(obj, value, namespace) {
 			if (namespace == null || namespace.indexOf('.') === -1) {
 				
 				for (var key in value) {
@@ -141,14 +194,16 @@ var Config = (function(){
 				obj = (obj[parts[i]] || (obj[parts[i]] = {}));
 			}
 			
-			obj_extend(obj, value);
+			cfg_extend(obj, value);
 			
 		}
+		
 		
 		return function(resp){
 			var data = resp.load,
 				key,
-				value;
+				value,
+				cfgLoad = {};
 			
 			for (key in data) {
 				value = data[key];
@@ -157,10 +212,11 @@ var Config = (function(){
 					continue;
 				
 				
-				obj_extend(cfg, value, key);
+				cfg_extend(cfgLoad, value, key);
 				
 			}
 			
+			obj_deepExtend(cfg, cfgLoad)
 			
 			if (cfg['compos-info']) {
 				mask.compoDefinitions(cfg['compos-info']);

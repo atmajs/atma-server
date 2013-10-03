@@ -85,28 +85,42 @@ var WatcherHandler = (function(){
         },
         Self: {
             fileChanged: function(path, sender){
-                path = path.replace(rootFolder, '');
                 
-                if (sender === 'filewatcher' && include.getResource(path)) {
-                    /**
-                     *  include.autoreload feature also listens for file changes
-                     *  and if the file is in includejs cache, then this function
-                     *  will be called by includejs immediately. This happens
-                     *  while Application enables autoreload via
-                     *   include.cfg('autoreload', {
-                     *      fileChanged: function(path) {
-                     *          Autoreload.fileChanged(path)
-                     *      }
-                     *   });
-                     */
-                    return;
+                if (path !== 'include') {
+                    // is called by internal filewatcher
+                    path = path.replace(rootFolder, '');
                 }
                 
+                this.trigger('fileChange', path);
                 
-                var that = this;
-                include.bin_tryReload(path, function(){
-                    that.trigger('fileChange', path);
-                });
+                //// --
+                ////if (sender === 'include') {
+                ////    this.trigger('fileChange', path);
+                ////    return;
+                ////}
+                ////
+                ////path = path.replace(rootFolder, '');
+                ////
+                ////////////////if (sender === 'filewatcher' && include.getResource(path)) {
+                ////////////////    /**
+                ////////////////     *  include.autoreload feature also listens for file changes
+                ////////////////     *  and if the file is in includejs cache, then this function
+                ////////////////     *  will be called by includejs immediately. This happens
+                ////////////////     *  while Application enables autoreload via
+                ////////////////     *   include.cfg('autoreload', {
+                ////////////////     *      fileChanged: function(path) {
+                ////////////////     *          Autoreload.fileChanged(path)
+                ////////////////     *      }
+                ////////////////     *   });
+                ////////////////     */
+                ////////////////    return;
+                ////////////////}
+                ////
+                ////
+                ////var that = this;
+                ////include.bin_tryReload(path, function(){
+                ////    that.trigger('fileChange', path);
+                ////});
             }
         },
         
