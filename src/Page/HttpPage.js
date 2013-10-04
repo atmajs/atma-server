@@ -30,7 +30,12 @@ server.HttpPage = (function(){
 			
 			this.template = cfg.getTemplate(data) + '::Template';
 			this.master = cfg.getMaster(data) + '::Master';
-			////-this.route = cfg.route;
+
+			/**
+			 * Page can also have path url definition like '/?:pageName/?:section/?:anchor'
+			 * and then get it like ctx.page.query.pageName;
+			 */
+			this.route = cfg.route;
 			
 			this.data = data;
 			this.query = query;
@@ -38,9 +43,16 @@ server.HttpPage = (function(){
 		
 		process: function(req, res){
 			
-			////this.query = ruta
-			////	.parse(this.route, req.url)
-			////	.params;
+			if (this.route) {
+				var query = ruta
+					.parse(this.route, req.url)
+					.params;
+
+				for(var key in query){
+					if (this.query[key] == null)
+						this.query[key] = query[key];
+				}
+			}
 			
 			this.ctx = {
 				req: req,
