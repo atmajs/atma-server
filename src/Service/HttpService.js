@@ -16,7 +16,7 @@ server.HttpService = (function(){
 			var value = entry.value;
 			
 			
-			value.call(this, req, res);
+			value.call(this, req, res, entry.current.params);
 			
 			return this;
 		}
