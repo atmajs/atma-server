@@ -20,25 +20,35 @@ server.HttpPage = (function(){
 		 *
 		 *	@TODO pass current route params
 		 */
-		Construct: function(data, query){
+		Construct: function(mix){
 			
 			if (this instanceof Page === false) {
-				return page_Create(data);
+				return page_Create(mix);
 			}
 			
 			var cfg = __app.config.page;
 			
-			this.template = cfg.getTemplate(data) + '::Template';
-			this.master = cfg.getMaster(data) + '::Master';
-
 			/**
 			 * Page can also have path url definition like '/?:pageName/?:section/?:anchor'
 			 * and then get it like ctx.page.query.pageName;
 			 */
 			this.route = cfg.route;
 			
-			this.data = data;
-			this.query = query;
+			var route = mix;
+			if (!(route && route.value)) {
+				logger
+					.error('<httppage> current route value is unedefined');
+				
+				return;
+			}
+			
+			
+			this.data = route.value;
+			this.query = route.current && route.current.params;
+			
+			this.template = cfg.getTemplate(this.data) + '::Template';
+			this.master = cfg.getMaster(this.data) + '::Master';
+
 		},
 		
 		process: function(req, res){

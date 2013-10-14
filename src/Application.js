@@ -18,16 +18,15 @@
 			__app = this;
 			
 			this.handlers = new HandlerFactory();
+			this.args = obj_extend(proto.args, cli_arguments());
+			this.config = Config({
+					buildDirectory : proto.buildDirectory,
+					configs: proto.configs
+				},
+				cfg_doneDelegate(this)
+			);
 			
-			var path_CONFIGS = proto.configs || 'server/config/';
-			
-			var configs = proto.configs;
-			if (configs == null)
-				configs = Config.getList(path_CONFIGS);
-				
-			this.config = Config(configs, cfg_doneDelegate(this));
-			this.args = cli_arguments();
-			
+		
 			if (this.args.debug !== true) 
 				logger.cfg('color', 'none');
 				
@@ -54,8 +53,6 @@
 	
 	function responder(app) {
 		return function (req, res, next){
-			
-			
 			include
 				.instance()
 				.js(app.config.env.server.scripts)
@@ -64,7 +61,7 @@
 			
 			app
 				.handlers
-				.get(req.url, function(handler){
+				.get(req, function(handler){
 					
 					if (app.autoreloadEnabled) {
 						Autoreload.watch(req.url);
@@ -82,25 +79,12 @@
 						.process(req, res)
 						.done(function(content, statusCode, mimeType, headers){
 							
-							if (statusCode) 
-								res.statusCode = statusCode;
-							
-							if (typeof mimeType === 'string') 
-								res.setHeader('Content-Type', mimeType);
-							
-							
-							if (headers) {
-								for (var key in headers) {
-									res.setHeader(key, headers[key]);
-								}
-							}
-							
-							res.end(content);
+							response_end(res, content, statusCode, mimeType, headers);
 						})
 						.fail(function(message, statusCode){
+							res.statusCode = statusCode || 500;
 							
-							res.statusCode = statusCode;
-							res.end(message);
+							response_end(res, message, statusCode || 500, 'text/plain');
 						});
 				});
 			});
@@ -109,7 +93,9 @@
 	
 	function cfg_doneDelegate(app) {
 		return function(error) {
-			
+			if (error)
+				logger.error(error);
+				
 			var cfg = app.config;
 			
 			
@@ -128,4 +114,30 @@
 		}
 	}
 	
+	function response_end(res, content, statusCode, mimeType, headers) {
+		
+		if (typeof content !== 'string' && content instanceof Buffer === false) {
+			try {
+				
+				content = JSON.stringify(content);
+				mimeType = 'application/json';
+				
+			}catch(error){
+				
+				logger.error('<responder> invalid json object', error);
+				content = '{ error: "invalid json object" }';
+			}
+		}
+		
+		if (headers) {
+			for (var key in headers) {
+				res.setHeader(key, headers[key]);
+			}
+		}
+		
+		res.setHeader('Content-Type', mimeType || 'text/html');
+		res.statusCode = statusCode || 200;
+		
+		res.end(content);
+	}
 }());

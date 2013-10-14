@@ -29,10 +29,14 @@ global.config = {
 		files: 'lib/server.js'
 	},
 
-	'watch': {
+	'watch': [{
+		action: 'custom',
+		script: 'tools/cfg-defaults.js'
+	},{
+		action: 'watch',
 		files: 'src/**',
 		config: '#[import]'
-	},
+	}],
 	'publish': {
 		action: 'custom',
 		script: 'tools/publish'

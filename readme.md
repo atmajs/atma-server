@@ -58,7 +58,7 @@ handlers:
 	'/say/hello': hello
 ```
 
-Handler is the first endpoint that will be search in defined routes by the responder.
+Handler is the first endpoint that will be looked for in defined routes by the responder.
 Usually this is the low level handlers, like 'Less' preprocessor. 
 But the interface ``` (Deferred + process(req, res)) ``` is the same as in HttpService and HttpPage
 
@@ -225,4 +225,4 @@ pages:
 		title: Hello
 ```
 
-**Route Declaration*** refer to [RutaJS](http://atmajs.com/ruta)
+**Route Declaration** refer to [RutaJS](http://atmajs.com/ruta)

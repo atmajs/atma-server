@@ -4,9 +4,19 @@ var Config = (function(){
 	// import Utils.js
 	
 	var cfg_attachUtils = ConfigUtils.attach,
-		cfg_Dir = new io.Directory('server/config/');
+		_cfgDir = new io.Directory('server/config/'),
 		
-	function Config(configs, callback) {
+		_buildPath = 'public/build/',
+		_configsPath = 'server/config/';
+		
+	function Config(params, callback) {
+		
+		if (params.buildDirectory) 
+			_buildPath = params.buildDirectory;
+		
+		if (params.configs) 
+			_configsPath = params.configs;
+		
 		
 		var cfg = {
 			env: {
@@ -61,7 +71,7 @@ var Config = (function(){
 		
 		obj_deepExtend(cfg, __cfgDefaults);
 		
-		return cfg_load(cfg, configs, callback);
+		return cfg_load(cfg, Config.getList(_configsPath), callback);
 		
 	};
 	
@@ -116,29 +126,24 @@ var Config = (function(){
 	
 	
 	Config.getList = function(path){
-		if (global.io == null || io.Directory == null) {
-			console.error('atma-io seems to be not loaded');
-			return null;
-		}
 		
-		cfg_Dir = io
-				.env
-				.currentDir
-				.combine(path)
-				;
+		_cfgDir = new io.Directory(net.Uri.combine(process.cwd(), path));
 		
-		var configs = new io
-			.Directory(cfg_Dir)
+		var configs = _cfgDir
 			.readFiles('**.yml')
 			.files
 			.map(function(file){
+				
 				return file
 					.uri
-					.toRelativeString(cfg_Dir)
+					.toRelativeString(_cfgDir.uri)
 					.replace('.yml', '')
 					;
 			});
-			
+		
+		if (configs.length === 0)
+			logger.error('<server> No configuration files in', _cfgDir.uri.toString());
+		
 		
 		return configs;
 	};
@@ -150,20 +155,35 @@ var Config = (function(){
 	 */
 	function cfg_load(cfg, configs, callback) {
 		if (Array.isArray(configs) === false){
-			callback('[Application.Config] should be an array of file names');
+			process.nextTick(function(){
+				callback('<server.config> should be an array of filenames');
+			});
 			return cfg;
 		}
 		
 		configs = configs.map(function(config){
-			return cfg_Dir
+			return _cfgDir
+				.uri
 				.combine(config + '.yml')
 				.toString()
 				+ '::'
 				+ config.replace(/\//g, '.');
 		});
 		
-		configs
-			.push('/public/build/stats.json::build');
+		// build data
+		var buildFile = new io.File(net.Uri.combine(_buildPath, 'stats.json'));
+		
+		if (buildFile.exists()) {
+			configs
+				.push(buildFile.uri.toString() + '::build');
+		} else {
+			
+			if (!__app.args.degub)
+				logger
+					.warn('<config> %s/stats.json . App is not built', _buildPath);
+			
+		}
+		
 		
 		include
 			.instance()
@@ -244,33 +264,33 @@ var Config = (function(){
 			ConfigUtils.prepairIncludes(cfg.env.client.scripts);
 			
 			// Prepair PAGES
-			var pages = cfg.pages;
-			if (pages) {
-				var path, page;
-				
-				for (path in pages) {
-					page = pages[path];
-					page.path = path;
-							
-					if (page.id == null) 
-						page.id = path.substring(path.indexOf('/') + 1);
-					
-					if (page.id === '') 
-						page.id = page.view || 'index';
-					
-					
-					if (page.view == null) 
-						page.view = page.id;
-
-				}
-		
-				for (path in pages) {
-					page = pages[path];
-					pages[page.id] = page;
-					
-					delete pages[path];
-				}
-			}
+			////var pages = cfg.pages;
+			////if (pages) {
+			////	var path, page;
+			////	
+			////	for (path in pages) {
+			////		page = pages[path];
+			////		page.path = path;
+			////				
+			////		if (page.id == null) 
+			////			page.id = path.substring(path.indexOf('/') + 1);
+			////		
+			////		if (page.id === '') 
+			////			page.id = page.view || 'index';
+			////		
+			////		
+			////		if (page.view == null) 
+			////			page.view = page.id;
+			////
+			////	}
+			////
+			////	for (path in pages) {
+			////		page = pages[path];
+			////		pages[page.id] = page;
+			////		
+			////		delete pages[path];
+			////	}
+			////}
 			
 			
 			cfg_attachUtils(cfg);		

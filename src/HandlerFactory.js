@@ -2,23 +2,42 @@
 var HandlerFactory = (function(){
 		
 	
-	return Class({
+	var fns_RESPONDERS = [
+		'handlers',
+		'services',
+		'pages'
+	];
+	
+	var HandlerFactory = Class({
 		
 		Construct: function(){
-			this.handlers = [];
+			this.handlers = new Routes();
 			this.services = new Routes();
-			
 			this.pages = new Routes();
 		},
 		
-		registerPages: function(routes){
+		registerPages: function(pages){
 			var page, key;
 			
-			for (key in routes) {
+			for (key in pages) {
 				
-				page = routes[key];
-				this.pages.add(page.path, page);
+				page = pages[key];
+				
+				if (page.controller != null) {
+					page.controller = __app
+						.config
+						.page
+						.getController(page)
+						;
+				} else {
+					
+					page.controller = server.HttpPage;
+				}
+				
+				this.pages.add(key, page);
 			}
+			
+			
 			
 			return this;
 		},
@@ -26,113 +45,91 @@ var HandlerFactory = (function(){
 		registerHandlers: function(routes, config){
 			
 			for (var key in routes) {
-				this.handlers.push({
-					matcher: rgx_fromString(key),
-					handler: handler_path(routes[key], config)
-				});
-			}
-			
-			return this;
-		},
-		
-		registerServices: function(services, config){
-			for (var key in services) {
-				this.services.add(key, handler_path(services[key], config));
-			}
-			
-			return this;
-		},
-		
-		get: function(url, callback){
-			
-			if (callback == null) 
-				return;
-			
-			
-			var handler = get_handler(this, url);
-			if (handler) {
-				
-				if (typeof handler === 'string') {
-					include
-						.instance()
-						.js(handler + '::Handler')
-						.done(function(resp){
-							
-							callback(new resp.Handler());
-						});
-					return;
-				}
-				
-				callback(handler);
-				return;
-			}
-			
-			
-			var route = get_service(this, url);
-			
-			if (route) {
-				
-				
-				var service = route.value;
-				
-				if (typeof service === 'string') {
-					include
-						.instance()
-						.js(service + '::Service')
-						.done(function(resp){
-							
-							callback(new resp.Service());
-						});
-					return;
-				}
-				
-				callback(service);
-				return;
-			}
-			
-			
-			var route = this.pages.get(url);
-			if (route) {
-				
-				var pageData = route.value,
-					query = route.current.params,
-					controller = __app.config.page.getController(pageData);
-				
-				if (controller == null) {
-					callback(new server.HttpPage(pageData, query));
-					return;
-				}
-				
-				include
-					.instance()
-					.js(controller + '::Controller')
-					.done(function(resp){
-						
-						callback(new resp.Controller(pageData, query));
+				this
+					.handlers
+					.add(key, {
+						controller: handler_path(routes[key], config)
 					});
-				
-				return;
 			}
 			
+			return this;
+		},
+		
+		registerServices: function(routes, config){
+			for (var key in routes) {
+				this
+					.services
+					.add(key, {
+						controller: handler_path(routes[key], config)
+					});
+			}
+			
+			return this;
+		},
+		
+		get: function(req, callback){
+			
+			var url = req.url,
+				method = req.method,
+				route;
+				
+			if (method === 'POST' && req.body && req.body._method) {
+				method = req.body._method;
+			}
+			
+			for (var i = 0, x, imax = fns_RESPONDERS.length; i < imax; i++){
+				x = fns_RESPONDERS[i];
+				
+				if (processor_tryGet(this[x], url, method, callback)) 
+					return;
+			}
 			
 			callback(null);
 		}
 	});
 	
-	
-	function get_handler(factory, path) {
+
+	function processor_tryGet(collection, url, method, callback){
+		var route = collection.get(url, method),
+			processor;
 		
-		var handlers = factory.handlers;
+		if (route == null) 
+			return false;
 		
-		for (var i = 0, x, imax = handlers.length; i < imax; i++){
-			x = handlers[i];
+		
+		var controller = route.value.controller;
+		if (typeof controller === 'string') {
 			
-			if (x.matcher.test(path)) {
-				return x.handler;
-			}
+			processor_loadAndInit(controller, route, callback);
+			return true;
 		}
 		
-		return null;
+		callback(new controller(route));
+		return true;
+	}
+	
+	function processor_loadAndInit(url, route, callback){
+		
+		include
+			.instance()
+			.js(url + '::Handler')
+			.done(function(resp){
+				
+				if (resp.Handler == null) {
+					logger.error('<handler> invalid route', url);
+					
+					return callback(new ErrorHandler());
+				}
+				
+				if (typeof resp.Handler.prototype.process !== 'function') {
+					logger.error('<handler> invalid interface - process function not implemented');
+					
+					return callback(new ErrorHandler());
+				}
+				
+				
+				callback(new resp.Handler(route));
+			});
 	}
 	
 	function get_service(factory, path) {
@@ -140,6 +137,14 @@ var HandlerFactory = (function(){
 			route = services.get(path);
 		
 		return route;
+	}
+	
+	function get_handler(factory, path) {
+		
+		return factory
+			.handlers
+			.get(path)
+			;
 	}
 	
 	
@@ -199,4 +204,16 @@ var HandlerFactory = (function(){
 	}
 
 	
+	
+	var ErrorHandler = Class({
+		Base: Class.Deferred,
+		process: function(){
+			this.reject('Invalid Routing');
+			return this;
+		}
+	});
+	
+	
+	
+	return HandlerFactory;
 }());

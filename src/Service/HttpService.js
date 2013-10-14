@@ -1,47 +1,65 @@
 
 server.HttpService = (function(){
 	
-	var HttpServiceProto = {
+	var HttpServiceProto = Class({
 		Extends: Class.Deferred,
-		process: function(req, res){
+		
+		Construct: function(route){
 			
-			var path = req.url,
-				entry = this.routes.get(path);
-			
-			if (entry == null) {
-				this.reject('Service Endpoint not Found: ' + path, 404);
-				return this;
+			var i = 0,
+				imax = route.parts.length,
+				count = 0;
+			for (; i < imax; i++){
+				if (typeof route.parts[i] !== 'string') 
+					break;
+				
+				count += route.parts[i].length + 1;
 			}
 			
-			var value = entry.value;
+			this.rootCharCount = count;
+		},
+		process: function(req, res){
+			
+			var path = req.url.substring(this.rootCharCount),
+				entry = this.routes.get(path, req.method);
 			
 			
-			value.call(this, req, res, entry.current.params);
+			if (entry == null) 
+				return this
+					.reject('Service method not Found: ' + path, 404);
+				
 			
+			entry
+				.value
+				.call(this, req, res, entry.current.params);
+				
 			return this;
 		}
-	};
+	});
 	
 	
 	return function HttpService(proto){
 		
-		var routes = new ruta.Collection,
-			key,
-			c;
+		var routes = new ruta.Collection;
 		
-		for (key in proto) {
+		var defs = proto.ruta || proto;
+		for (var key in defs) {
 			
-			c = key[0];
-			if ('/' === c || '!' === c) {
-				
-				routes.add(key, proto[key]);
-			}
+			routes.add(key, defs[key]);
 		}
-		
 		proto.routes = routes;
 		
-		for (key in HttpServiceProto) {
-			proto[key] = HttpServiceProto[key];
+		
+		if (proto.Extends == null) {
+			
+			proto.Extends = HttpServiceProto;
+			
+		} else if (Array.isArray(proto.Extends)) {
+			
+			proto.Extends.push(HttpServiceProto);
+		} else {
+			
+			proto.Extends = [HttpServiceProto, proto.Extends];
 		}
 		
 		return Class(proto);
