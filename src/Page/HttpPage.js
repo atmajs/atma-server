@@ -124,10 +124,11 @@ server.HttpPage = (function(){
 				if (Component.mode == null) 
 					Component.mode = 'server';
 				
-				this.nodes = {
-					controller: Component,
-					type: mask.Dom.COMPONENT
-				};
+				this.nodes = new mask
+					.Dom
+					.Component('', null, Component)
+					;
+				
 			}
 			
 			if (this.onRenderStart) {

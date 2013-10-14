@@ -2,11 +2,14 @@
 (function(){
 
 	// import Config/Config.js
-	
+	// import connect/Middleware.js
 
 
 	server.Application = Class({
 		Extends: Class.Deferred,
+		
+		middleware: null,
+		
 		Construct: function(proto){
 			if (proto == null) 
 				proto = {};
@@ -34,7 +37,8 @@
 		},
 		
 		
-		responder: function(){
+		responder: function(data){
+			this.middleware = data.middleware;
 			
 			return responder(this);
 		},
@@ -53,43 +57,65 @@
 	
 	function responder(app) {
 		return function (req, res, next){
-			include
-				.instance()
-				.js(app.config.env.server.scripts)
-				.js(app.config.env.both.scripts)
-				.done(function(){
 			
+			if (app.autoreloadEnabled) 
+				Autoreload.watch(req.url);
+			
+			var callback = app.middleware
+				? middleware_processDelegate(app.middleware)
+				: handler_process
+				;
+			
+			handler_resolve(app, req, res, next, callback);
+		}
+	}
+	
+	function middleware_processDelegate(middleware){
+		
+		return function(handler, req, res){
+			
+			new MiddlewareRunner(middleware)
+				.process(req, res, function(){
+				
+					handler_process(handler, req, res);
+				});
+		};
+	}
+	
+	function handler_resolve(app, req, res, next, callback){
+		resources_load(app, function(){
 			app
 				.handlers
 				.get(req, function(handler){
 					
-					if (app.autoreloadEnabled) {
-						Autoreload.watch(req.url);
-					}
+					if (handler == null) 
+						return next();
 					
-					if (handler == null) {
-						next();
-						return;
-					}
-					
-					logger(95)
-						.log('<request>', req.url);
-					
-					handler
-						.process(req, res)
-						.done(function(content, statusCode, mimeType, headers){
-							
-							response_end(res, content, statusCode, mimeType, headers);
-						})
-						.fail(function(message, statusCode){
-							res.statusCode = statusCode || 500;
-							
-							response_end(res, message, statusCode || 500, 'text/plain');
-						});
+					callback(handler, req, res);
 				});
-			});
-		}
+		});
 	}
+	
+	
+	
+	function handler_process(handler, req, res) {
+		logger(95)
+			.log('<request>', req.url);
+		
+		handler
+			.process(req, res)
+			.done(function(content, statusCode, mimeType, headers){
+				
+				response_end(res, content, statusCode, mimeType, headers);
+			})
+			.fail(function(message, statusCode){
+				res.statusCode = statusCode || 500;
+				
+				response_end(res, message, statusCode || 500, 'text/plain');
+			});
+	}
+	
+	
 	
 	function cfg_doneDelegate(app) {
 		return function(error) {
@@ -110,8 +136,31 @@
 				;
 				
 			
-			app.resolve(app);
+			if (app.args.debug) {
+				
+				app.resolve(app);
+				return;
+			}
+			
+			
+			resources_load(app, function(){
+				
+				resource_load = resource_loadEmpty;
+				app.resolve(app);
+			});
 		}
+	}
+	
+	function resources_load(app, callback) {
+		return include
+				.instance()
+				.js(app.config.env.server.scripts)
+				.js(app.config.env.both.scripts)
+				.done(callback);
+	}
+	
+	function resource_loadEmpty(app, callback){
+		callback();
 	}
 	
 	function response_end(res, content, statusCode, mimeType, headers) {

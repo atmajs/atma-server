@@ -67,6 +67,28 @@ var PageUtils = (function() {
 				styles = styles.concat(getResources('page', cfg.env, page.styles, page.routes));
 			}
 			
+			if (page.compo) {
+				var path = this.getCompo(page),
+					resource = include.getResource(path);
+				if (resource != null) {
+					
+					for (var i = 0, x, imax = resource.includes.length; i < imax; i++){
+						x = resource.includes[i];
+						
+						
+						if (x.resource.type === 'css') {
+							
+							styles.push(x.resource.url);
+						}
+					}
+					
+				} else {
+					
+					logger
+						.error('<page:styles> compo resource is undefined', path);
+				}
+			}
+			
 			
 			if (page.view && page.view.style) {
 				var path = cfg.formatPath(
