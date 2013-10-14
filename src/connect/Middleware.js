@@ -9,6 +9,7 @@ var MiddlewareRunner = Class.Collection(Function, {
 	callback: null,
 	
 	process: function(req, res, callback){
+		
 		this.callback = callback;
 		this.index = 0;
 		
@@ -19,7 +20,7 @@ var MiddlewareRunner = Class.Collection(Function, {
 
 
 function next(runner, req, res, index){
-	if (runner.length >= index) {
+	if (index >= runner.length) {
 		runner.callback(req, res);
 		runner.callback = null;
 		return;
@@ -39,6 +40,6 @@ function nextDelegate(runner, req, res, index){
 			logger.error(error);
 		}
 		
-		runner.next(req, res, ++index);
+		next(runner, req, res, ++index);
 	}
 }
