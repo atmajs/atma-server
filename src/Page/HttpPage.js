@@ -46,9 +46,18 @@ server.HttpPage = (function(){
 			this.data = route.value;
 			this.query = route.current && route.current.params;
 			
-			this.template = cfg.getTemplate(this.data) + '::Template';
+			
 			this.master = cfg.getMaster(this.data) + '::Master';
-
+			
+			if (this.data.template) 
+				this.template = cfg.getTemplate(this.data) + '::Template';
+			
+			
+			if (this.data.compo) 
+				this.compo = cfg.getCompo(this.data) + '::Compo';
+			
+			if (this.compo == null && this.template == null) 
+				this.template = cfg.getTemplate(this.data) + '::Template';
 		},
 		
 		process: function(req, res){
@@ -76,9 +85,10 @@ server.HttpPage = (function(){
 		
 		load: function(){
 			
-			include
+			this.resource = include
 				.instance()
 				.load(this.master, this.template)
+				.js(this.compo)
 				.done(fn_proxy(this.response, this));
 		},
 		
@@ -86,7 +96,8 @@ server.HttpPage = (function(){
 		response: function(resp){
 			
 			var master = resp.load.Master,
-				template = resp.load.Template;
+				template = resp.load.Template,
+				Component = resp.Compo;
 				
 			
 			if ('master' === this.query.debug) {
@@ -102,12 +113,25 @@ server.HttpPage = (function(){
 			}
 			
 			
-			if (master) {
+			if (master) 
 				mask.render(mask.parse(master));
+			
+			if (Component != null) {
+				
+				if (template && Component.template == null) 
+					Component.template = template;
+					
+				if (Component.mode == null) 
+					Component.mode = 'server';
+				
+				this.nodes = {
+					controller: Component,
+					type: mask.Dom.COMPONENT
+				};
 			}
 			
 			if (this.onRenderStart) {
-				this.onRenderStart(this.ctx.req, this.ctx.res);
+				this.onRenderStart(this.model, this.ctx);
 			}
 			
 			var html = mask.render(this.nodes || template, this.model, this.ctx);
@@ -136,12 +160,16 @@ server.HttpPage = (function(){
 	
 	
 	function page_Create(classProto) {
-		var base = classProto
-		while (base.Base){
-			base = base.Base;
-		}
 		
-		base.Base = Page;
+		if (classProto.Base == null) {
+			classProto.Base = Page;
+		} else if (classProto.Extends == null) {
+			classProto.Extends = Page;
+		} else if (Array.isArray(classProto)) {
+			classProto.Extends.push(Page);
+		} else {
+			classProto.Extends = [Page, classProto.Extends];
+		}
 		
 		return Class(classProto);
 	}

@@ -264,33 +264,36 @@ var Config = (function(){
 			ConfigUtils.prepairIncludes(cfg.env.client.scripts);
 			
 			// Prepair PAGES
-			////var pages = cfg.pages;
-			////if (pages) {
-			////	var path, page;
-			////	
-			////	for (path in pages) {
-			////		page = pages[path];
-			////		page.path = path;
-			////				
-			////		if (page.id == null) 
-			////			page.id = path.substring(path.indexOf('/') + 1);
-			////		
-			////		if (page.id === '') 
-			////			page.id = page.view || 'index';
-			////		
-			////		
-			////		if (page.view == null) 
-			////			page.view = page.id;
-			////
-			////	}
-			////
-			////	for (path in pages) {
-			////		page = pages[path];
-			////		pages[page.id] = page;
-			////		
-			////		delete pages[path];
-			////	}
-			////}
+			var pages = cfg.pages;
+			if (pages) {
+				
+				for (var key in pages) {
+					
+					pages[key].id = key;
+				}
+				//for (path in pages) {
+				//	page = pages[path];
+				//	page.path = path;
+				//			
+				//	if (page.id == null) 
+				//		page.id = path.substring(path.indexOf('/') + 1);
+				//	
+				//	if (page.id === '') 
+				//		page.id = page.view || 'index';
+				//	
+				//	
+				//	if (page.view == null) 
+				//		page.view = page.id;
+				//
+				//}
+				//
+				//for (path in pages) {
+				//	page = pages[path];
+				//	pages[page.id] = page;
+				//	
+				//	delete pages[path];
+				//}
+			}
 			
 			
 			cfg_attachUtils(cfg);		

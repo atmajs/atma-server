@@ -137,6 +137,17 @@ var PageUtils = (function() {
 					.config
 					.formatPath(this.location.controller, controller)
 				: null;
+		},
+		
+		getCompo: function(pageData){
+			var compo = pageData.compo,
+				location = this.location.compo || this.location.controller;
+			
+			return compo ?
+				__app
+					.config
+					.formatPath(location, compo)
+				: null;
 		}
 	};
 
