@@ -18,10 +18,12 @@ page:
 	index:
 		template: index
 		master: default
-		
+	
+	urls:
+		login: /login
 pages:
 	
-	!/:
+	/:
 		id: 'index'
 		title: 'Default Title'
 	

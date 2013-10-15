@@ -1,7 +1,7 @@
 server.HttpPage = (function(){
 	
 	// import Resources.js	
-
+	// import HttpContext.js
 	
 	var Page = Class({
 		
@@ -73,11 +73,20 @@ server.HttpPage = (function(){
 				}
 			}
 			
-			this.ctx = {
-				req: req,
-				res: res,
-				page: this
-			};
+			this.ctx = new HttpContext(this, req, res);
+			
+			if ('secure' in this.data) {
+				
+				var user = req.user,
+					secure = this.data.secure,
+					role = secure && secure.role
+					;
+					
+				if (user == null || (role && user.isInRole(role)) === false) {
+					this.ctx.redirect(__app.config.page.urls.login);
+					return this;
+				}
+			}
 			
 			this.load();
 			return this;
@@ -137,10 +146,10 @@ server.HttpPage = (function(){
 			
 			var html = mask.render(this.nodes || template, this.model, this.ctx);
 			
-			if (this.ctx.rewrite) {
+			if (this.ctx._rewrite != null) {
 				__app
 					.handlers
-					.get(this.ctx.rewrite, page_rewriteDelegate(this));
+					.get(this.ctx._rewrite, page_rewriteDelegate(this));
 				return;
 			}
 			
@@ -148,12 +157,21 @@ server.HttpPage = (function(){
 				
 				this
 					.ctx
-					.done(fn_proxy(this.resolve, this))
+					.done(fn_proxy(this.doResolve, this))
 					.fail(fn_proxy(this.fail, this));
 					
 				return;
 			}
-	
+			
+			this.doResolve(html);
+		},
+		
+		doResolve: function(html){
+			if (this.ctx._redirect != null) {
+				// response was already flushed
+				return;
+			}
+			
 			this.resolve(html);
 		}
 	
@@ -201,7 +219,6 @@ server.HttpPage = (function(){
 				;
 		}
 	}
-	
 	
 	return Page;	
 }());
