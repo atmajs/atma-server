@@ -3,6 +3,7 @@ server.HttpService = (function(){
 	
 	var HttpServiceProto = Class({
 		Extends: Class.Deferred,
+		secure: null,
 		
 		Construct: function(route){
 			
@@ -17,8 +18,19 @@ server.HttpService = (function(){
 			}
 			
 			this.rootCharCount = count;
+			
+			if ('secure' in route.value) {
+				this.secure = route.value.secure || {};	
+			}
+			
 		},
 		process: function(req, res){
+			
+			if (secure_canAccess(req, this.secure) === false) {
+				
+				return this
+					.reject({ error: 'Access Denied' }, 401);
+			}
 			
 			var path = req.url.substring(this.rootCharCount),
 				entry = this.routes.get(path, req.method);
@@ -65,5 +77,17 @@ server.HttpService = (function(){
 		return Class(proto);
 	}
 	
+	
+	function secure_canAccess(req, secureObj){
+		
+		if (secureObj == null) 
+			return true;
+		
+		var user = req.user,
+			role = secureObj.role
+			;
+		
+		return user != null && (role == null || user.isInRole(role));
+	}
 	
 }());

@@ -56,12 +56,26 @@ var HandlerFactory = (function(){
 		},
 		
 		registerServices: function(routes, config){
+			var route,
+				key,
+				path
 			for (var key in routes) {
+				
+				
+				route = typeof routes[key] === 'string'
+					? { controller: routes[key] }
+					: routes[key]
+					;
+					
+				path = route.controller;
+				if (!path) 
+					logger.error('<handler factory> service path not defined', routes[key]);
+				
+				route.controller = 	handler_path(path, config);
+				
 				this
 					.services
-					.add(key, {
-						controller: handler_path(routes[key], config)
-					});
+					.add(key, route);
 			}
 			
 			return this;
