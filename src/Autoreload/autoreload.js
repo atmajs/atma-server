@@ -48,9 +48,9 @@ var Autoreload = (function(){
             WebSocket.listen(httpServer);
         },
         
-        fileChanged: function(path){
+        fileChanged: function(path, sender){
             
-            WatcherHandler.fileChanged(path);
+            WatcherHandler.fileChanged(path, sender);
         },
         
         isWatching: function(file){
@@ -58,6 +58,19 @@ var Autoreload = (function(){
                 file = new io.File(file);
             
             return WatcherHandler.isWatching(file);
+        },
+        
+        listenDirectory: function(dir){
+            
+            var that = this;
+            
+            new io
+                .Directory(dir)
+                .readFiles()
+                .files
+                .forEach(function(file){
+                    that.watch(file.uri.toString());
+                })
         }
     };
     

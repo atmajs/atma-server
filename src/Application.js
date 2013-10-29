@@ -38,7 +38,9 @@
 		
 		
 		responder: function(data){
-			this.middleware = data.middleware;
+			if (data){
+				this.middleware = data.middleware;
+			}
 			
 			return responder(this);
 		},
@@ -47,6 +49,7 @@
 		autoreload: function(httpServer){
 			this.autoreloadEnabled = true;
 			Autoreload.listen(httpServer);
+			Autoreload.listenDirectory('server/config/');
 			
 			include.cfg('autoreload', Autoreload);
 		},

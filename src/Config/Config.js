@@ -238,8 +238,13 @@ var Config = (function(){
 			
 			obj_deepExtend(cfg, cfgLoad)
 			
-			if (cfg['compos-info']) {
-				mask.compoDefinitions(cfg['compos-info']);
+			var maskCfg = cfg.mask;
+			if (maskCfg.compos) {
+				mask.compoDefinitions(
+					maskCfg.compos,
+					maskCfg.utils,
+					maskCfg.attributes
+				);
 			}
 			
 			

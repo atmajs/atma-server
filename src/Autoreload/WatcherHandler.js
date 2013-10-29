@@ -86,9 +86,15 @@ var WatcherHandler = (function(){
         Self: {
             fileChanged: function(path, sender){
                 
-                if (path !== 'include') {
-                    // is called by internal filewatcher
-                    path = path.replace(rootFolder, '');
+                if (sender === 'filewatcher') {
+                    // @TODO
+                    path = '/' + path.replace(rootFolder, '');
+                    
+                    if (include.getResource(path) == null) {
+                        this.trigger('fileChanged', path);
+                    }
+                    
+                    return;
                 }
                 
                 this.trigger('fileChange', path);
