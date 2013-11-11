@@ -22,12 +22,7 @@
 			
 			this.handlers = new HandlerFactory();
 			this.args = obj_extend(proto.args, cli_arguments());
-			this.config = Config({
-					buildDirectory : proto.buildDirectory,
-					configs: proto.configs
-				},
-				cfg_doneDelegate(this)
-			);
+			this._loadConfig();
 			
 		
 			if (this.args.debug !== true) 
@@ -47,14 +42,22 @@
 		
 		
 		autoreload: function(httpServer){
-			this.autoreloadEnabled = true;
-			Autoreload.listen(httpServer);
-			Autoreload.listenDirectory('server/config/');
 			
-			include.cfg('autoreload', Autoreload);
+			Autoreload.enableForApp(this, httpServer);
 		},
 		autoreloadEnabled: false,
 		
+		Self: {
+			_loadConfig: function(){
+				this.config = Config({
+						buildDirectory : proto.buildDirectory,
+						configs: proto.configs
+					},
+					cfg_doneDelegate(this)
+				);
+				return this;
+			}
+		}
 	});
 	
 	
@@ -171,13 +174,13 @@
 		if (typeof content !== 'string' && content instanceof Buffer === false) {
 			try {
 				
-				content = JSON.stringify(content);
 				mimeType = 'application/json';
+				content = JSON.stringify(content);
 				
 			}catch(error){
 				
 				logger.error('<responder> invalid json object', error);
-				content = '{ error: "invalid json object" }';
+				content = '{ error: "JSON stringify failed" }';
 			}
 		}
 		

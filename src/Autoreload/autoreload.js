@@ -8,9 +8,11 @@ var Autoreload = (function(){
     // import websocket.js
     
     
-    var rootUri = new net.Uri(process.cwd() + '/');
+    var rootUri = new net.Uri(process.cwd() + '/'),
+        Autoreload
+        ;
     
-    return {
+    return Autoreload = {
         watch: function(requestedUrl){
             var start = requestedUrl[0] === '/'
                     ? 1
@@ -60,18 +62,41 @@ var Autoreload = (function(){
             return WatcherHandler.isWatching(file);
         },
         
-        listenDirectory: function(dir){
-            
-            var that = this;
-            
+        listenDirectory: function(dir, callback){
+            //logger.warn('<autoreload> config watcher not implemented yet.');
+            //var that = this;
+            //
             new io
                 .Directory(dir)
-                .readFiles()
-                .files
-                .forEach(function(file){
-                    that.watch(file.uri.toString());
-                })
+                .watch(callback)
+                ;
+        },
+        
+        enableForApp: function(app, httpServer){
+            app.autoreloadEnabled = true;
+            
+			this.listen(httpServer);
+			this.listenDirectory('server/config/', reloadConfigDelegate(app));
+			
+			include.cfg('autoreload', this);
         }
     };
+    
+    //= functional
+    
+    function reloadConfigDelegate(app){
+        
+        return function(path){
+            app
+                .defer()
+                ._loadConfig()
+                .done(function(){
+                    
+                    Autoreload.fileChanged(path);
+                })
+                ;
+        };
+    }
+    
     
 }());

@@ -91,7 +91,7 @@ var WatcherHandler = (function(){
                     path = '/' + path.replace(rootFolder, '');
                     
                     if (include.getResource(path) == null) {
-                        this.trigger('fileChanged', path);
+                        this.trigger('fileChange', path);
                     }
                     
                     return;
