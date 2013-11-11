@@ -1,6 +1,9 @@
 
 server.HttpService = (function(){
 	
+	// import utils.js
+	// import Barricade.js
+	
 	var HttpServiceProto = Class({
 		Extends: Class.Deferred,
 		secure: null,
@@ -50,17 +53,22 @@ server.HttpService = (function(){
 	});
 	
 	
-	return function HttpService(proto){
+	function HttpService(proto){
 		
-		var routes = new ruta.Collection;
-		
-		var defs = proto.ruta || proto;
-		for (var key in defs) {
+		var routes = new ruta.Collection,
+			defs = proto.ruta || proto,
+			path, responder
+			;
+		for (path in defs) {
+			responder = defs[path];
 			
-			routes.add(key, defs[key]);
+			if (arr_isArray(responder)) 
+				responder = new Barricade(responder);
+			
+			routes.add(path, responder);
 		}
-		proto.routes = routes;
 		
+		proto.routes = routes;
 		
 		if (proto.Extends == null) {
 			
@@ -77,17 +85,7 @@ server.HttpService = (function(){
 		return Class(proto);
 	}
 	
+	HttpService.Barricade = Barricade;
 	
-	function secure_canAccess(req, secureObj){
-		
-		if (secureObj == null) 
-			return true;
-		
-		var user = req.user,
-			role = secureObj.role
-			;
-		
-		return user != null && (role == null || user.isInRole(role));
-	}
-	
+	return HttpService;
 }());

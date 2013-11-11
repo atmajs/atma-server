@@ -1,38 +1,32 @@
 
 var MiddlewareRunner = Class.Collection(Function, {
-	Construct: function(array){
-		for (var i = 0, imax = array.length; i < imax; i++){
-			this[this.length++] = array[i];
-		}
-	},
-	
-	callback: null,
-	
+	Base: Class.Serializable,
 	process: function(req, res, callback){
 		
-		this.callback = callback;
-		this.index = 0;
-		
-		next(this, req, res, 0)
+		next(this, req, res, callback, 0);
 	}
 	
 });
 
 
-function next(runner, req, res, index){
-	if (index >= runner.length) {
-		runner.callback(req, res);
-		runner.callback = null;
-		return;
-	}
+function next(runner, req, res, callback, index){
+	if (index >= runner.length) 
+		return callback(req, res);
+
+	var middleware = runner[index];
 	
-	var fn = runner[index];
-	
-	fn(req, res, nextDelegate(runner, req, res, index));
+	if (middleware == null) 
+		return next(runner, req, res, callback, ++index);
+
+	middleware(
+		req,
+		res,
+		nextDelegate(runner, req, res, callback, index)
+	);
 }
 
 
-function nextDelegate(runner, req, res, index){
+function nextDelegate(runner, req, res, callback, index){
 	
 	return function(error){
 		
@@ -40,6 +34,6 @@ function nextDelegate(runner, req, res, index){
 			logger.error(error);
 		}
 		
-		next(runner, req, res, ++index);
-	}
+		next(runner, req, res, callback, ++index);
+	};
 }

@@ -34,7 +34,7 @@
 		
 		responder: function(data){
 			if (data){
-				this.middleware = data.middleware;
+				this.middleware = new MiddlewareRunner(data.middleware);
 			}
 			
 			return responder(this);
@@ -76,11 +76,11 @@
 		}
 	}
 	
-	function middleware_processDelegate(middleware){
+	function middleware_processDelegate(middlewareRunner){
 		
 		return function(handler, req, res){
 			
-			new MiddlewareRunner(middleware)
+			middlewareRunner
 				.process(req, res, function(){
 				
 					handler_process(handler, req, res);
