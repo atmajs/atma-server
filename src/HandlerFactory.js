@@ -42,43 +42,70 @@ var HandlerFactory = (function(){
 			return this;
 		},
 		
-		registerHandlers: function(routes, config){
+		registerHandlers: function(routes, appCfg){
 			
 			for (var key in routes) {
-				this
-					.handlers
-					.add(key, {
-						controller: handler_path(routes[key], config)
-					});
+				this.registerHandler(key, routes[key], appCfg);
 			}
 			
 			return this;
 		},
+		registerHandler: function(path, handler, appCfg) {
+			if (typeof handler === 'string') {
+				handler = {
+					controller: handler_path(handler, appCfg)
+				};
+			}
+			
+			this
+				.handlers
+				.add(path, handler)
+				;
+		},
 		
-		registerServices: function(routes, config){
-			var route,
-				key,
-				path
+		registerServices: function(routes, appCfg){
+			
 			for (var key in routes) {
-				
-				
-				route = typeof routes[key] === 'string'
-					? { controller: routes[key] }
-					: routes[key]
-					;
-					
-				path = route.controller;
-				if (!path) 
-					logger.error('<handler factory> service path not defined', routes[key]);
-				
-				route.controller = 	handler_path(path, config);
-				
-				this
-					.services
-					.add(key, route);
+				this.registerService(key, routes[key]);
 			}
 			
 			return this;
+		},
+		registerService: function(path, service, appCfg){
+			if (typeof service !== 'function') {
+				
+				if (typeof service === 'string') {
+					service = { controller: service };
+				}
+				
+				service.controller = handler_path(service.controller, appCfg);
+			}
+			this
+				.services
+				.add(path, service)
+				;
+		},
+		
+		registerWebsockets: function(routes){
+			for(var namespace in routes){
+				this.registerWebsocket(namespace, routes[namespace]);
+			}
+			
+			return this;
+		},
+		registerWebsocket: function(namespace, Handler){
+			
+			if (typeof Handler === 'string') {
+				include
+					.instance()
+					.js(Handler + '::Handler')
+					.done(function(resp){
+						
+						WebSocket.registerHandler(namespace, resp.Handler);
+					});
+				return;
+			}
+			WebSocket.registerHandler(namespace, Handler);
 		},
 		
 		get: function(req, callback){
@@ -104,6 +131,7 @@ var HandlerFactory = (function(){
 	
 
 	function processor_tryGet(collection, url, method, callback){
+		
 		var route = collection.get(url, method),
 			processor;
 		
@@ -170,7 +198,10 @@ var HandlerFactory = (function(){
 		
 		var location = config && config.location;
 		if (location == null) {
-			console.error('[Handler] Path is relative but no location. Set handler: {location: X} in config');
+			logger
+				.error('<Handler> Path is relative but no location. Set handler: {location: X} in config')
+				.error(path, config)
+				;
 			return path;
 		}
 		

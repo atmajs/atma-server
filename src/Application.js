@@ -20,8 +20,11 @@
 			
 			__app = this;
 			
+			
 			this.handlers = new HandlerFactory();
 			this.args = obj_extend(proto.args, cli_arguments());
+			
+			this._baseConfig = proto;
 			this._loadConfig();
 			
 		
@@ -41,14 +44,20 @@
 		},
 		
 		
+		webSockets: WebSocket,
 		autoreload: function(httpServer){
 			
-			Autoreload.enableForApp(this, httpServer);
+			WebSocket.listen(httpServer);
+			
+			return Autoreload.enableForApp(this);
 		},
 		autoreloadEnabled: false,
 		
 		Self: {
 			_loadConfig: function(){
+				
+				var proto = this._baseConfig;
+				
 				this.config = Config({
 						buildDirectory : proto.buildDirectory,
 						configs: proto.configs

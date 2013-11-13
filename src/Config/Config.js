@@ -14,8 +14,10 @@ var Config = (function(){
 		if (params.buildDirectory) 
 			_buildPath = params.buildDirectory;
 		
-		if (params.configs) 
+		if (params.configs) {
 			_configsPath = params.configs;
+			_cfgDir = new io.Directory(_configsPath);
+		}
 		
 		
 		var cfg = {
@@ -127,7 +129,12 @@ var Config = (function(){
 	
 	Config.getList = function(path){
 		
-		_cfgDir = new io.Directory(net.Uri.combine(process.cwd(), path));
+		var uri = new net.Uri(path);
+		if (uri.isRelative()) {
+			uri = new io.Directory().uri.combine(uri);
+		}
+		
+		_cfgDir = new io.Directory(uri);
 		
 		var configs = _cfgDir
 			.readFiles('**.yml')
@@ -178,7 +185,7 @@ var Config = (function(){
 				.push(buildFile.uri.toString() + '::build');
 		} else {
 			
-			if (!__app.args.degub)
+			if (!__app.args.debug)
 				logger
 					.warn('<config> %s/stats.json . App is not built', _buildPath);
 			

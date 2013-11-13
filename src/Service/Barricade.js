@@ -13,15 +13,20 @@ var Barricade = (function(){
 		if (index >= runner.length) 
 			return;
 	
-		var fn = runner[index];
+		var fn = runner[index],
+			error;
 		
-		fn.call(
+		error = fn.call(
 			service,
 			req,
 			res,
 			params,
 			nextDelegate(runner, req, res, params, index)
 		);
+		
+		if (error) 
+			reject(service, error);
+		
 	}
 	
 	
@@ -30,7 +35,7 @@ var Barricade = (function(){
 		return function(error){
 			
 			if (error) 
-				return service.reject(error);
+				return reject(service, error)
 			
 			next(
 				runner,
@@ -41,6 +46,13 @@ var Barricade = (function(){
 				++index
 			);
 		};
+	}
+	
+	function reject(service, error){
+		if (typeof error === 'string') 
+			error = { error: error };
+		
+		service.reject(error);
 	}
 	
 	return function(middlewares){

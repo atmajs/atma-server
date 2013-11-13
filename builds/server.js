@@ -37,7 +37,7 @@
 	
 	// import ../src/Page/HttpPage.js
 	// import ../src/Service/HttpService.js
-	
+	// import ../src/WebSocket.js
 	
 	// import ../src/Application.js
 	

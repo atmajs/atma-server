@@ -1,11 +1,8 @@
 var Autoreload = (function(){
     
-    var SocketListeners = {};
-
-        
     // import WatcherHandler.js
     // import Connection.js
-    // import websocket.js
+    
     
     
     var rootUri = new net.Uri(process.cwd() + '/'),
@@ -46,10 +43,6 @@ var Autoreload = (function(){
             WatcherHandler.unwatch(new io.File(path));
         },
         
-        listen: function(httpServer){
-            WebSocket.listen(httpServer);
-        },
-        
         fileChanged: function(path, sender){
             
             WatcherHandler.fileChanged(path, sender);
@@ -63,22 +56,29 @@ var Autoreload = (function(){
         },
         
         listenDirectory: function(dir, callback){
-            //logger.warn('<autoreload> config watcher not implemented yet.');
-            //var that = this;
-            //
             new io
                 .Directory(dir)
                 .watch(callback)
                 ;
         },
         
-        enableForApp: function(app, httpServer){
+        enableForApp: function(app){
+            
+            WebSocket.registerHandler('/browser', ConnectionSocket);
+            
             app.autoreloadEnabled = true;
             
-			this.listen(httpServer);
-			this.listenDirectory('server/config/', reloadConfigDelegate(app));
-			
+            var configs = new io.Directory('server/config/');
+            if (configs.exists()) 
+                configs.watch(reloadConfigDelegate(app));
+            
 			include.cfg('autoreload', this);
+            
+            return this;
+        },
+        
+        getWatcher: function(){
+            return WatcherHandler;
         }
     };
     

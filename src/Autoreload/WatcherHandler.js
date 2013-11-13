@@ -27,9 +27,8 @@ var WatcherHandler = (function(){
                 return;
             
             io
-                .File
                 .watcher
-                .watch(this.file, this.fileChanged);
+                .watch(this.file.uri.toLocalFile(), this.fileChanged);
                 
             this.active = true;
         },
@@ -38,7 +37,6 @@ var WatcherHandler = (function(){
             
             if (this._listeners.length === 0) {
                 io
-                    .File
                     .watcher
                     .unwatch(this.file.uri.toLocalFile());
             }
@@ -132,14 +130,14 @@ var WatcherHandler = (function(){
         
         
         bind: function(callback){
-            this.on('fileChange', callback);
             
-            return this;
+            return this
+                .on('fileChange', callback);
         },
         unbind: function(callback){
-            this.off('fileChange', callback);
             
-            return this;
+            return this
+                .off('fileChange', callback);
         }
     });
     
