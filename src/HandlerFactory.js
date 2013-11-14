@@ -195,6 +195,9 @@ var HandlerFactory = (function(){
 			// /
 			return path;
 		}
+		if (path.indexOf('://') !== -1) {
+			return path;
+		}
 		
 		var location = config && config.location;
 		if (location == null) {
