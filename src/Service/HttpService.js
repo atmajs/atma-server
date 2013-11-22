@@ -3,6 +3,7 @@ server.HttpService = (function(){
 	
 	// import utils.js
 	// import Barricade.js
+	// import static.js
 	
 	var HttpServiceProto = Class({
 		Extends: Class.Deferred,
