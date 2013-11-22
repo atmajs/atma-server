@@ -27,6 +27,7 @@
 		__cfgDefaults;
 	
 	// import ../src/dependency.js
+	// import ../src/util/is.js
 	// import ../src/util/obj.js
 	// import ../src/util/fn.js
 	// import ../src/util/arr.js

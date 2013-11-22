@@ -37,8 +37,6 @@ var HandlerFactory = (function(){
 				this.pages.add(key, page);
 			}
 			
-			
-			
 			return this;
 		},
 		
@@ -51,7 +49,7 @@ var HandlerFactory = (function(){
 			return this;
 		},
 		registerHandler: function(path, handler, appCfg) {
-			if (typeof handler === 'string') {
+			if (is_String(handler)) {
 				handler = {
 					controller: handler_path(handler, appCfg)
 				};
@@ -72,14 +70,22 @@ var HandlerFactory = (function(){
 			return this;
 		},
 		registerService: function(path, service, appCfg){
-			if (typeof service !== 'function') {
-				
-				if (typeof service === 'string') {
-					service = { controller: service };
-				}
-				
-				service.controller = handler_path(service.controller, appCfg);
+			if (is_Function(service)) {
+				service = {
+					controller: service
+				};
 			}
+			
+			else if (is_String(service)) {
+				service = {
+					controller: service
+				};
+			}
+			
+			if (is_String(service.controller)) 
+				service.controller = handler_path(service.controller, appCfg);
+			
+			
 			this
 				.services
 				.add(path, service)
@@ -95,7 +101,7 @@ var HandlerFactory = (function(){
 		},
 		registerWebsocket: function(namespace, Handler){
 			
-			if (typeof Handler === 'string') {
+			if (is_String(Handler)) {
 				include
 					.instance()
 					.js(Handler + '::Handler')
@@ -140,7 +146,7 @@ var HandlerFactory = (function(){
 		
 		
 		var controller = route.value.controller;
-		if (typeof controller === 'string') {
+		if (is_String(controller)) {
 			
 			processor_loadAndInit(controller, route, callback);
 			return true;
@@ -163,7 +169,7 @@ var HandlerFactory = (function(){
 					return callback(new ErrorHandler());
 				}
 				
-				if (typeof resp.Handler.prototype.process !== 'function') {
+				if (!is_Function(resp.Handler.prototype.process)) {
 					logger.error('<handler> invalid interface - process function not implemented');
 					
 					return callback(new ErrorHandler());

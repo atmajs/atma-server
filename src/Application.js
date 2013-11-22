@@ -36,9 +36,9 @@
 		
 		
 		responder: function(data){
-			if (data){
-				this.middleware = new MiddlewareRunner(data.middleware);
-			}
+			
+			this.middleware = new MiddlewareRunner(data && data.middleware);
+			
 			
 			return responder(this);
 		},
