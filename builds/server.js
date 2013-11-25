@@ -36,11 +36,11 @@
 	// import ../src/HandlerFactory.js
 	// import ../src/IHttpHandler.js
 	
-	// import ../src/Page/HttpPage.js
-	// import ../src/Service/HttpService.js
+	// import ../src/HttpPage/HttpPage.js
+	// import ../src/HttpService/HttpService.js
 	// import ../src/WebSocket.js
 	
-	// import ../src/Application.js
+	// import ../src/HttpApplication/Application.js
 	
 	
 	// import ../src/loader/coffee.js

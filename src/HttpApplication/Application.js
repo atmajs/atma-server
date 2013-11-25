@@ -1,12 +1,15 @@
 
 (function(){
 
-	// import Config/Config.js
-	// import connect/Middleware.js
-
+	// import ../Config/Config.js
+	// import ../connect/Middleware.js
+    // import SubApp.js
 
 	server.Application = Class({
 		Extends: Class.Deferred,
+		
+		_responder: null,
+		_responders: null,
 		
 		middleware: null,
 		
@@ -18,7 +21,9 @@
 				return new server.Application(proto);
 			}
 			
-			__app = this;
+			// if a root application
+			if (__app == null) 
+				__app = this; 
 			
 			
 			this.handlers = new HandlerFactory();
@@ -40,9 +45,26 @@
 			this.middleware = new MiddlewareRunner(data && data.middleware);
 			
 			
-			return responder(this);
+			return (this._responder = responder(this));
 		},
 		
+		respond: function(req, res, next){
+			if (this._responder == null) 
+				this.responder();
+				
+			this._responder(req, res, next);
+		},
+		
+		
+		responders: function(array){
+			this._responders = new MiddlewareRunner(array);
+		},
+		
+		process: function(req, res, next){
+			this
+				._responders
+				.process(req, res, next);
+		},
 		
 		webSockets: WebSocket,
 		autoreload: function(httpServer){
@@ -62,6 +84,7 @@
 						buildDirectory : proto.buildDirectory,
 						configs: proto.configs
 					},
+					proto.config,
 					cfg_doneDelegate(this)
 				);
 				return this;
@@ -87,12 +110,12 @@
 	
 	function middleware_processDelegate(middlewareRunner){
 		
-		return function(handler, req, res){
+		return function(app, handler, req, res){
 			
 			middlewareRunner
 				.process(req, res, function(){
 				
-					handler_process(handler, req, res);
+					handler_process(app, handler, req, res);
 				});
 		};
 	}
@@ -106,25 +129,29 @@
 					if (handler == null) 
 						return next();
 					
-					callback(handler, req, res);
+					callback(app, handler, req, res);
 				});
 		});
 	}
 	
 	
 	
-	function handler_process(handler, req, res) {
+	function handler_process(app, handler, req, res) {
 		logger(95)
 			.log('<request>', req.url);
 		
 		handler
-			.process(req, res)
+			.process(req, res, app.config);
+			
+		if (handler.done == null) 
+			return;
+		
+		handler
 			.done(function(content, statusCode, mimeType, headers){
 				
 				response_end(res, content, statusCode, mimeType, headers);
 			})
 			.fail(function(message, statusCode){
-				res.statusCode = statusCode || 500;
 				
 				response_end(res, message, statusCode || 500, 'text/plain');
 			});
@@ -145,9 +172,11 @@
 			
 			app
 				.handlers
+				.registerSubApps(cfg.subapps, cfg.subapp)
 				.registerHandlers(cfg.handlers, cfg.handler)
 				.registerServices(cfg.services, cfg.service)
 				.registerPages(cfg.pages)
+				
 				;
 				
 			

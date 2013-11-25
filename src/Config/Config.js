@@ -4,23 +4,28 @@ var Config = (function(){
 	// import Utils.js
 	
 	var cfg_attachUtils = ConfigUtils.attach,
-		_cfgDir = new io.Directory('server/config/'),
 		
 		_buildPath = 'public/build/',
 		_configsPath = 'server/config/';
 		
-	function Config(params, callback) {
+	function Config(params, baseConfig, callback) {
 		
 		if (params.buildDirectory) 
 			_buildPath = params.buildDirectory;
 		
-		if (params.configs) {
-			_configsPath = params.configs;
-			_cfgDir = new io.Directory(_configsPath);
-		}
+		var path,
+			directory,
+			basePath
+			;
+			
+		
+		path = params.configs || _configsPath;
+		basePath = params.base || io.env.currentDir.toString();
+		directory = cfg_getDirectory(path);
 		
 		
 		var cfg = {
+			base: basePath,
 			env: {
 				client: {
 					routes: null,
@@ -73,12 +78,29 @@ var Config = (function(){
 		
 		obj_deepExtend(cfg, __cfgDefaults);
 		
-		return cfg_load(cfg, Config.getList(_configsPath), callback);
+		if (directory.exists()) {
+			cfg_load(
+				basePath,
+				directory,
+				cfg,
+				Config.getList(directory),
+				baseConfig,
+				callback
+			);
+		} else{
+			
+			obj_deepExtend(cfg, baseConfig);
+			callback();
+		}
 		
+		return cfg;
 	};
 	
 	
 	function obj_deepExtend(target, source){
+		
+		if (source == null) 
+			return target;
 		
 		if (Array.isArray(target) && Array.isArray(source)) {
 			for (var i = 0, x, imax = source.length; i < imax; i++){
@@ -127,49 +149,51 @@ var Config = (function(){
 	}
 	
 	
-	Config.getList = function(path){
+	Config.getList = function(directory){
 		
-		var uri = new net.Uri(path);
-		if (uri.isRelative()) {
-			uri = new io.Directory().uri.combine(uri);
-		}
-		
-		_cfgDir = new io.Directory(uri);
-		
-		var configs = _cfgDir
+		var configs = directory
 			.readFiles('**.yml')
 			.files
 			.map(function(file){
 				
 				return file
 					.uri
-					.toRelativeString(_cfgDir.uri)
+					.toRelativeString(directory.uri)
 					.replace('.yml', '')
 					;
 			});
 		
 		if (configs.length === 0)
-			logger.error('<server> No configuration files in', _cfgDir.uri.toString());
+			logger.error('<server> No configuration files in', directory.uri.toString());
 		
 		
 		return configs;
 	};
 	
 	
+	function cfg_getDirectory(path){
+		var uri = new net.Uri(path);
+		if (uri.isRelative()) {
+			uri = new io.Directory().uri.combine(uri);
+		}
+		
+		return new io.Directory(uri);
+	}
+	
 	
 	/**
 	 *	- configs - Array - ['name']
 	 */
-	function cfg_load(cfg, configs, callback) {
+	function cfg_load(basePath, directory, cfg, configs, baseConfig, callback) {
 		if (Array.isArray(configs) === false){
 			process.nextTick(function(){
 				callback('<server.config> should be an array of filenames');
 			});
-			return cfg;
+			return;
 		}
 		
 		configs = configs.map(function(config){
-			return _cfgDir
+			return directory
 				.uri
 				.combine(config + '.yml')
 				.toString()
@@ -178,7 +202,7 @@ var Config = (function(){
 		});
 		
 		// build data
-		var buildFile = new io.File(net.Uri.combine(_buildPath, 'stats.json'));
+		var buildFile = new io.File(net.Uri.combine(basePath, _buildPath, 'stats.json'));
 		
 		if (buildFile.exists()) {
 			configs
@@ -195,13 +219,12 @@ var Config = (function(){
 		include
 			.instance()
 			.load(configs)
-			.done(cfg_parseDelegate(cfg, callback));
-		
-		return cfg;
+			.done(cfg_parseDelegate(cfg, baseConfig, callback))
+			;
 	}
 	
 	
-	function cfg_parseDelegate(cfg, callback) {
+	function cfg_parseDelegate(cfg, baseConfig, callback) {
 		
 		function cfg_extend(obj, value, namespace) {
 			if (namespace == null || namespace.indexOf('.') === -1) {
@@ -309,6 +332,7 @@ var Config = (function(){
 			
 			
 			cfg_attachUtils(cfg);		
+			obj_deepExtend(cfg, baseConfig);
 			
 			callback();
 		};
