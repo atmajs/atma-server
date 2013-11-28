@@ -23,6 +23,9 @@ var Config = (function(){
 		basePath = params.base || io.env.currentDir.toString();
 		directory = cfg_getDirectory(path);
 		
+		if (baseConfig && params.configs == null) 
+			path = null;
+		
 		
 		var cfg = {
 			base: basePath,
@@ -76,9 +79,9 @@ var Config = (function(){
 			}
 		};
 		
-		obj_deepExtend(cfg, __cfgDefaults);
+		obj_deepExtend(cfg, JSON.parse(JSON.stringify(__cfgDefaults)));
 		
-		if (directory.exists()) {
+		if (path && directory.exists()) {
 			cfg_load(
 				basePath,
 				directory,
@@ -90,7 +93,7 @@ var Config = (function(){
 		} else{
 			
 			obj_deepExtend(cfg, baseConfig);
-			callback();
+			process.nextTick(callback);
 		}
 		
 		return cfg;

@@ -65,37 +65,23 @@ var HandlerFactory = (function(){
 		
 		registerSubApps: function(routes, subAppCfg){
 			for(var key in routes){
-				this.registerSubApp(key, routes[cfg], subAppCfg);
+				this.registerSubApp(key, routes[key], subAppCfg);
 			}
 			return this;
 		},
 		registerSubApp: function(name, data, subAppCfg){
+			var route = name;
 			
-			if (name[0] !== '^') {
-				if (name[0] !== '/') 
-					name += '/' + name;
+			if (route[0] !== '^') {
+				if (route[0] !== '/') 
+					route = '/' + route;
 				
-				name += '^' + name;
+				route = '^' + route;
 			}
-			
-			////var mix = data;
-			////
-			////if (is_String(mix)) {
-			////	mix = {
-			////		controller: mix
-			////	};
-			////}
-			////
-			////if (mix == null ||
-			////	mix instanceof server.Application ||
-			////	mix.controller == null) {
-			////	
-			////	mix = ;
-			////}
 			
 			this
 				.subapps
-				.add(name, new server.HttpSubApplication(name, data))
+				.add(route, new server.HttpSubApplication(name, data))
 				;
 		},
 		
@@ -201,7 +187,7 @@ var HandlerFactory = (function(){
 		if (route == null) 
 			return false;
 		
-		var controller = route.value.controller;
+		var controller = route.value.controller || route.value;
 		
 		if (controller == null) {
 			logger.error('<routing> no controller', url);

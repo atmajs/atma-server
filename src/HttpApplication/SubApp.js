@@ -8,7 +8,7 @@ server.HttpSubApplication = (function(){
         Construct: function(path, data){
             
             if (path[0] !== '/') 
-                path += '/' + path;
+                path = '/' + path;
             
             if (path[path.length - 1] !== '/') 
                 path += '/';
@@ -26,7 +26,7 @@ server.HttpSubApplication = (function(){
             if (is_String(controller)) {
                 this._res = include
                     .instance()
-                    .js(url + '::App')
+                    .js(controller + '::App')
                     .done(function(resp){
                         
                         if (resp.App instanceof server.Application) {
@@ -68,6 +68,8 @@ server.HttpSubApplication = (function(){
             if (this._res) {
                 
                 this._res.done(function(){
+                    
+                    that._res = null;
                     that.process(req, res);
                 });
                 
@@ -90,6 +92,15 @@ server.HttpSubApplication = (function(){
         },
         
         pipe: function(req, res){
+            
+            if (req.url.length < this._path.length) {
+                
+                res.writeHead(301, {
+                    'Location': this._path
+                });
+                res.end();
+                return;
+            }
             
             req.url = req.url.replace(this._path, '/');
             

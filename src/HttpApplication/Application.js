@@ -23,9 +23,9 @@
 			
 			// if a root application
 			if (__app == null) 
-				__app = this; 
+				__app = this;
 			
-			
+			this.isRoot = this === __app;
 			this.handlers = new HandlerFactory();
 			this.args = obj_extend(proto.args, cli_arguments());
 			
@@ -33,7 +33,7 @@
 			this._loadConfig();
 			
 		
-			if (this.args.debug !== true) 
+			if (this.isRoot && this.args.debug !== true) 
 				logger.cfg('color', 'none');
 				
 			return this;
@@ -61,9 +61,10 @@
 		},
 		
 		process: function(req, res, next){
+			
 			this
 				._responders
-				.process(req, res, next);
+				.process(req, res, next || response_notProcessed, this.config);
 		},
 		
 		webSockets: WebSocket,
@@ -176,9 +177,8 @@
 				.registerHandlers(cfg.handlers, cfg.handler)
 				.registerServices(cfg.services, cfg.service)
 				.registerPages(cfg.pages)
-				
 				;
-				
+			
 			
 			if (app.args.debug) {
 				
@@ -189,7 +189,7 @@
 			
 			resources_load(app, function(){
 				
-				resource_load = resource_loadEmpty;
+				resources_load = resource_loadEmpty;
 				app.resolve(app);
 			});
 		}
@@ -233,4 +233,14 @@
 		
 		res.end(content);
 	}
+	
+	function response_notProcessed(req, res){
+	
+		response_end(
+			res,
+			'Error: Request was not processed ' + req.url,
+			500
+		);
+	}
+	
 }());
