@@ -233,7 +233,9 @@ var HandlerFactory = (function(){
 					return callback(new ErrorHandler());
 				}
 				
-				route.value.controller = resp.Handler;
+				if (__app.args.debug !== true) 
+					route.value.controller = resp.Handler;
+				
 				
 				if (is_Object(resp.Handler) && is_Function(resp.Handler.process)) {
 					return callback(resp.Handler);

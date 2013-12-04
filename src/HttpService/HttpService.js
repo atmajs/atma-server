@@ -11,14 +11,15 @@ server.HttpService = (function(){
 		
 		Construct: function(route){
 			
-			var i = 0,
-				imax = route.parts.length,
+			var pathParts = route.path,
+				i = 0,
+				imax = pathParts.length,
 				count = 0;
 			for (; i < imax; i++){
-				if (typeof route.parts[i] !== 'string') 
+				if (typeof pathParts[i] !== 'string') 
 					break;
 				
-				count += route.parts[i].length + 1;
+				count += pathParts[i].length + 1;
 			}
 			
 			this.rootCharCount = count;

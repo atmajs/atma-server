@@ -46,6 +46,8 @@
 	// import ../src/loader/coffee.js
 	// import ../src/loader/less.js
 	// import ../src/loader/yml.js
+	// import ../src/loader/jsnext.js
+
 	// import ../src/Autoreload/autoreload.js
 	
 	__cfgDefaults = [
