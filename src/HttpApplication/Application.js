@@ -88,7 +88,7 @@
 				//	proto.config,
 				//	cfg_doneDelegate(this)
 				//);
-				this.config = Config(proto.confing);
+				this.config = Config(proto);
 				this
 					.config
 					.done(cfg_doneDelegate(this))

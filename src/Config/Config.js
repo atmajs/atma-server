@@ -11,8 +11,13 @@ var Config = (function() {
 	function Config(params) {
 		params = params || {};
 		
-		var path_Configs = params.configs || PATH,
-			path_Build = params.buildDirectory || BUILD_PATH;
+		var path_Configs = 'configs' in params
+				? params.configs 
+				: PATH,
+			path_Build = path_Configs
+				? (params.buildDirectory || BUILD_PATH)
+				: null
+				;
 		
 		var path_base = params.base || io.env.currentDir.toString();
 
@@ -22,12 +27,19 @@ var Config = (function() {
 				config: {
 					base: path_base
 				}
-			}, {
-				path: path_Configs
-			}, {
-				path: path_Build,
-				optional: true
-			}, {
+			},
+			path_Configs
+				? {
+					path: path_Configs
+				}
+				: null,
+			path_Build
+				? {
+					path: path_Build,
+					optional: true
+				}
+				: null,
+			{
 				config: ConfigUtils
 			}, {
 				config: EnvUtils
@@ -94,8 +106,10 @@ var Config = (function() {
 					if (page.route == null) 
 						page.route = key;
 					
-					if (pages[page.id]) 
-						logger.error('<page:register> overwrite existed ID', page.id);
+					if (pages[page.id] && pages[page.id] !== page) 
+						logger.error('<page:register> overwrite existed ID',
+							key.bold,
+							pages[page.id] === page);
 						
 					pages[page.id] = page;
 					
