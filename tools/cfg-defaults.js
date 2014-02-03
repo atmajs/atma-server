@@ -24,7 +24,7 @@ function cfg_getDefault(){
 	
 	new io
 		.Directory('src/ConfigDefaults/')
-		.readFiles('*.yml')
+		.readFiles('**.yml')
 		.files
 		.forEach(function(file){
 			cfg = file.read();

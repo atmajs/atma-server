@@ -43,7 +43,10 @@ server.HttpService = (function(){
 			
 			if (entry == null) 
 				return this
-					.reject('Service method not Found: ' + path, 404);
+					.reject('Service method not Found: <'
+						+ req.method
+						+ '> '
+						+ path, 404);
 				
 			
 			entry

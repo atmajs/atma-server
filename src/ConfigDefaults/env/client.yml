@@ -1,11 +1,13 @@
 
 
+env:
+	client:
 
-client:
+		include:
+			src: '/.reference/atma/include/lib/include.js'
 
-	include:
-		src: '/.reference/atma/include/lib/include.js'
+		scripts:
 
-	scripts:
+		styles:
 
-	styles:
+		routes:

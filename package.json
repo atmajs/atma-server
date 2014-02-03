@@ -13,6 +13,7 @@
         "atma-logger": ">0.0.0",
         "atma-io": ">0.0.0",
         "atma-libs": ">0.0.0",
+        "appcfg": ">0.0.0",
         "coffee": ">0.0.0",
         "less": ">0.0.0",
         "yamljs": ">0.0.0",

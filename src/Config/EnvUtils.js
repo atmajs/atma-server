@@ -1,110 +1,105 @@
-var PageUtils = (function() {
+var EnvUtils = (function() {
 
 
-	var PageUtils = {
-		getScripts: Class.Fn.memoize(function(pageID) {
-			var cfg = __app.config,
-				scripts = getResources('scripts', cfg.env).slice();
+	var EnvUtils = {
 
-			
-			if (pageID) 
-				scripts = scripts.concat(this.getScriptsForPageOnly(pageID));
-			
-			
+		$getScripts: Class.Fn.memoize(function(pageID) {
+			var scripts = getResources('scripts', this.env).slice();
+			if (pageID)
+				scripts = scripts.concat(this.$getScriptsForPageOnly(pageID));
+
 			return scripts;
 		}),
-		getScriptsForPageOnly: Class.Fn.memoize(function(pageID) {
-			var cfg = __app.config,
-				page = cfg.pages[pageID],
+		
+		$getScriptsForPageOnly: Class.Fn.memoize(function(pageID) {
+			var page = this.pages[pageID],
 				scripts = [];
-				
+
 			if (page == null) {
 				logger.error('<page:scripts> Page not defined', pageID);
 				return null;
 			}
-			
+
 			if (page.scripts) {
-				scripts = scripts.concat(getResources('page', cfg.env, page.scripts, page.routes));
+				scripts = scripts.concat(getResources(
+					'page',
+					this.env,
+					page.scripts,
+					page.routes)
+				);
 			}
-			
-			
+
+
 			if (page.view && page.view.controller) {
-				var path = cfg.formatPath(
-					this.location.viewController,
+				var path = this.$formatPath(
+					this.page.location.viewController,
 					page.view.controller
 				);
-				
+
 				scripts.push(path);
 			}
-			
-			
+
+
 			return scripts;
 		}),
 
-		getStyles: function(pageID) {
-			
-			var cfg = __app.config,
+		$getStyles: function(pageID) {
+
+			var cfg = this,
 				styles = getResources('styles', cfg.env).slice();
 
-			if (pageID) 
-				styles = styles.concat(this.getStylesForPageOnly(pageID));
-		
+			if (pageID)
+				styles = styles.concat(this.$getStylesForPageOnly(pageID));
 
 			return styles;
 		},
 
-		getStylesForPageOnly: function(pageID) {
-			var cfg = __app.config,
+		$getStylesForPageOnly: function(pageID) {
+			var cfg = this,
 				page = cfg.pages[pageID],
 				styles = [];
-				
+
 			if (page == null) {
 				logger.error('<page:styles> Page not defined', pageID);
 				return null;
 			}
-			
+
 			if (page.styles) {
 				styles = styles.concat(getResources('page', cfg.env, page.styles, page.routes));
 			}
-			
+
 			if (page.compo) {
-				var path = this.getCompo(page),
+				var path = this.$getCompo(page),
 					resource = include.getResource(path);
 				if (resource != null) {
 					
-					for (var i = 0, x, imax = resource.includes.length; i < imax; i++){
-						x = resource.includes[i];
-						
-						
-						if (x.resource.type === 'css') {
-							
+					resource.includes.forEach(function(x){
+						if (x.resource.type === 'css')
 							styles.push(x.resource.url);
-						}
-					}
-					
-				} else {
-					
+					});
+				}
+				
+				else {
 					logger
 						.error('<page:styles> compo resource is undefined', path);
 				}
 			}
-			
-			
+
+
 			if (page.view && page.view.style) {
-				var path = cfg.formatPath(
-						this.location.viewStyle,
-						page.view.style
-					);
-				
+				var path = this.$formatPath(
+					this.page.location.viewStyle,
+					page.view.style);
+
 				styles.push(path);
 			}
-			
-			
+
+
 			return styles;
 		},
 
-		getInclude: function() {
-			var env = __app.config.env,
+		$getInclude: function() {
+			var env = this.env,
 				include = {
 					src: '',
 					routes: {},
@@ -120,6 +115,7 @@ var PageUtils = (function() {
 			incl_extend(include, {
 				routes: env.both.routes
 			});
+			
 			incl_extend(include, {
 				routes: env.client.routes
 			});
@@ -127,50 +123,43 @@ var PageUtils = (function() {
 			return include;
 		},
 
-		getIncludeForPageOnly: function(pageID) {
-			var page = __app.config.pages[pageID],
+		$getIncludeForPageOnly: function(pageID) {
+			var page = this.pages[pageID],
 				include = {};
 
-			return page && page.include
-				? incl_extend(include, page.include)
-				: include
+			return page && page.include ? incl_extend(include, page.include) : include;
+		},
+
+		$getTemplate: function(pageData) {
+			var template = pageData.template || this.page.index.template;
+
+			return this.$formatPath(this.page.location.template, template);
+		},
+		$getMaster: function(pageData) {
+			var master = pageData.master || this.page.index.master;
+
+			return this.$formatPath(this.page.location.master, master);
+		},
+		$getController: function(pageData) {
+			var controller = pageData.controller || this.page.index.controller;
+
+			return controller 
+				? this.$formatPath(this.page.location.controller, controller)
+				: null
 				;
 		},
 
-		getTemplate: function(pageData) {
-			var template = pageData.template || this.index.template;
-
-			return __app
-				.config
-				.formatPath(this.location.template, template);
-		},
-		getMaster: function(pageData) {
-			var master = pageData.master || this.index.master;
-
-			return __app
-				.config
-				.formatPath(this.location.master, master);
-		},
-		getController: function(pageData){
-			var controller = pageData.controller || this.index.controller;
-			
-			return controller ?
-				__app
-					.config
-					.formatPath(this.location.controller, controller)
-				: null;
-		},
-		
-		getCompo: function(pageData){
+		$getCompo: function(pageData) {
 			var compo = pageData.compo,
-				location = this.location.compo || this.location.controller;
-			
-			return compo ?
-				__app
-					.config
-					.formatPath(location, compo)
-				: null;
+				location = this.page.location.compo || this.page.location.controller;
+
+			return compo
+				? this.$formatPath(location, compo)
+				: null
+				;
 		}
+
+
 	};
 
 
@@ -202,25 +191,25 @@ var PageUtils = (function() {
 		register(env.both.routes);
 
 		switch (type) {
-			
+
 			case 'page':
 				register(routes);
 				resolve(pckg);
 				break;
-			
+
 			case 'debug':
 				resolve(env.client.debug);
 				break;
-			
+
 			default:
 				// scripts
 				resolve(env.client[type]);
 				resolve(env.both[type]);
 				break;
 		}
-		
 
-		
+
+
 		return array;
 	});
 
@@ -271,6 +260,6 @@ var PageUtils = (function() {
 		return target;
 	}
 
-	
-	return PageUtils;
+
+	return EnvUtils;
 }());

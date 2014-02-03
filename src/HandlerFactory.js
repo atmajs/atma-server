@@ -19,24 +19,23 @@ var HandlerFactory = (function(){
 		},
 		
 		registerPages: function(pages){
-			var page, key;
+			var page, id;
 			
-			for (key in pages) {
+			for (id in pages) {
 				
-				page = pages[key];
+				page = pages[id];
 				
 				if (page.controller != null) {
 					page.controller = __app
 						.config
-						.page
-						.getController(page)
+						.$getController(page)
 						;
 				} else {
 					
 					page.controller = server.HttpPage;
 				}
 				
-				this.pages.add(key, page);
+				this.pages.add(page.route, page);
 			}
 			
 			return this;

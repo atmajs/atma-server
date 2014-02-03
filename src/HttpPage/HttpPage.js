@@ -26,13 +26,13 @@ server.HttpPage = (function(){
 				return page_Create(mix);
 			}
 			
-			var cfg = __app.config.page;
+			var cfg = __app.config;
 			
 			/**
 			 * Page can also have path url definition like '/?:pageName/?:section/?:anchor'
 			 * and then get it like ctx.page.query.pageName;
 			 */
-			this.route = cfg.route;
+			this.route = cfg.page.route;
 			
 			var route = mix;
 			if (!(route && route.value)) {
@@ -47,17 +47,17 @@ server.HttpPage = (function(){
 			this.query = route.current && route.current.params;
 			
 			
-			this.master = cfg.getMaster(this.data) + '::Master';
+			this.master = cfg.$getMaster(this.data) + '::Master';
 			
 			if (this.data.template) 
-				this.template = cfg.getTemplate(this.data) + '::Template';
+				this.template = cfg.$getTemplate(this.data) + '::Template';
 			
 			
 			if (this.data.compo) 
-				this.compo = cfg.getCompo(this.data) + '::Compo';
+				this.compo = cfg.$getCompo(this.data) + '::Compo';
 			
 			if (this.compo == null && this.template == null) 
-				this.template = cfg.getTemplate(this.data) + '::Template';
+				this.template = cfg.$getTemplate(this.data) + '::Template';
 		},
 		
 		process: function(req, res){

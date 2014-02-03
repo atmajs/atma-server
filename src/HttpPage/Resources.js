@@ -6,15 +6,13 @@ var Resources = (function(){
 		getScripts: function(){
 			return __app
 				.config
-				.page
-				.getScripts(this.data.id);
+				.$getScripts(this.data.id);
 		},
 		
 		getStyles: function(){
 			return __app
 				.config
-				.page
-				.getStyles(this.data.id);
+				.$getStyles(this.data.id);
 		}
 	};
 	

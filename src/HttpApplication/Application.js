@@ -81,13 +81,24 @@
 				
 				var proto = this._baseConfig;
 				
-				this.config = Config({
-						buildDirectory : proto.buildDirectory,
-						configs: proto.configs
-					},
-					proto.config,
-					cfg_doneDelegate(this)
-				);
+				//this.config = Config({
+				//		buildDirectory : proto.buildDirectory,
+				//		configs: proto.configs
+				//	},
+				//	proto.config,
+				//	cfg_doneDelegate(this)
+				//);
+				this.config = Config(proto.confing);
+				this
+					.config
+					.done(cfg_doneDelegate(this))
+					.fail(function(error){
+						
+						logger
+							.warn('Configuration Error')
+							.error(error);
+					})
+					;
 				return this;
 			}
 		}
@@ -161,9 +172,7 @@
 	
 	
 	function cfg_doneDelegate(app) {
-		return function(error) {
-			if (error)
-				logger.error(error);
+		return function() {
 				
 			var cfg = app.config;
 			

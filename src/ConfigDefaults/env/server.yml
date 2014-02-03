@@ -1,13 +1,14 @@
 
-server:
+env:
+	server:
 
-	routes:
-		server : '/server/{0}.js' 
-		server_lib : '/server/lib/{0}.js' 
-		server_compo : '/server/compo/{0}/{1}.js'
+		routes:
+			server : '/server/{0}.js' 
+			server_lib : '/server/lib/{0}.js' 
+			server_compo : '/server/compo/{0}/{1}.js'
 
-	scripts:
+		scripts:
 
-		server_compo:
-			- scripts
-			- styles
+			server_compo:
+				- scripts
+				- styles
