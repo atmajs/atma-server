@@ -155,17 +155,22 @@
 		handler
 			.process(req, res, app.config);
 			
-		if (handler.done == null) 
+		if (handler.done == null)
+			// Handler responds to the request itself
 			return;
 		
 		handler
 			.done(function(content, statusCode, mimeType, headers){
 				
-				response_end(res, content, statusCode, mimeType, headers);
-			})
-			.fail(function(message, statusCode){
+				var send = handler.send || send_Content;
 				
-				response_end(res, message, statusCode || 500, 'text/plain');
+				send(res, content, statusCode, mimeType, headers);
+			})
+			.fail(function(error, statusCode){
+				
+				var send = handler.sendError || send_Error;
+				
+				send(res, error, statusCode || 500);
 			});
 	}
 	
@@ -216,39 +221,11 @@
 		callback();
 	}
 	
-	function response_end(res, content, statusCode, mimeType, headers) {
-		
-		if (typeof content !== 'string' && content instanceof Buffer === false) {
-			try {
-				
-				mimeType = 'application/json';
-				content = JSON.stringify(content);
-				
-			}catch(error){
-				
-				logger.error('<responder> invalid json object', error);
-				content = '{ error: "JSON stringify failed" }';
-			}
-		}
-		
-		if (headers) {
-			for (var key in headers) {
-				res.setHeader(key, headers[key]);
-			}
-		}
-		
-		res.setHeader('Content-Type', mimeType || 'text/html');
-		res.statusCode = statusCode || 200;
-		
-		res.end(content);
-	}
-	
 	function response_notProcessed(req, res){
 	
-		response_end(
+		send_Content(
 			res,
-			'Error: Request was not processed ' + req.url,
-			500
+			HttpError('Request not processed ' + req.url, 422)
 		);
 	}
 	

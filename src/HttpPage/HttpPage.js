@@ -13,6 +13,9 @@ server.HttpPage = (function(){
 		template: null,
 		master: null,
 		route: null,
+		model: null,
+		
+		send: null,
 		
 		/**
 		 *	- data (Object)
@@ -88,26 +91,77 @@ server.HttpPage = (function(){
 				}
 			}
 			
-			this.load();
+			this._load();
 			return this;
 		},
 		
-		load: function(){
+		sendError: function(res, mix, statusCode){
+			var pageCfg = __app.config.page,
+				errorPages = pageCfg.errors,
+				genericPage = pageCfg.error
+				;
+			
+			var error;
+			if (mix instanceof Error) {
+				error = mix;
+			}
+			else if (is_String(mix)) {
+				error = new HttpError(mix, statusCode);
+			}
+			else if (is_Object(mix)) {
+				error = new HttpError(JSON.stringify(mix), statusCode);
+			}
+			
+			var pageData = (errorPages && errorPages[error.statusCode]) || genericPage,
+				page;
+				
+			
+			if (pageData == null) {
+				pageError_failDelegate
+					(res, error)
+					('No Error Page in Configuration')
+					;
+				return;
+			}
+			
+			this.master = app.config.$getMaster(pageData) + '::Master';
+			this.template = pageData.template + '::Template';
+			this.compo = null;
+			this.model = error;
+			this
+				.defer()
+				.done(pageError_sendDelegate(res, error))
+				.fail(pageError_failDelegate(res, error))
+				._load()
+				;
+			
+		},
+		
+		_load: function(){
 			
 			this.resource = include
 				.instance()
 				.load(this.master, this.template)
 				.js(this.compo)
-				.done(fn_proxy(this.response, this));
+				.done(fn_proxy(this._response, this));
 		},
 		
 		
-		response: function(resp){
+		_response: function(resp){
 			
 			var master = resp.load.Master,
 				template = resp.load.Template,
 				Component = resp.Compo;
-				
+			
+			if (master == null) {
+				this.reject(HttpError('Page: Masterpage not found'));
+				return;
+			}
+			
+			if (template == null && Component == null) {
+				this.reject(HttpError('Page: Template not found'));
+				return;
+			}
 			
 			if ('master' === this.query.debug) {
 				this.resolve(master);
@@ -157,16 +211,16 @@ server.HttpPage = (function(){
 				
 				this
 					.ctx
-					.done(fn_proxy(this.doResolve, this))
+					.done(fn_proxy(this._doResolve, this))
 					.fail(fn_proxy(this.fail, this));
 					
 				return;
 			}
 			
-			this.doResolve(html);
+			this._doResolve(html);
 		},
 		
-		doResolve: function(html){
+		_doResolve: function(html){
 			if (this.ctx._redirect != null) {
 				// response was already flushed
 				return;
@@ -201,22 +255,42 @@ server.HttpPage = (function(){
 			ctx.rewriteCount = 1;
 		
 		if (++ctx.rewriteCount > 5) {
-			page.reject('Too much rewrites, last path: ' + ctx.rewrite);
+			page.reject('Too much rewrites, last path: ' + ctx._rewrite);
 			return;
 		}
 		
 		
 		return function(rewrittenHandler){
 			if (rewrittenHandler == null) {
-				page.reject('Rewritten Path is not valid', ctx.rewrite);
+				page.reject('Rewritten Path is not valid: ' + ctx._rewrite);
 				return;
 			}
 			
 			rewrittenHandler
 				.process(ctx.req, ctx.res)
-				.done(fn_proxy(page.resolve, page))
-				.fail(fn_proxy(page.reject, page))
+				.done(page.resolveDelegate())
+				.fail(page.rejectDelegate())
 				;
+		}
+	}
+	
+	function pageError_sendDelegate(res, error){
+		
+		return function(html) {
+			send_Content(res, html, error.statusCode || 500, mime_HTML);
+		};
+	}
+	
+	function pageError_failDelegate(res, error){
+		return function(internalError){
+			var str = is_Object(internalError)
+				? JSON.stringify(internalError)
+				: internalError
+				;
+				
+			str += '\nError: ' + error.message
+			
+			send_Content(res, 'ErrorPage Failed: ' + str, 500, mime_PLAIN);
 		}
 	}
 	
