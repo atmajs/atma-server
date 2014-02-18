@@ -26,7 +26,7 @@
 				__app = this;
 			
 			this.isRoot = this === __app;
-			this.handlers = new HandlerFactory();
+			this.handlers = new HandlerFactory(this);
 			this.args = obj_extend(proto.args, cli_arguments());
 			
 			this._baseConfig = proto;

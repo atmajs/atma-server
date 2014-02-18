@@ -12,6 +12,11 @@ server.HttpPage = (function(){
 		
 		template: null,
 		master: null,
+		
+		templatePath: null,
+		masterPath: null,
+		compoPath: null,
+		
 		route: null,
 		model: null,
 		
@@ -46,21 +51,27 @@ server.HttpPage = (function(){
 			}
 			
 			
-			this.data = route.value;
+			var data = this.data = route.value;
 			this.query = route.current && route.current.params;
 			
+			if (data.masterPath) 
+				this.masterPath = data.masterPath + '::Master';
 			
-			this.master = cfg.$getMaster(this.data) + '::Master';
+			if (data.templatePath) 
+				this.templatePath = data.templatePath + '::Template';
 			
-			if (this.data.template) 
-				this.template = cfg.$getTemplate(this.data) + '::Template';
+			if (data.master) 
+				this.masterPath = cfg.$getMaster(data) + '::Master';
+			
+			if (data.template) 
+				this.templatePath = cfg.$getTemplate(data) + '::Template';
+			
+			if (data.compo) 
+				this.compoPath = cfg.$getCompo(data) + '::Compo';
 			
 			
-			if (this.data.compo) 
-				this.compo = cfg.$getCompo(this.data) + '::Compo';
-			
-			if (this.compo == null && this.template == null) 
-				this.template = cfg.$getTemplate(this.data) + '::Template';
+			if ((this.template || this.compoPath || this.templatePath) == null) 
+				this.templatePath = cfg.$getTemplate(data) + '::Template';
 		},
 		
 		process: function(req, res){
@@ -124,9 +135,9 @@ server.HttpPage = (function(){
 				return;
 			}
 			
-			this.master = app.config.$getMaster(pageData) + '::Master';
-			this.template = pageData.template + '::Template';
-			this.compo = null;
+			this.masterPath = __app.config.$getMaster(pageData) + '::Master';
+			this.templatePath = pageData.template + '::Template';
+			this.compoPath = null;
 			this.model = error;
 			this
 				.defer()
@@ -141,7 +152,7 @@ server.HttpPage = (function(){
 			
 			this.resource = include
 				.instance()
-				.load(this.master, this.template)
+				.load(this.masterPath, this.templatePath)
 				.js(this.compo)
 				.done(fn_proxy(this._response, this));
 		},
@@ -149,8 +160,8 @@ server.HttpPage = (function(){
 		
 		_response: function(resp){
 			
-			var master = resp.load.Master,
-				template = resp.load.Template,
+			var master = resp.load.Master || this.master,
+				template = resp.load.Template || this.template,
 				Component = resp.Compo;
 			
 			if (master == null) {
@@ -194,9 +205,9 @@ server.HttpPage = (function(){
 				
 			}
 			
-			if (this.onRenderStart) {
+			if (is_Function(this.onRenderStart)) 
 				this.onRenderStart(this.model, this.ctx);
-			}
+			
 			
 			var html = mask.render(this.nodes || template, this.model, this.ctx);
 			

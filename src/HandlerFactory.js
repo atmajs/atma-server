@@ -11,7 +11,9 @@ var HandlerFactory = (function(){
 	
 	var HandlerFactory = Class({
 		
-		Construct: function(){
+		Construct: function(app){
+			this.app = app;
+			
 			var i = fns_RESPONDERS.length;
 			while(--i > -1){
 				this[fns_RESPONDERS[i]] = new Routes();
@@ -25,14 +27,15 @@ var HandlerFactory = (function(){
 				
 				page = pages[id];
 				
-				if (page.controller != null) {
+				if (page.controller == null) {
+					page.controller = server.HttpPage;
+				}
+				
+				else if (is_String(page.controller)) {
 					page.controller = __app
 						.config
 						.$getController(page)
 						;
-				} else {
-					
-					page.controller = server.HttpPage;
 				}
 				
 				this.pages.add(page.route, page);

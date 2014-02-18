@@ -29,14 +29,10 @@ module.exports = {
 		files: 'lib/server.js'
 	},
 
-	'watch': [{
-		action: 'custom',
-		script: 'tools/cfg-defaults.js'
-	},{
-		action: 'watch',
+	'watch': {
 		files: 'src/**',
-		config: '#[import]'
-	}],
+		actions: [ 'add-defaults-handler', 'import' ]
+	},
 	'publish': {
 		action: 'custom',
 		script: 'tools/publish'
