@@ -16,7 +16,11 @@ var Config = (function() {
 				: PATH,
 			path_Build = path_Configs
 				? (params.buildDirectory || BUILD_PATH)
+				: null,
+			appConfig = params.config
+				? { config: params.config }
 				: null
+				
 				;
 		
 		var path_base = params.base || io.env.currentDir.toString();
@@ -43,8 +47,8 @@ var Config = (function() {
 				config: ConfigUtils
 			}, {
 				config: EnvUtils
-			}
-			
+			},
+			appConfig
 		];
 
 		if (Array.isArray(params.sources)) {
