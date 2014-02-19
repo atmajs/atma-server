@@ -76,6 +76,12 @@
 		},
 		autoreloadEnabled: false,
 		
+		getSubApp: function(path){
+			var route = this.handlers.subapps.get(path);
+			
+			return route && route.value && route.value._app;
+		},
+		
 		Self: {
 			_loadConfig: function(){
 				
@@ -136,7 +142,7 @@
 		resources_load(app, function(){
 			app
 				.handlers
-				.get(req, function(handler){
+				.get(app, req, function(handler){
 					
 					if (handler == null) 
 						return next();

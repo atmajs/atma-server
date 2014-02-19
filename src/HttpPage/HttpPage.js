@@ -28,7 +28,7 @@ server.HttpPage = (function(){
 		 *
 		 *	@TODO pass current route params
 		 */
-		Construct: function(mix){
+		Construct: function(mix, app){
 			
 			if (this instanceof Page === false) {
 				return page_Create(mix);

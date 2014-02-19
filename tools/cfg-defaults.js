@@ -9,7 +9,10 @@ include.exports = {
 					return true;
 				},
 				read: function(){
-					return this.content = cfg_getDefault();
+					
+					logger.log('read cfg defaults'.cyan.bold);
+					
+					return this.content = cfg_getDefaults();
 				}
 			}));
 		
@@ -18,21 +21,31 @@ include.exports = {
 }
 
 
-function cfg_getDefault(){
-	var defaults = {},
+var cfg_getDefaults;
+(function(){
+	
+	cfg_getDefaults = function(){
+		return _defaults || (_defaults = get());
+	};
+	
+	var _defaults;
+
+	function get(){
+		var defaults = {},
 		cfg;
-	
-	new io
-		.Directory('src/ConfigDefaults/')
-		.readFiles('**.yml')
-		.files
-		.forEach(function(file){
-			cfg = file.read();
-			
-			for(var key in cfg){
-				defaults[key] = cfg[key];
-			}
-		});
-	
-	return JSON.stringify(defaults, null, 4);
-}
+		
+		new io
+			.Directory('src/ConfigDefaults/')
+			.readFiles('**.yml')
+			.files
+			.forEach(function(file){
+				cfg = file.read();
+				
+				for(var key in cfg){
+					defaults[key] = cfg[key];
+				}
+			});
+		
+		return JSON.stringify(defaults, null, 4);
+	};
+}());

@@ -140,25 +140,29 @@ var HandlerFactory = (function(){
 			WebSocket.registerHandler(namespace, Handler);
 		},
 		
-		get: function(req, callback){
+		get: function(app, req, callback){
 			
 			var url = req.url,
 				method = req.method,
+				base = app.config.base,
 				route;
 				
 			if (method === 'POST' && req.body && req.body._method) {
 				method = req.body._method;
 			}
 			
+			logger.log('>>'.yellow, url, base);
+			
 			var imax = fns_RESPONDERS.length,
 				i = -1,
 				x
 				;
+			
 			while( ++i < imax ){
 			
 				x = fns_RESPONDERS[i];
 				
-				if (processor_tryGet(this[x], url, method, callback)) 
+				if (processor_tryGet(this[x], url, method, base, callback)) 
 					return;
 			}
 			
@@ -181,7 +185,7 @@ var HandlerFactory = (function(){
 	});
 	
 
-	function processor_tryGet(collection, url, method, callback){
+	function processor_tryGet(collection, url, method, base, callback){
 		
 		var route = collection.get(url, method),
 			processor;
@@ -202,7 +206,9 @@ var HandlerFactory = (function(){
 		}
 		
 		if (is_String(controller)) {
-			processor_loadAndInit(controller, route, callback);
+			var path = net.Uri.combine(base, controller);
+			
+			processor_loadAndInit(path, route, callback);
 			return true;
 		}
 	
