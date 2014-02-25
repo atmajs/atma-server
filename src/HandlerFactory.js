@@ -151,8 +151,6 @@ var HandlerFactory = (function(){
 				method = req.body._method;
 			}
 			
-			logger.log('>>'.yellow, url, base);
-			
 			var imax = fns_RESPONDERS.length,
 				i = -1,
 				x

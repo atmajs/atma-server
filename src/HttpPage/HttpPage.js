@@ -72,6 +72,9 @@ server.HttpPage = (function(){
 			
 			if ((this.template || this.compoPath || this.templatePath) == null) 
 				this.templatePath = cfg.$getTemplate(data) + '::Template';
+			
+			if (this.master == null && this.masterPath == null)
+				this.masterPath = cfg.$getMaster(data) + '::Master';
 		},
 		
 		process: function(req, res){
@@ -153,7 +156,7 @@ server.HttpPage = (function(){
 			this.resource = include
 				.instance()
 				.load(this.masterPath, this.templatePath)
-				.js(this.compo)
+				.js(this.compoPath)
 				.done(fn_proxy(this._response, this));
 		},
 		
