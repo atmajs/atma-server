@@ -70,7 +70,7 @@ server.HttpPage = (function(){
 				this.compoPath = cfg.$getCompo(data) + '::Compo';
 			
 			
-			if ((this.template || this.compoPath || this.templatePath) == null) 
+			if (this.template == null && this.compoPath == null && this.templatePath == null)
 				this.templatePath = cfg.$getTemplate(data) + '::Template';
 			
 			if (this.master == null && this.masterPath == null)
