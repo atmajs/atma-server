@@ -212,7 +212,13 @@ server.HttpPage = (function(){
 				this.onRenderStart(this.model, this.ctx);
 			
 			
-			var html = mask.render(this.nodes || template, this.model, this.ctx);
+			var html = mask.render(
+				this.nodes || template,
+				this.model,
+				this.ctx,
+				null,
+				this
+			);
 			
 			if (this.ctx._rewrite != null) {
 				__app
