@@ -1,0 +1,33 @@
+
+include
+	.inject('/lib/server.js')
+	.done(function(resp){
+		
+				
+		var FooService = atma.server.HttpService({
+			'$get /': function(){},
+			'$post /baz': {
+				meta: {
+					description: 'Baz Helper',
+					args: {
+						bazValue: ''
+					}
+				},
+				process: [
+					function () {}
+				]
+			}
+		});
+		
+		UTest({
+			'service help': function(){
+				
+				var help = new FooService().help();
+				
+				has_(help, [{
+					path: '/baz',
+					description: 'Baz Helper'
+				}]);
+			}
+		})
+	})

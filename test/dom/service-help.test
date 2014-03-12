@@ -1,0 +1,43 @@
+
+UTest({
+	$config: {
+		'http.eval': function(done){
+			
+			include
+				.inject('/lib/server.js')
+				.done(function(){
+					
+					var FooService = atma.server.HttpService({
+						'$get /': {
+							meta: {
+								description: 'FooService'
+							},
+							process: function(){}
+						}
+					});
+					
+					atma
+						.server
+						.app
+						.handlers
+						.registerService('/foo', FooService);
+					
+					done();
+				})
+		}
+	},
+	
+	'service help test': function(done){
+		UTest
+			.server
+			.request('/foo?help', function(error, array){
+				
+				has_(array, [{
+					method: 'GET',
+					path: '/',
+					description: 'FooService'
+				}]);
+				done();
+			})
+	}
+})

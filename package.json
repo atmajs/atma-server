@@ -5,7 +5,7 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.0.74",
+    "version": "0.0.75",
     "main": "./lib/server.js",
     "repository": {},
     "license": "MIT",
@@ -20,9 +20,9 @@
         "socket.io": ">0.0.0"
     },
     "scripts": {
-    	"test": "node_modules/.bin/atma test"
+        "test": "node_modules/.bin/atma test"
     },
     "devDependencies": {
-    	"atma": "latest"
+        "atma": "latest"
     }
 }
