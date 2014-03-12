@@ -181,7 +181,6 @@ var HandlerFactory = (function(){
 			return false;
 		}
 	});
-	
 
 	function processor_tryGet(collection, url, method, base, callback){
 		

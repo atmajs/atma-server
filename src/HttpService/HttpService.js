@@ -11,6 +11,9 @@ server.HttpService = (function(){
 		
 		Construct: function(route){
 			
+			if (route == null) 
+				return;
+			
 			var pathParts = route.path,
 				i = 0,
 				imax = pathParts.length,
@@ -29,12 +32,48 @@ server.HttpService = (function(){
 			}
 			
 		},
+		help: function(){
+			var routes = this.routes.routes,
+				endpoints = []
+				;
+			
+			
+			var i = -1,
+				imax = routes.length,
+				endpoint, info, meta;
+			while ( ++i < imax ){
+				endpoint = routes[i];
+				info = {
+					method: endpoint.method || '*',
+					path: endpoint.definition,
+					description: null,
+					args: null
+				};
+				
+				meta = endpoint.value.meta;
+				if (meta) {
+					info.description = meta.description;
+					info.args = meta.args;
+				}
+				
+				endpoints.push(info);
+			}
+			
+			return endpoints;
+		},
 		process: function(req, res){
+			
+			var iQuery = req.url.indexOf('?');
+			if (iQuery !== -1
+				&& /\bhelp\b/.test(req.url.substring(iQuery))) {
+				
+				this.resolve(this.help());
+			}
 			
 			if (secure_canAccess(req, this.secure) === false) {
 				
 				return this
-					.reject({ error: 'Access Denied' }, 401);
+					.reject(SecurityError('Access Denied'));
 			}
 			
 			var path = req.url.substring(this.rootCharCount),
@@ -43,14 +82,15 @@ server.HttpService = (function(){
 			
 			if (entry == null) 
 				return this
-					.reject('Service method not Found: <'
+					.reject(NotFoundError('Service method not Found: <'
 						+ req.method
 						+ '> '
-						+ path, 404);
+						+ path));
 				
 			
 			entry
 				.value
+				.process
 				.call(this, req, res, entry.current.params);
 				
 			return this;
@@ -62,13 +102,37 @@ server.HttpService = (function(){
 		
 		var routes = new ruta.Collection,
 			defs = proto.ruta || proto,
-			path, responder
+			path, responder, x
 			;
 		for (path in defs) {
-			responder = defs[path];
+			x = defs[path];
+			responder = null;
 			
-			if (arr_isArray(responder)) 
-				responder = new Barricade(responder);
+			if (is_Function(x)) {
+				responder = {
+					process: x
+				};
+			}
+			
+			if (responder == null && is_Array(responder)) {
+				responder = {
+					process: new Barricade(responder)
+				}
+			}
+			
+			if (responder == null && is_Object(x)) {
+				responder = x;
+			}
+			
+			if (responder != null && is_Array(responder.process)) 
+				responder.process = new Barricade(responder.process);
+			
+			if (responder == null || is_Function(responder.process) === false) {
+				logger.warn('<HttpService> `process` is not a function'
+							+ path 
+							+ (typeof responder.process));
+				continue;
+			}
 			
 			routes.add(path, responder);
 		}

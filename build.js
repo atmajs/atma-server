@@ -1,7 +1,7 @@
 /**
- *	IncludeJSBuild
+ *	Run with the Atma.Toolkit
  *
- *	``` $ includejs build.js ```
+ *	``` $ atma```
  **/
 
 

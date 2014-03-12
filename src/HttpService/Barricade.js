@@ -50,19 +50,20 @@ var Barricade = (function(){
 	
 	function reject(service, error){
 		if (typeof error === 'string') 
-			error = { error: error };
+			error = HttpError(error);
 		
 		service.reject(error);
 	}
 	
 	return function(middlewares){
 		
-		var baricade = new Runner(middlewares);
+		var baricade = new Runner(middlewares),
+			service;
 		
 		return function(req, res, params){
+			service = this;
 			
-		
-			barricade.process(this, req, res, params);
+			barricade.process(service, req, res, params);
 		};
 	};
 	
