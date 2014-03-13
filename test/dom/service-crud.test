@@ -1,0 +1,86 @@
+UTest({
+	$config: {
+		'http.eval': function(done){
+			
+			include
+				.inject('/lib/server.js')
+				.done(function(){
+	
+				Class.MongoStore.settings({
+					db: 'test-service-crude'
+				});
+				
+				var Foo = Class({
+					Base: Class.Serializable,
+					Store: Class.MongoStore,
+					
+					_id: null,
+					name: ''
+				});
+				
+				var Endpoints = atma.server.HttpCrudEndpoints.Single(
+					'foo', Foo
+				);
+				
+				var FooService = atma
+					.server
+					.HttpService(Endpoints)
+					;
+				
+				FooService = {
+					'$get /foo': function(res, req){
+						req.end('Foo');
+					},
+					'$get /': function(res, req){
+						req.end('Foo');
+					},
+				};
+				
+				atma
+					.server
+					.app
+					.handlers
+					.registerService('/rest', atma.server.HttpService(FooService));
+					
+				
+				
+				done();
+			});
+		}
+	},
+	
+	'crud - service': function(done){
+		var Foo = Class({
+			Base: Class.Serializable,
+			Store: Class.Remote('/rest/foo/?:_id'),
+			
+			name: ''
+		});
+		
+		new Foo({name: 'test-foo'})
+			.save()
+			.done(function(foo){
+				notEq_(foo._id, null);
+				
+				Foo
+					.fetch({
+						_id: foo._id
+					})
+					.fail(assert.avoid())
+					.done(function(foo){
+						
+						eq_(foo.name, 'test-foo');
+						done();
+					})
+			})
+			.fail(function(error){
+				console.error(error)
+			}
+			//assert.avoid('save', function(error){
+			//	logger.error(error);
+			//})
+			)
+			;
+		
+	}
+})

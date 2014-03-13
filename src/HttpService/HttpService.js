@@ -3,6 +3,7 @@ server.HttpService = (function(){
 	
 	// import utils.js
 	// import Barricade.js
+	// import CrudWrapper.js
 	// import static.js
 	
 	var HttpServiceProto = Class({
@@ -114,9 +115,9 @@ server.HttpService = (function(){
 				};
 			}
 			
-			if (responder == null && is_Array(responder)) {
+			if (responder == null && is_Array(x)) {
 				responder = {
-					process: new Barricade(responder)
+					process: new Barricade(x)
 				}
 			}
 			
