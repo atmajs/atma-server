@@ -23,6 +23,7 @@
         "test": "node_modules/.bin/atma test"
     },
     "devDependencies": {
-        "atma": "latest"
+        "atma": "latest",
+        "mongodb": "latest"
     }
 }

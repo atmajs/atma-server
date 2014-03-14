@@ -20,7 +20,7 @@ UTest({
 						.server
 						.app
 						.handlers
-						.registerService('/foo', FooService);
+						.registerService('/help-foo', FooService);
 					
 					done();
 				})
@@ -30,7 +30,7 @@ UTest({
 	'service help test': function(done){
 		UTest
 			.server
-			.request('/foo?help', function(error, array){
+			.request('/help-foo?help', function(error, array){
 				
 				has_(array, [{
 					method: 'GET',

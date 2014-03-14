@@ -1,86 +1,109 @@
+var Foo = Class({
+	Base: Class.Serializable,
+	Store: Class.Remote('/rest/foo/?:_id'),
+	
+	name: ''
+});
+
+
 UTest({
 	$config: {
-		'http.eval': function(done){
-			
-			include
-				.inject('/lib/server.js')
-				.done(function(){
-	
-				Class.MongoStore.settings({
-					db: 'test-service-crude'
-				});
-				
-				var Foo = Class({
-					Base: Class.Serializable,
-					Store: Class.MongoStore,
-					
-					_id: null,
-					name: ''
-				});
-				
-				var Endpoints = atma.server.HttpCrudEndpoints.Single(
-					'foo', Foo
-				);
-				
-				var FooService = atma
-					.server
-					.HttpService(Endpoints)
-					;
-				
-				FooService = {
-					'$get /foo': function(res, req){
-						req.end('Foo');
-					},
-					'$get /': function(res, req){
-						req.end('Foo');
-					},
-				};
-				
-				atma
-					.server
-					.app
-					.handlers
-					.registerService('/rest', atma.server.HttpService(FooService));
-					
-				
-				
-				done();
-			});
-		}
+		'http.include': [
+			'test/dom/crud-model.js'
+		]
 	},
 	
-	'crud - service': function(done){
-		var Foo = Class({
-			Base: Class.Serializable,
-			Store: Class.Remote('/rest/foo/?:_id'),
-			
-			name: ''
-		});
-		
+	'save': function(done){
 		new Foo({name: 'test-foo'})
 			.save()
 			.done(function(foo){
-				notEq_(foo._id, null);
-				
-				Foo
-					.fetch({
-						_id: foo._id
-					})
-					.fail(assert.avoid())
-					.done(function(foo){
-						
-						eq_(foo.name, 'test-foo');
-						done();
-					})
+				is_(foo._id, 'String');
+				done(foo);
 			})
-			.fail(function(error){
-				console.error(error)
-			}
-			//assert.avoid('save', function(error){
-			//	logger.error(error);
-			//})
-			)
+			.fail(assert.avoid('save fail'))
 			;
+	},
+	
+	'fetch': function(done, foo){
+		Foo
+			.fetch({
+				_id: foo._id
+			})
+			.fail(assert.avoid('fetch fail'))
+			.done(function(foo){
+				
+				eq_(foo.name, 'test-foo');
+				done(foo);
+			})
+	},
+	
+	'patch': function(done, foo){
 		
+		foo
+			.patch({
+				$set: {
+					'name': 'test-foo-patched'
+				}
+			})
+			.fail(assert.avoid('patch fail', function(error){
+				debugger
+			}))
+			.done(function(foo){
+				debugger
+				eq_(foo.name, 'test-foo-patched');
+				done(foo);
+			})
+	},
+	'patched fetch': function(done, foo){
+		Foo
+			.fetch({_id: foo._id})
+			.fail(assert.avoid('fetch fail after patch'))
+			.done(function(foo){
+				
+				eq_(foo.name, 'test-foo-patched');
+				done(foo);
+			})
+			;
+	},
+	
+	'delete': function(done, foo){
+		
+		foo
+			.del()
+			.fail(assert.avoid('delete fail'))
+			.done(function(){
+				done();
+			})
+	},
+	
+	'!help': function(done){
+		
+		UTest
+			.server
+			.request('/rest/foo?help', function(error, json){
+				eq_(error, null);
+				
+				has_(json, [
+					{
+						method: 'GET',
+						path: '/foo/:id'
+					},
+					{
+						method: 'POST',
+						path: '/foo'
+					},
+					{
+						method: 'PUT',
+						path: '/foo/:id'
+					},
+					{
+						method: 'PATCH',
+						path: '/foo/:id'
+					}
+				]);
+				
+				done();
+			})
+			
 	}
 })

@@ -69,6 +69,7 @@ server.HttpService = (function(){
 				&& /\bhelp\b/.test(req.url.substring(iQuery))) {
 				
 				this.resolve(this.help());
+				return;
 			}
 			
 			if (secure_canAccess(req, this.secure) === false) {

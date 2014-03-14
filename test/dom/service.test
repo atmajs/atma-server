@@ -30,7 +30,20 @@ UTest({
 							this.resolve({
 								name: req.body.name
 							});
-						}
+						},
+						
+						'$get /many': [
+							function(req, res, params, next){
+								req.sum = 5;
+								next();
+							},
+							
+							function(req, res, params, next){
+								this.resolve({
+									sum: req.sum + 5
+								});
+							}
+						]
 					})
 					;
 				
@@ -110,5 +123,17 @@ UTest({
 				done();
 			})
 			;
-	}
-})
+	},
+	'http service - barricade': function(done){
+		UTest
+			.server
+			.request('/foo/many')
+			.done(function(obj){
+				eq_(obj.sum, 10);
+				done();
+			})
+			.fail(assert.avoid('barricade'));
+			;
+	},
+	
+});

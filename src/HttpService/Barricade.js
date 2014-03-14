@@ -9,19 +9,19 @@ var Barricade = (function(){
 		
 	});
 		
-	function next(runner, service, req, res, callback, index){
+	function next(runner, service, req, res, params, index){
 		if (index >= runner.length) 
 			return;
 	
 		var fn = runner[index],
 			error;
-		
+			
 		error = fn.call(
 			service,
 			req,
 			res,
 			params,
-			nextDelegate(runner, req, res, params, index)
+			nextDelegate(runner, service, req, res, params, index)
 		);
 		
 		if (error) 
@@ -57,12 +57,11 @@ var Barricade = (function(){
 	
 	return function(middlewares){
 		
-		var baricade = new Runner(middlewares),
+		var barricade = new Runner(middlewares),
 			service;
 		
 		return function(req, res, params){
 			service = this;
-			
 			barricade.process(service, req, res, params);
 		};
 	};
