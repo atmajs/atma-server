@@ -100,7 +100,9 @@ server.HttpService = (function(){
 	});
 	
 	
-	function HttpService(proto){
+	function HttpService(){
+		
+		var proto = endpoints_merge(_Array_slice.call(arguments));
 		
 		var routes = new ruta.Collection,
 			defs = proto.ruta || proto,
@@ -157,6 +159,42 @@ server.HttpService = (function(){
 	}
 	
 	HttpService.Barricade = Barricade;
+	
+	
+	function endpoints_merge(array) {
+		if (array.length === 1) 
+			return array[0];
+		
+		var proto = array[0],
+			ruta = proto.ruta || proto;
+		
+		var imax = array.length,
+			i = 0,
+			x,
+			xruta;
+		while ( ++i < imax ){
+			x = array[i];
+			xruta = x.ruta || x;
+			
+			for(var key in xruta){
+				if (xruta[key] != null) 
+					ruta[key] = xruta[key];
+			}
+			
+			if (x.ruta == null) 
+				continue;
+			
+			for(var key in x){
+				if (key === 'ruta') 
+					continue;
+				
+				if (x[key] != null) 
+					proto[key] = x[key];
+			}
+		}
+		
+		return proto;
+	}
 	
 	return HttpService;
 }());

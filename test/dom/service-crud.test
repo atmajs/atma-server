@@ -76,7 +76,7 @@ UTest({
 			})
 	},
 	
-	'!help': function(done){
+	'help': function(done){
 		
 		UTest
 			.server
