@@ -1,7 +1,7 @@
 (function() {
 
 	HttpService.classParser = function(name, Ctor) {
-		var keys = Class.keys(Ctor);
+		var keys = Class.properties(Ctor);
 
 		return function(req, res, params, next) {
 
@@ -28,7 +28,7 @@
 	};
 
 	HttpService.classPatchParser = function(name, Ctor) {
-		var keys = Class.keys(Ctor);
+		var keys = Class.properties(Ctor);
 
 		return function(req, res, params, next) {
 			if (req.body == null)
