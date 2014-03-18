@@ -1,3 +1,4 @@
+
 var Foo = Class({
 	Base: Class.Serializable,
 	Store: Class.Remote('/rest/foo/?:_id'),
@@ -5,6 +6,10 @@ var Foo = Class({
 	name: ''
 });
 
+var Foos = Class.Collection(Foo, {
+	Base: Class.Serializable,
+	Store: Class.Remote('/rest/foos'),
+});
 
 UTest({
 	$config: {
@@ -37,6 +42,18 @@ UTest({
 			})
 	},
 	
+	'fetch collection': function(done, foo){
+		Foos
+			.fetch()
+			.fail(assert.avoid('fetch collection fail'))
+			.done(function(foos){
+				is_(foos.length, 'Number');
+				notEq_(foos.length, 0);
+				
+				done(foo);
+			});
+	},
+	
 	'patch': function(done, foo){
 		
 		foo
@@ -45,11 +62,8 @@ UTest({
 					'name': 'test-foo-patched'
 				}
 			})
-			.fail(assert.avoid('patch fail', function(error){
-				debugger
-			}))
+			.fail(assert.avoid('patch fail'))
 			.done(function(foo){
-				debugger
 				eq_(foo.name, 'test-foo-patched');
 				done(foo);
 			})
@@ -94,7 +108,11 @@ UTest({
 					},
 					{
 						method: 'PUT',
-						path: '/foo/:id'
+						path: '/foo/:id',
+						arguments: {
+							_id: null,
+							name: 'string'
+						}
 					},
 					{
 						method: 'PATCH',

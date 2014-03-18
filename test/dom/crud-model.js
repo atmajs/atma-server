@@ -1,5 +1,6 @@
+
 Class.MongoStore.settings({
-	db: 'test-service-crude'
+	db: 'test-service-crud'
 });
 
 var Foo = Class({
@@ -10,13 +11,21 @@ var Foo = Class({
 	name: ''
 });
 
-var Endpoints = atma.server.HttpCrudEndpoints.Single(
+var Foos = Class.Collection(Foo, {
+	Base: Class.Serializable,
+	Store: Class.MongoStore.Collection('foos')
+});
+
+var endpoints_Single = atma.server.HttpCrudEndpoints.Single(
 	'foo', Foo
+);
+var endpoints_Collection = atma.server.HttpCrudEndpoints.Collection(
+	'foos', Foos
 );
 
 var FooService = atma
 	.server
-	.HttpService(Endpoints)
+	.HttpService(endpoints_Single, endpoints_Collection)
 	;
 
 atma

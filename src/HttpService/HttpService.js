@@ -46,15 +46,14 @@ server.HttpService = (function(){
 				endpoint = routes[i];
 				info = {
 					method: endpoint.method || '*',
-					path: endpoint.definition,
-					description: null,
-					args: null
+					path: endpoint.definition
 				};
 				
 				meta = endpoint.value.meta;
 				if (meta) {
 					info.description = meta.description;
-					info.args = meta.args;
+					info.arguments = meta.arguments;
+					info.response = meta.response;
 				}
 				
 				endpoints.push(info);
