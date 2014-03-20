@@ -13,6 +13,8 @@ Atma Node.js Server Module
 		- [Barricade](#barricades-middlewares)
 		- [Example](#service-and-the-application-routing-example)
 	- [Page](#httppage)
+		- [Master View](#master-view)
+		- [Page View](#page-view)
 
 ## Overview
 _Can be used as a [Connect](http://www.senchalabs.org/connect/) Middleware_
@@ -317,7 +319,7 @@ Going back to the HttpPage, lets start from a master view template
 
 #### Master View
 
-Please refer to [layout component](http://atmajs.com/compo/layout)
+Refer to the [layout component](http://atmajs.com/compo/layout)
 
 Example:
 ```mask
