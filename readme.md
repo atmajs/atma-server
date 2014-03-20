@@ -6,13 +6,13 @@ Atma Node.js Server Module
 	- [Resources](#resources)
 	- [Routing](#routing)
 - [Endpoints](#endpoints)
-	- Handler(#handler)
-	- Service(#httpservice)
+	- [Handler](#handler)
+	- [Service](#httpservice)
 		- [Routes](#service-routes)
 		- [Endpoints](#service-endpoints)
 		- [Barricade](#barricades-middlewares)
 		- [Example](#service-and-the-application-routing-example)
-	- Page(#httppage)
+	- [Page](#httppage)
 
 ## Overview
 _Can be used as a [Connect](http://www.senchalabs.org/connect/) Middleware_
@@ -27,20 +27,20 @@ This module uses:
 To setup a bootstrap project use Atma.Toolkit - ``` $ atma gen server ```
 
 ## Configuration
-[appcfg](https://github.com/atmajs/appcfg) module is used to load the configuration and routings. The default path is the **` /server/config/**.yml `**.
+[appcfg](https://github.com/atmajs/appcfg) module is used to load the configurations and routings. The default path is the ``` /server/config/**.yml ```.
 
 The default configuration can be viewed here - [link](https://github.com/atmajs/atma-server/tree/master/src/ConfigDefaults)
 
 #### Resources
-_scripts / styles_
-For the NodeJS application itself and for pages scripts and styles are defined in
+_scripts / styles_ for the NodeJS application itself and for pages. They are defined in
 - `config/env/both.yml` - shared resources
 - `config/env/server.yml` - resources for the nodejs application, e.g. server side components paths.
-- `config/env/client.yml` - resources, that should be loaded on the client
+- `config/env/client.yml` - resources, that should be loaded on the client.
+	
 	In the DEV Mode all client-side scripts/styles/components are served to browsers without concatenation.
 	For the production compile resources with `atma custom node_modules/atma-server/tools/compile`
 	
-- Define scripts and styles for a particular page only in page routings
+- Define scripts and styles for a particular page only _in page routing_.
 
 #### Routing
 
@@ -113,7 +113,7 @@ There are 3 types of endpoints:
 
 ### Handler
 
-To declare a Handler is as simple as to define a Class/Constructor with Deferred implementation and process function in prototypes, like this
+To declare a Handler is as simple as to define a Class/Constructor with Deferred(_Promise_) Interface and `process` function in prototypes, like this
 
 ```javascript
 // server/http/handler/hello.js
@@ -121,31 +121,30 @@ module.exports = Class({
 	Base: Class.Deferred,
 	process: function(req, res){
 		this.resolve(
-			data <String|Object|Buffer>,
-			?statusCode <Number>,
-			?mimeType <String>,
-			?headers <Object>
+			data String | Object | Buffer,
+			?statusCode Number,
+			?mimeType String,
+			?headers Object
 		);
 		this.reject(error)
 	}
 });
 ```
 
-To bind for a route:
+To bind for a route(`server/config/handlers.yml`):
 ```yml
-# server/config/handlers.yml
-
 handler:
 	location: '/server/http/handler/{0}.js'
 	# <- default
-
 handlers:
-	'/say/hello': hello
+	'/say/hello': Hello
+	'(\.less(\.map)?$)': LessHandler
+	'(\.es6(\.map)?$)': TraceurHandler
 ```
 
-Handler is the first endpoint that will be looked for in defined routes by the responder.
-Usually this is the low level handlers, like 'Less' preprocessor. 
-But the interface ``` (Deferred + process(req, res)) ``` is the same for HttpService and HttpPage
+Handler is the first endpoint that will be looked for by the responder.
+Usually, this are the low level handlers, like 'less' preprocessor. 
+But the interface ``` (Deferred + process(req, res)) ``` is same also for HttpService and HttpPage
 
 
 ### HttpService
@@ -190,6 +189,8 @@ atma.server.HttpService(/* endpoints */ {
 	}
 })
 ```
+> Help feature will list all endpoints of a service with there meta information. `http://127.0.0.1/rest/user?help`
+
 
 ###### Barricades (_Middlewares_)
 ```javascript
@@ -288,20 +289,22 @@ Some things we remind:
 	```javascript
 	{ req: <Request>, res: <Response>, page: <HttpPage (current instance)> }
 	```
-- **Render Mode**
-	Define if the component(optionally define the same mode for all children) is rendered on the server or client mode, default mode is 'both'
-	Define if the model is serialized and sent to the client
+- **Render-mode**
+	- ```javascript
+		mode: 'server' | 'client' | 'both' // @default is 'both'
+		modeModel: 'server' // if `server` is defined, the model wont be serialized
+	```
 - **Cache**
-	Components rendered output could be cached and the conditions could be defined.
-	- byProperty: Get data from model or ctx and cache compo for each unique value.
+	Each components output could be cached and the conditions could be defined.
+	- `byProperty`: For each unique value from model or ct
 
-
+_Example_
 ```javascript
 mask.registerHandler(':requestedUrl', Compo({
-	mode: <String> // 'server' 'server:all' 'client' 'client:all'
-	modelMode: <String> // 'server' 'server:all'
+	mode: 'server:all'
+	modelMode: 'server:all'
 	cache: {
-		byProperty: <String> // e.g: 'ctx.req.url'
+		byProperty: 'ctx.req.url'
 	},
 
 	onRenderStart: function(model, ctx){
