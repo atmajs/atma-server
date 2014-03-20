@@ -322,11 +322,9 @@ Going back to the HttpPage, lets start from a master view template
 Refer to the [layout component](http://atmajs.com/compo/layout)
 
 Example:
-```mask
+```sass
 // server/http/master/default.mask
-
 layout:master #default {
-
 	:document {
 		
 		head {
@@ -336,7 +334,6 @@ layout:master #default {
 
 			atma:styles;
 		}
-		
 		body {
 			
 			@placeholder #body;
@@ -350,9 +347,8 @@ layout:master #default {
 
 #### Page View
 
-```mask
+```sass
 // server/http/page/hello.mask
-
 layout:view master=default {
 	@content #body {
 		'Hello World'
