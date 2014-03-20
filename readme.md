@@ -356,25 +356,14 @@ layout:view master=default {
 }
 ```
 
-The routing is also made via configuration files
+The routing is also made via the configuration files
 
 ```yml
 # server/config/pages.yml
 
-page: 
-	location:
-		# controller: '/server/http/page/{0}/{1}.js'
-		# template: '/server/http/page/{0}/{1}.mask'
-		# master: '/server/http/master/{0}.mask'
-		# <- this all are defaults
-
 pages: 
-	'!/hello': 
-		template: hello
-		master: default #<- default
-
-		# also other data could be here defined, and then accessed in components onRenderStart like: ``` ctx.page.data.title ```
-		title: Hello
+	'/hello': 
+		id: hello
 ```
 
 
