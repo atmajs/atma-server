@@ -1,47 +1,132 @@
 Atma Node.js Server Module
 ----
 
-Connect Middleware.
+- [Overview](#overview)
+- [Configuration](#configuration)
+	- [Resources](#resources)
+	- [Routing](#routing)
+- [Endpoints](#endpoints)
+	- Handler(#handler)
+	- Service(#httpservice)
+		- [Routes](#service-routes)
+		- [Endpoints](#service-endpoints)
+		- [Barricade](#barricades-middlewares)
+		- [Example](#service-and-the-application-routing-example)
+	- Page(#httppage)
+
+## Overview
+_Can be used as a [Connect](http://www.senchalabs.org/connect/) Middleware_
 
 This module uses:
 
-- MaskJS.Node
-- IncludeJS.Node
-- ClassJS.Node
-- atma.logger
-- atma.io
+- [Atma.js libs](https://github.com/atmajs/atma.libs)
+- [atma.logger](https://github.com/atmajs/atma-logger)
+- [atma.io](https://github.com/atmajs/atma-io)
+- [appcfg](https://github.com/atmajs/appcfg)
 
+To setup a bootstrap project use Atma.Toolkit - ``` $ atma gen server ```
 
-To setup a bootstrap project use Atma.Toolkit - ``` $ atma template server ```
+## Configuration
+[appcfg](https://github.com/atmajs/appcfg) module is used to load the configuration and routings. The default path is the **` /server/config/**.yml `**.
 
-All the configuration and the routing are defined in '/server/config/**.yml' files (path is also configurable).
+The default configuration can be viewed here - [link](https://github.com/atmajs/atma-server/tree/master/src/ConfigDefaults)
 
-There are 3 Types of a request endpoint:
+#### Resources
+_scripts / styles_
+For the NodeJS application itself and for pages scripts and styles are defined in
+- `config/env/both.yml` - shared resources
+- `config/env/server.yml` - resources for the nodejs application, e.g. server side components paths.
+- `config/env/client.yml` - resources, that should be loaded on the client
+	In the DEV Mode all client-side scripts/styles/components are served to browsers without concatenation.
+	For the production compile resources with `atma custom node_modules/atma-server/tools/compile`
+	
+- Define scripts and styles for a particular page only in page routings
 
-- Handler (generic handler)
-- HttpService (RESTful service)
-- HttpPage
+#### Routing
 
+- **handlers** ` config/handlers.yml `
+	```yml
+	handler:
+		location: /server/http/handler/{0}.js
+		#< default
+	handlers:
+		# route - resource that exports a HttpHandler
+		'/foo': 'baz'
+			# path is '/server/http/handler/baz.js'
+			# method is '*'
+		
+		'$post /qux': 'qux/postHandler'
+			# path is '/server/http/handler/quz/postHander.js'
+			# method is 'POST'
+	```
+
+- **services** ` config/services.yml `
+	```yml
+	service:
+		location: /server/http/service/{0}.js
+		#< default
+	services:
+		# route - resource that exports a HttpService @see HttpService
+		'/user': 'User'
+			# path is '/server/http/service/User.js'
+			# method is '*'
+			# futher routing is handled by the service, like '/user/:id'
+	```
+- **pages** ` config/pages.yml `
+	```yml
+	page:
+		# see default config to see the default page paths
+	
+	pages:
+		# route - Page Definition
+		
+		/:
+			id: index #optional, or is generated from the route
+				
+			template: quz #optional, or is equal to `id`
+				# path is `/server/http/page/quz/quz.mask
+			master: simple #optional, or is `default`
+				# path is `/server/http/master/simple.mask`
+			
+			# optional
+			secure:
+				# optional, default - any logged in user
+				role: 'admin'
+			
+			scripts:
+				# scripts for the page
+			styles:
+				# styles for the page
+			
+			# any other data, which then is accessable via javascript or mask
+			# `ctx.page.data.title`
+			title: String
+	```
+	
+## Endpoints
+
+There are 3 types of endpoints:
+
+- [Handler (generic handler)](#handler)
+- [HttpService (RESTful service)](#httpservice)
+- [HttpPage](#httppage)
 
 ### Handler
 
-To declare a Handler is as simple as to define a Class/Constructor 
-with Deferred implementation and process function in prototypes, like this
+To declare a Handler is as simple as to define a Class/Constructor with Deferred implementation and process function in prototypes, like this
 
 ```javascript
 // server/http/handler/hello.js
 module.exports = Class({
 	Base: Class.Deferred,
 	process: function(req, res){
-
-		this.resolve('Hello World');
-
-		// or
-
-		var that = this;
-		setTimeout(function(){
-			that.resolve('Hello World - wait async');
-		}, 200);
+		this.resolve(
+			data <String|Object|Buffer>,
+			?statusCode <Number>,
+			?mimeType <String>,
+			?headers <Object>
+		);
+		this.reject(error)
 	}
 });
 ```
@@ -60,15 +145,96 @@ handlers:
 
 Handler is the first endpoint that will be looked for in defined routes by the responder.
 Usually this is the low level handlers, like 'Less' preprocessor. 
-But the interface ``` (Deferred + process(req, res)) ``` is the same as in HttpService and HttpPage
+But the interface ``` (Deferred + process(req, res)) ``` is the same for HttpService and HttpPage
 
 
 ### HttpService
 
+##### Service routes
+For route docs refer to [RutaJS](http://github.com/atmajs/ruta)
+
+Sample:
+```javascript
+module.exports = atma.server.HttpService({
+	'$get /': Function | Endpoint
+	'$post /': ...
+	'$get /:name(foo|bar|qux)': ...
+	'$put /user': ...
+})
+```
+
+##### Service endpoints
+###### Function
+
+```javascript
+atma.server.HttpService(/* endpoints */ {
+	// route - handler
+	route: function(req, res, params){
+		this.resolve(/* @see Handler */);
+		this.reject(...);
+	}
+	// route - handler with `help` information
+	route: {
+		help {
+			description: String,
+			arguments: {
+				foo: 'string',
+				...
+			},
+			response: {
+				baz: 'string',
+				...
+			}
+		}
+		process: function(req, res, params) { ... }
+	}
+})
+```
+
+###### Barricades (_Middlewares_)
+```javascript
+atma.server.HttpService({
+	// route - Barricade (Middleware pattern)
+	route: [
+		function(req, res, params, next){
+			// error example
+			if (req.body.name == null){
+				next('Name argument expected');
+				return;
+			}
+			
+			// continue
+			req.name = req.body.name;
+			next();
+			
+			// stop processing
+			this.resolve(...);
+			this.reject(...);
+		},
+		function(req, res, params, next){
+			...
+		},
+		...
+	],
+	
+	// same with `help`
+	route: {
+		help: { ... }
+		process: [
+			fooFunction,
+			bazFunction,
+			...
+		]
+	}
+})
+```
+
+##### Service and the application routing example 
+
 ```javascript
 // server/http/service/time.js
 module.exports = atma.server.HttpService({
-	'!/': function(req, res){
+	'/': function(req, res){
 		this.resolve('This is a time service');
 	},
 	'/:transport(console|file|client)': function(req, res, params){
@@ -105,21 +271,6 @@ services:
 	'/time': time
 ```
 
-### _(still in progress)_ Barricades
-
-Define the 'Barricade' Functions to reach the service handler. To get the idea look at this example:
-
-```javascript
-var HttpService = atma.server.HttpService
-module.exports = HttpService({
-	'/current': HttpService.Barricade(
-		HttpService.isInRole('admin'), 
-		function(req, res, params) {
-			// process request
-		}
-	)
-})
-```
 
 ### HttpPage
 
@@ -129,8 +280,8 @@ HttpPage consists of 3 parts
 - Master View Template
 - View Template
 
-You would rare redefine the default controller, as each Page contains of a component composition. 
-So the logic could be moved to each component. We wont explain what a component is, as you should refer to MaskJS library.
+You would rare redefine the default controller, as each Page should consist of a component composition,
+so that the logic could be moved to each component. We wont explain what a component is, as you should refer to [MaskJS](https://github.com/atmajs/mask) and [MaskJS.Node](https://github.com/atmajs/mask-node)
 Some things we remind:
 
 - **Context**
@@ -178,14 +329,14 @@ layout:master #default {
 			meta name="viewport" content="maximum-scale=1.5, minimum-scale=.8, initial-scale=1, user-scalable=1";
 			title > "Atma.js"
 
-			:styles;
+			atma:styles;
 		}
 		
 		body {
 			
 			@placeholder #body;
 			
-			:scripts;
+			atma:scripts;
 		}
 	}
 }
@@ -225,4 +376,6 @@ pages:
 		title: Hello
 ```
 
-**Route Declaration** refer to [RutaJS](http://atmajs.com/ruta)
+
+----
+(c) 2014 MIT

@@ -5,19 +5,19 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.0.77",
+    "version": "0.0.78",
     "main": "./lib/server.js",
     "repository": {},
     "license": "MIT",
     "dependencies": {
-        "atma-logger": ">0.0.0",
-        "atma-io": ">0.0.0",
-        "atma-libs": ">0.0.0",
-        "appcfg": ">0.0.0",
-        "coffee": ">0.0.0",
-        "less": ">0.0.0",
-        "yamljs": ">0.0.0",
-        "socket.io": ">0.0.0"
+        "atma-logger": "latest",
+        "atma-io": "latest",
+        "atma-libs": "latest",
+        "appcfg": "latest",
+        "coffee": "latest",
+        "less": "latest",
+        "yamljs": "latest",
+        "socket.io": "latest"
     },
     "scripts": {
         "test": "node_modules/.bin/atma test"
