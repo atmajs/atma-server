@@ -7,10 +7,4 @@ env:
 			server_lib : '/server/lib/{0}.js' 
 			server_compo : '/server/compo/{0}/{1}.js'
 			
-			atma_server: '/node_modules/atma-server/lib/{0}.js'
-			
-			
 		scripts:
-			atma_server:
-				- compos/scripts/scripts
-				- compos/styles/styles

@@ -34,13 +34,6 @@ module.exports = {
 		actions: [ 'add-defaults-handler', 'import' ]
 	},
 	
-	'export-components': {
-		action: 'copy',
-		files: {
-			'src/compos/**': 'lib/compos/**'
-		}
-	},
-	
 	'publish': {
 		action: 'custom',
 		script: 'tools/publish'
@@ -49,7 +42,6 @@ module.exports = {
 	'defaults': [
 		'add-defaults-handler',
 		'import',
-		'export-components',
 		'jshint',
 		'uglify'
 	]

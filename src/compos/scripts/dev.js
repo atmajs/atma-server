@@ -1,9 +1,12 @@
 
-include
-	.load('dev.html')
-	.done(function(resp){
+var Dev_Scripts;
+(function(){
 	
-	include.exports = Compo({
+	var Template = [
+		// import:string dev.html
+	][0];
+	
+	Dev_Scripts = Compo({
 		mode: 'server:all',
 		
 		scripts: null,
@@ -23,9 +26,7 @@ include
 				
 		},
 		toHtml: function(){
-			return resp
-				.load
-				.dev
+			return Template
 				.replace('%CFG%', JSON.stringify(this.include.cfg, null, 4))
 				.replace('%ROUTES%', JSON.stringify(this.include.routes, null, 4))
 				.replace('%INCLUDE%', this.include.src)
@@ -33,6 +34,4 @@ include
 				;
 		}
 	});
-	
-
-});
+}());

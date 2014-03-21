@@ -20,11 +20,15 @@ var Config = (function() {
 			if (path_base[0] === '/')
 				path_base = path_base.substring(1);
 				
-			path_base = io
-				.env
-				.currentDir
-				.combine(path_base)
-				.toString();
+			var uri = new net.Uri(path_base);
+			path_base = uri.isRelative()
+				? io
+					.env
+					.currentDir
+					.combine(uri)
+					.toString()
+				: uri.toString()
+				;
 		}
 		
 		if (path_base == null) 

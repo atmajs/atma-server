@@ -57,9 +57,11 @@
 
 	// import ../src/Autoreload/autoreload.js
 	
+	// import /src/compos/exports.js
+	
 	__cfgDefaults = [
-			// import cfg-defaults.json
-		][0];
+		// import cfg-defaults.json
+	][0];
 		
 	if (exports.atma != null && typeof exports.atma === 'object') {
 		

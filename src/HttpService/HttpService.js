@@ -54,6 +54,9 @@ server.HttpService = (function(){
 					info.description = meta.description;
 					info.arguments = meta.arguments;
 					info.response = meta.response;
+					
+					if ('secure' in endpoint.value) 
+						info.secure = endpoint.value.secure || true;
 				}
 				
 				endpoints.push(info);
@@ -67,12 +70,10 @@ server.HttpService = (function(){
 			if (iQuery !== -1
 				&& /\bhelp\b/.test(req.url.substring(iQuery))) {
 				
-				this.resolve(this.help());
-				return;
+				return this.resolve(this.help());
 			}
 			
 			if (secure_canAccess(req, this.secure) === false) {
-				
 				return this
 					.reject(SecurityError('Access Denied'));
 			}
@@ -88,9 +89,17 @@ server.HttpService = (function(){
 						+ '> '
 						+ path));
 				
+			var endpoint = entry.value,
+				args = endpoint.meta && endpoint.meta.arguments;
 			
-			entry
-				.value
+			if (args != null) {
+				var error = service_validateArgs(req, args);
+				if (error) 
+					return this.reject(RequestError(error));
+				
+			}
+			
+			endpoint
 				.process
 				.call(this, req, res, entry.current.params);
 				

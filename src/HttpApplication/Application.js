@@ -87,13 +87,6 @@
 				
 				var proto = this._baseConfig;
 				
-				//this.config = Config({
-				//		buildDirectory : proto.buildDirectory,
-				//		configs: proto.configs
-				//	},
-				//	proto.config,
-				//	cfg_doneDelegate(this)
-				//);
 				this.config = Config(proto);
 				this
 					.config
@@ -186,10 +179,10 @@
 		return function() {
 				
 			var cfg = app.config;
-			
-			
 			logger(90)
 				.log('<app.config>', cfg);
+			
+			initilizeEmbeddedComponents(app);
 			
 			app
 				.handlers

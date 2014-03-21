@@ -18,7 +18,7 @@ include.exports = {
 		
 		done();
 	}
-}
+};
 
 
 var cfg_getDefaults;
@@ -46,6 +46,6 @@ var cfg_getDefaults;
 				}
 			});
 		
-		return JSON.stringify(defaults, null, 4);
+		return JSON.stringify(defaults, null, '\t');
 	};
 }());
