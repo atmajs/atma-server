@@ -10,6 +10,7 @@ Atma Node.js Server Module
 	- [Service](#httpservice)
 		- [Routes](#service-routes)
 		- [Endpoints](#service-endpoints)
+		- [Help & Validation](#meta-help-validation)
 		- [Barricade](#barricades-middlewares)
 		- [Example](#service-and-the-application-routing-example)
 	- [Page](#httppage)
@@ -170,29 +171,53 @@ module.exports = atma.server.HttpService({
 ```javascript
 atma.server.HttpService(/* endpoints */ {
 	// route - handler
-	route: function(req, res, params){
+	'route': function(req, res, params){
 		this.resolve(/* @see Handler */);
 		this.reject(...);
-	}
-	// route - handler with `help` information
-	route: {
-		help {
-			description: String,
-			arguments: {
-				foo: 'string',
-				...
-			},
-			response: {
-				baz: 'string',
-				...
-			}
-		}
-		process: function(req, res, params) { ... }
+	},
+	
+	'route': {
+		process: function(){ ... }
 	}
 })
 ```
-> Help feature will list all endpoints of a service with there meta information. `http://127.0.0.1/rest/user?help`
 
+###### Meta - help & validation
+ - **help** - list all endpoints of a service with there meta information. `http://127.0.0.1/rest/user?help`
+ - **validation** - when sending data with `post`/`put`, httpservice will validate it before processing
+	```javascript
+	atma.server.HttpService({
+		route: {
+			meta {
+				description: String,
+				arguments: {
+					// required, not empty string
+					foo: 'string',
+					// required, validate with regexp
+					age: /^\d+$/,
+					
+					// optional, of type 'number'
+					'?baz': 'number'
+					
+					
+					// validate subobject
+					jokers: {
+						left: 'number',
+						right: 'number'
+					},
+					
+					// validate arrays
+					collection: [ {_id: 'string', username: 'string'} ]
+				},
+				response: {
+					baz: 'string',
+					...
+				}
+			}
+			process: function(req, res, params) { ... }
+		}
+	})
+	```
 
 ###### Barricades (_Middlewares_)
 ```javascript
