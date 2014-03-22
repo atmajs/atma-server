@@ -10,7 +10,7 @@ Atma Node.js Server Module
 	- [Service](#httpservice)
 		- [Routes](#service-routes)
 		- [Endpoints](#service-endpoints)
-		- [Help & Validation](#meta-help-validation)
+		- [Help & Validation](#meta---help--validation)
 		- [Barricade](#barricades-middlewares)
 		- [Example](#service-and-the-application-routing-example)
 	- [Page](#httppage)
@@ -189,7 +189,7 @@ atma.server.HttpService(/* endpoints */ {
 	atma.server.HttpService({
 		route: {
 			meta {
-				description: String,
+				description: 'Lorem...',
 				arguments: {
 					// required, not empty string
 					foo: 'string',
