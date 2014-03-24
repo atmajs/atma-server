@@ -87,7 +87,7 @@
 				
 				var proto = this._baseConfig;
 				
-				this.config = Config(proto);
+				this.config = Config(proto, this);
 				this
 					.config
 					.done(cfg_doneDelegate(this))
@@ -177,8 +177,8 @@
 	
 	function cfg_doneDelegate(app) {
 		return function() {
-				
-			var cfg = app.config;
+			
+			var cfg = app.config;	
 			logger(90)
 				.log('<app.config>', cfg);
 			
