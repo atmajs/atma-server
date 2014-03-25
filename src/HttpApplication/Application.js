@@ -209,11 +209,27 @@
 	}
 	
 	function resources_load(app, callback) {
-		return include
-				.instance()
-				.js(app.config.env.server.scripts)
-				.js(app.config.env.both.scripts)
-				.done(callback);
+		app.resources = include
+			.instance()
+			.js(app.config.env.server.scripts)
+			.js(app.config.env.both.scripts)
+			;
+		app
+			.resources
+			.done(function(resp){
+				
+				if (app.config.projects) {
+					app
+						.config
+						.projects.forEach(function(name){
+							var res = resp[name];
+							if (res != null && typeof res.attach === 'function')
+								res.attach(app);
+						});
+				}
+				
+				callback();
+			});
 	}
 	
 	function resource_loadEmpty(app, callback){

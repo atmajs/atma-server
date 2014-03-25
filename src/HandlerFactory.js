@@ -160,7 +160,7 @@ var HandlerFactory = (function(){
 			
 				x = fns_RESPONDERS[i];
 				
-				if (processor_tryGet(this[x], url, method, base, callback)) 
+				if (processor_tryGet(this, this[x], url, method, base, callback)) 
 					return;
 			}
 			
@@ -182,7 +182,7 @@ var HandlerFactory = (function(){
 		}
 	});
 
-	function processor_tryGet(collection, url, method, base, callback){
+	function processor_tryGet(factory, collection, url, method, base, callback){
 		
 		var route = collection.get(url, method),
 			processor;
@@ -205,7 +205,7 @@ var HandlerFactory = (function(){
 		if (is_String(controller)) {
 			var path = net.Uri.combine(base, controller);
 			
-			processor_loadAndInit(path, route, callback);
+			processor_loadAndInit(factory, path, route, callback);
 			return true;
 		}
 	
@@ -219,10 +219,13 @@ var HandlerFactory = (function(){
 		
 	}
 	
-	function processor_loadAndInit(url, route, callback){
+	function processor_loadAndInit(factory, url, route, callback){
 		
-		include
-			.instance()
+		factory
+			.app
+			.resources
+		//include
+		//	.instance()
 			.js(url + '::Handler')
 			.done(function(resp){
 				
