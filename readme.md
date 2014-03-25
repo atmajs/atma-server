@@ -1,5 +1,6 @@
 Atma Node.js Server Module
 ----
+[![Build Status](https://travis-ci.org/atmajs/atma-server.svg?branch=master)](https://travis-ci.org/atmajs/atma-server)
 
 - [Overview](#overview)
 - [Configuration](#configuration)
