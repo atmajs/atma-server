@@ -12,11 +12,11 @@ var Dev_Scripts;
 		scripts: null,
 		renderStart: function(model, ctx){
 			
-			this.include = app
+			this.include = ctx
 				.config
 				.$getInclude();
 			
-			this.scripts = app
+			this.scripts = ctx
 				.config
 				.$getScripts(ctx.page.data.id)
 				.map(function(x, index){

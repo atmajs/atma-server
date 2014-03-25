@@ -46,6 +46,6 @@ var cfg_getDefaults;
 				}
 			});
 		
-		return JSON.stringify(defaults, null, '\t');
+		return JSON.stringify(JSON.stringify(defaults));
 	};
 }());

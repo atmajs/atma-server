@@ -15,7 +15,7 @@ var Prod_Sctipts;
 		},
 		onRenderStart: function(model, ctx){
 			
-			if (app.config.build == null) {
+			if (ctx.config.build == null) {
 				logger
 					.error('<Application is not built>')
 					.warn('To execute the DEV version use `--debug` flag: `node index --debug`'.bold)
@@ -27,11 +27,11 @@ var Prod_Sctipts;
 			
 			var pageData = ctx.page.data,
 				id = pageData.id,
-				data = app.config.build[id],
+				data = ctx.config.build[id],
 				that = this;
 			
 			this.model = {
-				buildVersion: app.config.buildVersion
+				buildVersion: ctx.config.buildVersion
 			};
 			
 			if (data == null) {

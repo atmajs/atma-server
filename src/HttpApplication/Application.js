@@ -40,14 +40,6 @@
 		},
 		
 		
-		responder: function(data){
-			
-			this.middleware = new MiddlewareRunner(data && data.middleware);
-			
-			
-			return (this._responder = responder(this));
-		},
-		
 		respond: function(req, res, next){
 			if (this._responder == null) 
 				this.responder();
@@ -55,12 +47,23 @@
 			this._responder(req, res, next);
 		},
 		
+		responder: function(data){
+			
+			this.middleware = new MiddlewareRunner(data && data.middleware);
+			return (this._responder = responder(this));
+		},
 		
 		responders: function(array){
 			this._responders = new MiddlewareRunner(array);
 		},
 		
 		process: function(req, res, next){
+			
+			if (this._responders == null) {
+				this.responders([
+					this.responder()
+				]);
+			}
 			
 			this
 				._responders
@@ -210,7 +213,7 @@
 	
 	function resources_load(app, callback) {
 		app.resources = include
-			.instance()
+			.instance(app.config.base)
 			.js(app.config.env.server.scripts)
 			.js(app.config.env.both.scripts)
 			;

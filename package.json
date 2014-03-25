@@ -5,7 +5,7 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.0.81",
+    "version": "0.0.82",
     "main": "./lib/server.js",
     "repository": {},
     "license": "MIT",

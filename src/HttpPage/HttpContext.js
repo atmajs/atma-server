@@ -1,5 +1,6 @@
 
-function HttpContext(page, req, res){
+function HttpContext(page, config, req, res){
+	this.config = config;
 	this.page = page;
 	this.req = req;
 	this.res = res;

@@ -49,7 +49,7 @@ var Config = (function() {
 		
 		var $sources = [
 			{
-				config: __cfgDefaults
+				config: JSON.parse(__cfgDefaults)
 			},
 			{
 				config: {

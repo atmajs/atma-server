@@ -77,7 +77,7 @@ server.HttpPage = (function(){
 				this.masterPath = cfg.$getMaster(data) + '::Master';
 		},
 		
-		process: function(req, res){
+		process: function(req, res, config){
 			
 			if (this.route) {
 				var query = ruta
@@ -90,7 +90,7 @@ server.HttpPage = (function(){
 				}
 			}
 			
-			this.ctx = new HttpContext(this, req, res);
+			this.ctx = new HttpContext(this, config, req, res);
 			
 			if ('secure' in this.data) {
 				

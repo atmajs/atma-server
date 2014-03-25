@@ -25,7 +25,7 @@
 		
 		var pageData = ctx.page.data,
 			id = pageData.id,
-			data = app.config.build[id];
+			data = ctx.config.build[id];
 			
 					
 		if (data.styles) 
