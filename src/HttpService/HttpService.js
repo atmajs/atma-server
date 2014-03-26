@@ -90,7 +90,13 @@ server.HttpService = (function(){
 						+ path));
 				
 			var endpoint = entry.value,
-				args = endpoint.meta && endpoint.meta.arguments;
+				meta = endpoint.meta
+				args = meta && meta.arguments;
+			
+			if (meta != null && secure_canAccess(req, meta.secure) === false) {
+				return this
+					.reject(SecurityError('Access Denied'));
+			}
 			
 			if (args != null) {
 				var error = service_validateArgs(req, args);
