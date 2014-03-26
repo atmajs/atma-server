@@ -1,5 +1,6 @@
 (function() {
-
+	var error_TITLE = '<service> Model deserialization: ';
+	
 	HttpService.classParser = function(name, Ctor) {
 		var keys = Class.properties(Ctor);
 
@@ -9,12 +10,21 @@
 				next('Body is not defined');
 				return;
 			}
-
-			if (!checkProperties(req.body, keys, next)) 
+			
+			var error = checkProperties(req.body, keys);
+			if (error != null) {
+				next(error_TITLE + error);
 				return;
+			}
+			
 			
 			req[name] = new Ctor(req.body);
-			next(Class.validate(req[name]));
+			error = Class.validate(req[name]);
+			
+			if (error != null) 
+				error = error_TITLE + error;
+			
+			next(error);
 		};
 	};
 	
@@ -28,22 +38,25 @@
 			}
 			var error,
 				imax = req.body.length,
+				error,
 				i = -1;
 			while( ++i < imax ){
 				
-				if (!checkProperties(req.body[i], keys, next)) 
+				error = checkProperties(req.body[i], keys);
+				if (error != null) {
+					next(error_TITLE + error);
 					return;
+				}
 			}
 			
 			req[name] = new CollCtor(req.body);
 			i = -1;
 			while ( ++i < imax ){
 				error = Class.validate(req[name][i]);
-				if (error == null) 
-					continue;
-				
-				next(error);
-				return;
+				if (error != null) {
+					next(error_TITLE + error);
+					return;
+				}
 			}
 			next();
 		}
@@ -82,23 +95,21 @@
 		};
 	}
 
-	function checkProperties(obj, keys, next){
+	function checkProperties(obj, keys){
 		var type,
 			key;
 		for (key in obj) {
 
-			if (keys[key] === void 0){
-				next('Unexpected property ' + key);
-				return false;
-			}
+			if (keys[key] === void 0)
+				return 'Unexpected property ' + key;
+			
 
 			type = typeof obj[key];
 			if (type !== 'undefined' && type !== keys[key]){
-				next('Type mismatch ' + type + '/' + keys[key]);
-				return false;
+				return 'Type mismatch ' + type + '/' + keys[key];
 			}
 		}
 		
-		return true;
+		return null;
 	}
 }());

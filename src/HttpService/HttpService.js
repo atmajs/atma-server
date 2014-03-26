@@ -82,12 +82,16 @@ server.HttpService = (function(){
 				entry = this.routes.get(path, req.method);
 			
 			
-			if (entry == null) 
+			if (entry == null) {
+				var name = this.name || '<service>',
+					url = path || '/';
 				return this
-					.reject(NotFoundError('Service method not Found: <'
+					.reject(NotFoundError(name
+						+ ': endpoint not Found: <'
 						+ req.method
 						+ '> '
-						+ path));
+						+ url));
+			}
 				
 			var endpoint = entry.value,
 				meta = endpoint.meta,
@@ -115,9 +119,17 @@ server.HttpService = (function(){
 	});
 	
 	
-	function HttpService(){
+	function HttpService(mix){
+		var name, args;
 		
-		var proto = endpoints_merge(_Array_slice.call(arguments));
+		if (typeof mix === 'string') {
+			name = mix;
+			args = _Array_slice.call(arguments, 1);
+		} else {
+			args = _Array_slice.call(arguments);
+		}
+		
+		var proto = endpoints_merge(args);
 		
 		var routes = new ruta.Collection,
 			defs = proto.ruta || proto,
@@ -157,16 +169,14 @@ server.HttpService = (function(){
 		}
 		
 		proto.routes = routes;
-		
+		if (name != null) 
+			proto.name = name;
+			
 		if (proto.Extends == null) {
-			
 			proto.Extends = HttpServiceProto;
-			
 		} else if (Array.isArray(proto.Extends)) {
-			
 			proto.Extends.push(HttpServiceProto);
 		} else {
-			
 			proto.Extends = [HttpServiceProto, proto.Extends];
 		}
 		

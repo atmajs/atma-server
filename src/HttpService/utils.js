@@ -8,10 +8,12 @@ var secure_canAccess,
 		if (secureObj == null) 
 			return true;
 		
+		if (secureObj === true || secureObj.role == null) 
+			return (req.session != null || req.user != null);
+		
 		var user = req.user,
 			role = secureObj.role
 			;
-		
 		return user != null && (role == null || user.isInRole(role));
 	};
 	
