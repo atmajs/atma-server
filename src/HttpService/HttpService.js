@@ -90,8 +90,9 @@ server.HttpService = (function(){
 						+ path));
 				
 			var endpoint = entry.value,
-				meta = endpoint.meta
-				args = meta && meta.arguments;
+				meta = endpoint.meta,
+				args = meta && meta.arguments
+				;
 			
 			if (meta != null && secure_canAccess(req, meta.secure) === false) {
 				return this
