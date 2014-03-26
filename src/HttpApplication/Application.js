@@ -12,6 +12,7 @@
 		_responders: null,
 		
 		middleware: null,
+		resources: null,
 		
 		Construct: function(proto){
 			if (proto == null) 
@@ -82,7 +83,7 @@
 		getSubApp: function(path){
 			var route = this.handlers.subapps.get(path);
 			
-			return route && route.value && route.value._app;
+			return route && route.value && route.value.app_;
 		},
 		
 		Self: {
@@ -202,10 +203,12 @@
 				return;
 			}
 			
+			if (app.resources != null) {
+				app.resolve(app);
+				return;
+			}
 			
 			resources_load(app, function(){
-				
-				resources_load = resource_loadEmpty;
 				app.resolve(app);
 			});
 		}
