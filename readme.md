@@ -198,8 +198,10 @@ atma.server.HttpService(/* endpoints */ {
 					age: /^\d+$/,
 					
 					// optional, of type 'number'
-					'?baz': 'number'
+					'?baz': 'number',
 					
+					// unexpect
+					'-quz': null,
 					
 					// validate subobject
 					jokers: {
