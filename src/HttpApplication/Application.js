@@ -40,20 +40,20 @@
 			return this;
 		},
 		
-		
+		//> ConnectJS middleware scenario
 		respond: function(req, res, next){
 			if (this._responder == null) 
 				this.responder();
 				
 			this._responder(req, res, next);
 		},
-		
 		responder: function(data){
 			
 			this.middleware = new MiddlewareRunner(data && data.middleware);
 			return (this._responder = responder(this));
 		},
 		
+		//> Generic HttpServer scenario, responder should be also used in the middleware
 		responders: function(array){
 			this._responders = new MiddlewareRunner(array);
 		},

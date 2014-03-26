@@ -5,6 +5,8 @@ var send_JSON,
 	
 (function(){
 	
+	var obj_toString = Object.prototype.toString;
+	
 	send_JSON = function(res, json, headers){
 		
 		try {
@@ -21,7 +23,9 @@ var send_JSON,
 	send_Error = function(res, error, headers){
 		
 		var text = JSON.stringify({
-			error: error.toString(),
+			error: error.toString !== obj_toString
+				? error.toString()
+				: error,
 			stack: error.stack
 		});
 		
