@@ -72,7 +72,8 @@ var Config = (function() {
 			},
 			{
 				path: 'package.json',
-				getterProperty: 'atma'
+				getterProperty: 'atma',
+				optional: true
 			},
 			{
 				config: EnvUtils
