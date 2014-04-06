@@ -14,7 +14,7 @@ var Foos = Class.Collection(Foo, {
 UTest({
 	$config: {
 		'http.include': [
-			'test/dom/crud-model.js'
+			'test/service-dom/crud-model.js'
 		]
 	},
 	
@@ -110,8 +110,8 @@ UTest({
 						method: 'PUT',
 						path: '/foo/:id',
 						arguments: {
-							_id: null,
-							name: 'string'
+							'?_id': null,
+							'?name': 'string'
 						}
 					},
 					{

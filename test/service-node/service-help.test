@@ -9,8 +9,8 @@ include
 			'$post /baz': {
 				meta: {
 					description: 'Baz Helper',
-					args: {
-						bazValue: ''
+					arguments: {
+						bazValue: 'string'
 					}
 				},
 				process: [
@@ -26,7 +26,10 @@ include
 				
 				has_(help, [{
 					path: '/baz',
-					description: 'Baz Helper'
+					description: 'Baz Helper',
+					arguments: {
+						bazValue: 'string'
+					}
 				}]);
 			}
 		})

@@ -1,7 +1,9 @@
 server.HttpPage = (function(){
 	
+	// import page-utils.js
 	// import Resources.js	
 	// import HttpContext.js
+	
 	
 	var Page = Class({
 		
@@ -12,6 +14,9 @@ server.HttpPage = (function(){
 		
 		template: null,
 		master: null,
+		
+		ctx: null,
+		middleware: null,
 		
 		templatePath: null,
 		masterPath: null,
@@ -55,57 +60,40 @@ server.HttpPage = (function(){
 			this.query = route.current && route.current.params;
 			
 			if (data.masterPath) 
-				this.masterPath = data.masterPath + '::Master';
+				this.masterPath = data.masterPath;
 			
 			if (data.templatePath) 
-				this.templatePath = data.templatePath + '::Template';
+				this.templatePath = data.templatePath;
 			
 			if (data.master) 
-				this.masterPath = cfg.$getMaster(data) + '::Master';
+				this.masterPath = cfg.$getMaster(data);
 			
 			if (data.template) 
-				this.templatePath = cfg.$getTemplate(data) + '::Template';
+				this.templatePath = cfg.$getTemplate(data);
 			
 			if (data.compo) 
-				this.compoPath = cfg.$getCompo(data) + '::Compo';
+				this.compoPath = cfg.$getCompo(data);
 			
 			
 			if (this.template == null && this.compoPath == null && this.templatePath == null)
-				this.templatePath = cfg.$getTemplate(data) + '::Template';
+				this.templatePath = cfg.$getTemplate(data);
 			
 			if (this.master == null && this.masterPath == null)
-				this.masterPath = cfg.$getMaster(data) + '::Master';
+				this.masterPath = cfg.$getMaster(data);
+				
 		},
 		
 		process: function(req, res, config){
 			
-			if (this.route) {
-				var query = ruta
-					.parse(this.route, req.url)
-					.params;
-
-				for(var key in query){
-					if (this.query[key] == null)
-						this.query[key] = query[key];
-				}
-			}
+			if (this.middleware == null) 
+				return page_proccessRequest(this, req, res, config);
 			
-			this.ctx = new HttpContext(this, config, req, res);
-			
-			if ('secure' in this.data) {
-				
-				var user = req.user,
-					secure = this.data.secure,
-					role = secure && secure.role
-					;
-					
-				if (user == null || (role && user.isInRole(role)) === false) {
-					this.ctx.redirect(__app.config.page.urls.login);
-					return this;
-				}
-			}
-			
-			this._load();
+			this.middleware.process(
+				req,
+				res,
+				page_proccessRequestDelegate(this, req, res, config),
+				config
+			);
 			return this;
 		},
 		
@@ -155,9 +143,14 @@ server.HttpPage = (function(){
 			
 			this.resource = include
 				.instance()
-				.load(this.masterPath, this.templatePath)
-				.js(this.compoPath)
+				.load(
+					page_pathAddAlias(this.masterPath, 'Master'),
+					page_pathAddAlias(this.templatePath, 'Template'))
+				.js(
+					page_pathAddAlias(this.compoPath, 'Compo')
+				)
 				.done(fn_proxy(this._response, this));
+			return this;
 		},
 		
 		
@@ -205,7 +198,6 @@ server.HttpPage = (function(){
 					.Dom
 					.Component('', null, Component)
 					;
-				
 			}
 			
 			if (is_Function(this.onRenderStart)) 
@@ -228,91 +220,18 @@ server.HttpPage = (function(){
 			}
 			
 			if (this.ctx.async) {
-				
 				this
 					.ctx
-					.done(fn_proxy(this._doResolve, this))
-					.fail(fn_proxy(this.fail, this));
-					
+					.done(fn_delegate(page_resolve, page))
+					.fail(this.rejectDelegate());
 				return;
 			}
 			
-			this._doResolve(html);
-		},
-		
-		_doResolve: function(html){
-			if (this.ctx._redirect != null) {
-				// response was already flushed
-				return;
-			}
-			
-			this.resolve(html);
+			page_resolve(this, html)
 		}
 	
 	});
 	
-	
-	function page_Create(classProto) {
-		
-		if (classProto.Base == null) {
-			classProto.Base = Page;
-		} else if (classProto.Extends == null) {
-			classProto.Extends = Page;
-		} else if (Array.isArray(classProto)) {
-			classProto.Extends.push(Page);
-		} else {
-			classProto.Extends = [Page, classProto.Extends];
-		}
-		
-		return Class(classProto);
-	}
-	
-	
-	function page_rewriteDelegate(page) {
-		var ctx = page.ctx;
-		
-		if (ctx.rewriteCount == null) 
-			ctx.rewriteCount = 1;
-		
-		if (++ctx.rewriteCount > 5) {
-			page.reject('Too much rewrites, last path: ' + ctx._rewrite);
-			return;
-		}
-		
-		
-		return function(rewrittenHandler){
-			if (rewrittenHandler == null) {
-				page.reject('Rewritten Path is not valid: ' + ctx._rewrite);
-				return;
-			}
-			
-			rewrittenHandler
-				.process(ctx.req, ctx.res)
-				.done(page.resolveDelegate())
-				.fail(page.rejectDelegate())
-				;
-		}
-	}
-	
-	function pageError_sendDelegate(res, error){
-		
-		return function(html) {
-			send_Content(res, html, error.statusCode || 500, mime_HTML);
-		};
-	}
-	
-	function pageError_failDelegate(res, error){
-		return function(internalError){
-			var str = is_Object(internalError)
-				? JSON.stringify(internalError)
-				: internalError
-				;
-				
-			str += '\nError: ' + error.message
-			
-			send_Content(res, 'ErrorPage Failed: ' + str, 500, mime_PLAIN);
-		}
-	}
 	
 	return Page;	
 }());

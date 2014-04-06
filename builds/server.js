@@ -63,12 +63,17 @@
 	__cfgDefaults = [
 		// import cfg-defaults.json
 	][0];
-		
+	
+	
 	if (exports.atma != null && typeof exports.atma === 'object') {
-		
-		obj_extend(exports.atma, server);
+		if (exports.atma.server) {
+			obj_extend(exports.atma.server, server);
+			return;
+		}
+		exports.atma.server = server;
 		return;
 	}
+	
 	
 	exports.atma = {
 		server: server

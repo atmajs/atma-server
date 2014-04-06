@@ -12,6 +12,15 @@
 				properties = Class.properties(Ctor)
 				;
 			
+			Object
+				.keys(properties)
+				.forEach(function(key){
+					properties['?' + key] = properties[key];
+					delete properties[key];
+				})
+				;
+			
+			
 			proto['$get /' + name + '/:id'] = {
 				meta: {
 					response: properties
@@ -22,7 +31,6 @@
 						this,
 						Ctor.fetch({ _id: params.id })
 					);
-				
 				}
 			};
 			
@@ -34,9 +42,11 @@
 				},
 				process: [
 					bodyParser,
-					function(req){
+					function(req, res, params){
+						var x = req[properties];
+						x._id = params.id;
 						
-						await(this, req[property].save());
+						await(this, x.save());
 					}
 				]
 			};
@@ -50,7 +60,9 @@
 				process: [
 					bodyParser,
 					function(req){
-						await(this, req[property].save());
+						var x = req[property];
+						delete x._id;
+						await(this, x.save());
 					}
 				]
 			};
@@ -60,9 +72,8 @@
 					description: 'Remove entity'
 				},
 				process: function(req, res, params) {
-					var instance = new Ctor({_id: params.id }).del();
-					
-					await(this, instance);
+					var x = new Ctor({ _id: params.id });
+					await(this, x.del());
 				}
 			}
 			

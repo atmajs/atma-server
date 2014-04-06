@@ -66,9 +66,12 @@
 				]);
 			}
 			
-			this
-				._responders
-				.process(req, res, next || response_notProcessed, this.config);
+			this._responders.process(
+				req,
+				res,
+				next || response_notProcessed,
+				this.config
+			);
 		},
 		
 		webSockets: WebSocket,
@@ -119,7 +122,16 @@
 				: handler_process
 				;
 			
-			handler_resolve(app, req, res, next, callback);
+			if (next == null) 
+				next = fn_delegate(response_notProcessed, null, req, res);
+			
+			handler_resolve(
+				app,
+				req,
+				res,
+				next,
+				callback
+			);
 		}
 	}
 	
@@ -128,8 +140,13 @@
 		return function(app, handler, req, res){
 			
 			middlewareRunner
-				.process(req, res, function(){
+				.process(req, res, function(error){
 				
+					if (error) {
+						send_Error(res, error);
+						return;
+					}
+					
 					handler_process(app, handler, req, res);
 				});
 		};
@@ -242,7 +259,11 @@
 		callback();
 	}
 	
-	function response_notProcessed(req, res){
+	function response_notProcessed(error, req, res){
+		if (error) {
+			send_Error(res, error);
+			return;
+		}
 	
 		send_Content(
 			res,
