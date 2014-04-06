@@ -5,7 +5,7 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.0.87",
+    "version": "0.0.88",
     "main": "./lib/server.js",
     "repository": {},
     "license": "MIT",
@@ -24,6 +24,16 @@
     },
     "devDependencies": {
         "atma": "latest",
-        "mongodb": "latest"
+        "atma-loader-traceur": "latest",
+        "mongodb": "latest",
+        "connect": "lastest"
+    },
+    "atma": {
+        "settings": {
+            "traceur-extension": [
+                "es6",
+                "test"
+            ]
+        }
     }
 }

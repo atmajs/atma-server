@@ -42,7 +42,7 @@ UTest({
 		UTest
 			.server
 			.request('/help-foo?help', function(error, array){
-				
+				debugger
 				has_(array, [{
 					method: 'GET',
 					path: '/',
@@ -52,7 +52,7 @@ UTest({
 					path: '/',
 					arguments: {
 						username: 'string',
-						'?password': '/^\d+$/'
+						'?password': '/^\\d+$/'
 					}
 				}]);
 				done();

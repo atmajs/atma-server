@@ -1,6 +1,6 @@
 layout:view master=default {
 	
 	@content #body {
-		span > 'Hello Bar'
+		span > 'Hello ~[: text || "Bar" ]'
 	}
 }

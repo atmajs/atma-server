@@ -8,6 +8,11 @@ module.exports = {
 		'service-node': {
 			exec: 'node',
 			tests: 'test/service-node/**.test'
+		},
+		
+		'examples': {
+			exec: 'browser',
+			tests: 'test/examples/**.test'
 		}
 	}
 };

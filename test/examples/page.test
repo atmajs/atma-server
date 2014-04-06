@@ -1,0 +1,50 @@
+var host = 'http://localhost:5888'
+UTest({
+	
+	'$config': {
+		'http.eval': function(done) {
+			
+			include
+				.instance(io.env.currentDir.combine('test/examples/').toDir())
+				.inject('server.es6')
+				.done(function(){
+					
+					spawnServer('page', function() {
+						
+						done();
+					});
+				});
+		}
+		
+	},
+	'get': function(done){
+		UTest
+			.server
+			.request(host + '/get/hello')
+			.fail(assert.avoid())
+			.done((doc, win) => {
+				has_(doc.body.innerHTML, 'span')
+				has_(doc.body.innerHTML, 'Hello Bar');
+				done();
+			})
+	},
+	'post': function(done){
+		
+		UTest
+			.server
+			.request({
+				url: host + '/post/echo',
+				method: 'POST',
+				data: {
+					text: 'Quux'
+				}
+			})
+			.fail(assert.avoid())
+			.done(function(doc, win){
+				
+				has_(doc.body.innerHTML, 'span')
+				has_(doc.body.innerHTML, 'Quux');
+				done();
+			})
+	}
+})
