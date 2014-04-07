@@ -222,7 +222,7 @@ server.HttpPage = (function(){
 			if (this.ctx.async) {
 				this
 					.ctx
-					.done(fn_delegate(page_resolve, page))
+					.done(fn_delegate(page_resolve, this))
 					.fail(this.rejectDelegate());
 				return;
 			}
