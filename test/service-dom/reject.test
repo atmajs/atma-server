@@ -1,0 +1,72 @@
+UTest({
+	$config: {
+		'http.include': [
+			'test/service-dom/service-reject.js'
+		]
+	},
+	
+	'string error': function(done){
+		UTest
+			.server
+			.request('/reject/string')
+			.done(assert.avoid())
+			.fail(toJSOND(function(error){
+
+
+				eq_(error.error, 'String reject');
+				eq_(Object.keys(error).length, 1);
+				done();
+			}))
+	},
+	'native error': function(done){
+		UTest
+			.server
+			.request('/reject/native')
+			.done(assert.avoid())
+			.fail(toJSOND(function(error){
+
+
+				is_(error.stack, 'String');
+				has_(error.stack, 'service-reject.js')
+				has_(error.error, 'Native reject');
+				
+
+				deepEq_(Object.keys(error), ['error', 'stack']);
+				done();
+			}))
+	},
+	'http error': function(done){
+		UTest
+			.server
+			.request('/reject/http')
+			.done(assert.avoid())
+			.fail(toJSOND(function(error, code){
+
+				//eq_(code, 500);	
+				is_(error.stack, 'String');
+				has_(error.stack, 'service-reject.js')
+				has_(error.error, 'Http reject');
+				deepEq_(Object.keys(error), ['error', 'stack']);
+				done();
+			}))
+	}
+})
+
+function toJSON(xhr){
+	try {
+		return JSON.parse(xhr.responseText);
+	} catch(error) {
+		console.error('>parse error', error);
+
+		return {};
+	}
+}
+
+function toJSOND(fn){
+	
+	return function(xhr){
+		debugger
+		console.log(xhr.status, xhr.statusCode.status);
+		return fn(toJSON(xhr), xhr.statusCode);
+	}
+}
