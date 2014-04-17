@@ -37,14 +37,14 @@ The default configuration can be viewed here - [link](https://github.com/atmajs/
 
 #### Resources
 _scripts / styles_ for the NodeJS application itself and for pages. They are defined in
-- `config/env/both.yml` - shared resources
+- `config/env/both.yml`   - shared resources
 - `config/env/server.yml` - resources for the nodejs application, e.g. server side components paths.
 - `config/env/client.yml` - resources, that should be loaded on the client.
 	
 	In the DEV Mode all client-side scripts/styles/components are served to browsers without concatenation.
 	For the production compile resources with `atma custom node_modules/atma-server/tools/compile`
 	
-- Define scripts and styles for a particular page only _in page routing_.
+- Define scripts and styles for a particular page in page routing.
 
 #### Routing
 
@@ -188,8 +188,8 @@ atma.server.HttpService(/* endpoints */ {
  - **validation** - when sending data with `post`/`put`, httpservice will validate it before processing
 	```javascript
 	atma.server.HttpService({
-		route: {
-			meta {
+		'/route': {
+			meta: {
 				description: 'Lorem...',
 				arguments: {
 					// required, not empty string
@@ -216,7 +216,7 @@ atma.server.HttpService(/* endpoints */ {
 					baz: 'string',
 					...
 				}
-			}
+			},
 			process: function(req, res, params) { ... }
 		}
 	})
@@ -226,7 +226,7 @@ atma.server.HttpService(/* endpoints */ {
 ```javascript
 atma.server.HttpService({
 	// route - Barricade (Middleware pattern)
-	route: [
+	'/route': [
 		function(req, res, params, next){
 			// error example
 			if (req.body.name == null){
@@ -249,8 +249,8 @@ atma.server.HttpService({
 	],
 	
 	// same with `help`
-	route: {
-		help: { ... }
+	'/other/route': {
+		meta: { ... }
 		process: [
 			fooFunction,
 			bazFunction,
