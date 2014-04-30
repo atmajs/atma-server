@@ -51,7 +51,7 @@ var WatcherHandler = (function(){
         Base: Class.EventEmitter,
         
         watch: function(file){
-            var path = file.uri.toLocalFile();
+            var path = file.uri.toString();
             
             if (_watchers[path] != null) 
                 return;
@@ -64,7 +64,7 @@ var WatcherHandler = (function(){
                 
         },
         unwatch: function(file){
-            var path = file.uri.toLocalFile();
+            var path = file.uri.toString();
             
             if (_watchers[path] == null) {
                 logger.log('<watcher> No watchers', path);
@@ -77,7 +77,7 @@ var WatcherHandler = (function(){
         },
         
         isWatching: function(file){
-            var path = file.uri.toLocalFile();
+            var path = file.uri.toString();
             
             return _watchers[path] != null;
         },
