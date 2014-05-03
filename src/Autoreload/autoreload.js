@@ -26,7 +26,7 @@ var Autoreload = (function(){
             var uri = rootUri.combine(requestedUrl),
                 file = new io.File(uri);
             
-            if (!file.uri.file) 
+            if (!(file.uri && file.uri.file)) 
                 return;
             
             if (WatcherHandler.isWatching(file)) 
