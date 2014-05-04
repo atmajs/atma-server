@@ -159,8 +159,25 @@ var HandlerFactory = (function(){
 			while( ++i < imax ){
 			
 				x = fns_RESPONDERS[i];
-				
 				if (processor_tryGet(this, this[x], url, method, base, callback)) 
+					return;
+			}
+			
+			if (this.app !== __app) {
+				// check handlers of the root application
+				var factory = __app.handlers,
+					cfg = __app.config;
+					
+				var hasHandler = processor_tryGet(
+						factory,
+						factory.handlers,
+						url,
+						method,
+						cfg.base || base,
+						callback
+					);
+				
+				if (hasHandler) 
 					return;
 			}
 			
@@ -224,29 +241,30 @@ var HandlerFactory = (function(){
 		factory
 			.app
 			.resources
-		//include
-		//	.instance()
 			.js(url + '::Handler')
 			.done(function(resp){
 				
 				if (resp.Handler == null) {
 					logger.error('<handler> invalid route', url);
 					
-					return callback(new ErrorHandler());
+					callback(new ErrorHandler());
+					return;
 				}
 				
 				if (!is_Function(resp.Handler.prototype.process)) {
 					logger.error('<handler> invalid interface - process function not implemented');
 					
-					return callback(new ErrorHandler());
+					callback(new ErrorHandler());
+					return;
 				}
 				
-				if (__app.args.debug !== true) 
+				if (is_Debug() === false) 
 					route.value.controller = resp.Handler;
 				
 				
 				if (is_Object(resp.Handler) && is_Function(resp.Handler.process)) {
-					return callback(resp.Handler);
+					callback(resp.Handler);
+					return;
 				}
 				
 				callback(new resp.Handler(route));

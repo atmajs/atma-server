@@ -1,7 +1,9 @@
 var is_String,
     is_Function,
     is_Object,
-    is_Array
+    is_Array,
+    
+    is_Debug
     ;
     
 (function(){
@@ -19,5 +21,16 @@ var is_String,
     };
 
     is_Array = Array.isArray;
+    
+    is_Debug = (function(){
+        
+        var debug;
+        return function(){
+            if (debug == null) 
+                debug = Boolean(__app.args.debug || __app.config.debug);
+            
+            return debug;
+        };
+    }());
     
 }());

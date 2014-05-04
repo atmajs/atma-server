@@ -34,7 +34,7 @@
 			this._loadConfig();
 			
 		
-			if (this.isRoot && this.args.debug !== true) 
+			if (this.isRoot && is_Debug() !== true) 
 				logger.cfg('color', 'none');
 				
 			return this;
@@ -214,8 +214,7 @@
 				;
 			
 			
-			if (app.args.debug) {
-				
+			if (is_Debug()) {
 				app.resolve(app);
 				return;
 			}
