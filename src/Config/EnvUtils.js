@@ -131,35 +131,39 @@ var EnvUtils = (function() {
 		},
 
 		$getTemplate: function(pageData) {
-			var template = pageData.template || this.page.index.template;
-
-			return this.$formatPath(this.page.location.template, template);
+			var template = pageData.template || this.page.index.template,
+				location = this.page.location.template,
+				path = this.$formatPath(location, template)
+				;
+			return net.Uri.combine(this.base, path);
 		},
 		$getMaster: function(pageData) {
-			var master = pageData.master || this.page.index.master;
-
-			return this.$formatPath(this.page.location.master, master);
+			var master = pageData.master || this.page.index.master,
+				location = this.page.location.master,
+				path = this.$formatPath(location, master)
+				;
+			return net.Uri.combine(this.base, path);
 		},
 		$getController: function(pageData) {
 			var controller = pageData.controller || this.page.index.controller;
-
-			return controller 
-				? this.$formatPath(this.page.location.controller, controller)
-				: null
+			if (controller == null) 
+				return null;
+			
+			var location = this.page.location.controller,
+				path = this.$formatPath(location, controller)
 				;
+			return net.Uri.combine(this.base, path);
 		},
-
 		$getCompo: function(pageData) {
-			var compo = pageData.compo,
-				location = this.page.location.compo || this.page.location.controller;
-
-			return compo
-				? this.$formatPath(location, compo)
-				: null
+			var compo = pageData.compo;
+			if (compo == null) 
+				return null;
+			
+			var location = this.page.location.compo || this.page.location.controller,
+				path = this.$formatPath(location, compo)
 				;
+			return net.Uri.combine(this.base, path);
 		}
-
-
 	};
 
 
