@@ -44,9 +44,10 @@ var Prod_Sctipts;
 			
 			Compo.pause(this, ctx);
 			
-			var load = [net.Uri.combine(build_DIR, 'load.html::app')];
+			var base = ctx.config.base,
+				load = [net.Uri.combine(base, build_DIR, 'load.html::app')];
 			if (id && data.load)
-				load.push(net.Uri.combine(build_DIR, id, 'load.html::page'))
+				load.push(net.Uri.combine(base, build_DIR, id, 'load.html::page'));
 			
 			
 			include
