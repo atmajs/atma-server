@@ -32,7 +32,8 @@ var HandlerFactory = (function(){
 				}
 				
 				else if (is_String(page.controller)) {
-					page.controller = __app
+					page.controller = this
+						.app
 						.config
 						.$getController(page)
 						;
@@ -220,7 +221,10 @@ var HandlerFactory = (function(){
 		}
 		
 		if (is_String(controller)) {
-			var path = net.Uri.combine(base, controller);
+			var path = path_isAbsolute(controller)
+				? controller
+				: net.Uri.combine(base, controller)
+				;
 			
 			processor_loadAndInit(factory, path, route, callback);
 			return true;

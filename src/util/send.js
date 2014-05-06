@@ -22,14 +22,32 @@ var send_JSON,
 	
 	send_Error = function(res, error, headers){
 		
-		var text = JSON.stringify({
-			error: error.toString !== obj_toString
-				? error.toString()
-				: error,
-			stack: error.stack
-		});
+		var body;
+		if (typeof error === 'string') {
+			body = {
+				error: error,
+				code: 500
+			};
+		}
 		
-		send_Content(res, text, error.statusCode || 500, mime_JSON, headers);
+		else if (error.toString === obj_toString) {
+			body = error;
+		}
+		
+		else {
+			body = {
+				error: error.toString(),
+				code: error.statusCode || 500
+			};
+		}
+		
+		send_Content(
+			res
+			, JSON.stringify(body)
+			, error.statusCode || 500
+			, mime_JSON
+			, headers
+		);
 	};
 	
 	
