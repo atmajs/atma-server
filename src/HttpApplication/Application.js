@@ -220,6 +220,8 @@
 			}
 			
 			if (app.resources != null) {
+				// deprecated
+				logger.error('<unreachable mark>');
 				app.resolve(app);
 				return;
 			}
@@ -231,19 +233,30 @@
 	}
 	
 	function resources_load(app, callback) {
+		if (is_Debug() && app.resources != null) {
+			callback();
+			return;
+		}
+		var config = app.config,
+			base = config.base,
+			env = config.env
+			;
+		
 		app.resources = include
-			.instance(app.config.base)
-			.js(app.config.env.server.scripts)
-			.js(app.config.env.both.scripts)
+			.instance(base)
+			.setBase(base)
+			
+			.js(env.server.scripts)
+			.js(env.both.scripts)
 			;
 		app
 			.resources
 			.done(function(resp){
 				
-				if (app.config.projects) {
-					app
-						.config
-						.projects.forEach(function(name){
+				if (config.projects) {
+					config
+						.projects
+						.forEach(function(name){
 							var res = resp[name];
 							if (res != null && typeof res.attach === 'function')
 								res.attach(app);
