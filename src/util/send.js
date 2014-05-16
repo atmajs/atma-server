@@ -7,7 +7,7 @@ var send_JSON,
 	
 	var obj_toString = Object.prototype.toString;
 	
-	send_JSON = function(res, json, headers){
+	send_JSON = function(res, json, statusCode, headers){
 		
 		try {
 			
@@ -17,7 +17,7 @@ var send_JSON,
 			return send_Error(res, RuntimeError('Json Serialization'));
 		}
 		
-		send_Content(res, text, 200, mime_JSON, headers);
+		send_Content(res, text, statusCode || 200, mime_JSON, headers);
 	};
 	
 	send_Error = function(res, error, headers){
@@ -57,7 +57,7 @@ var send_JSON,
 		if (typeof content !== 'string' && content instanceof Buffer === false) {
 			
 			if (is_Object(content)) {
-				send_JSON(res, content, headers);
+				send_JSON(res, content, statusCode, headers);
 				return;
 			}
 			

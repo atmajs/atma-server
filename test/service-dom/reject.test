@@ -14,7 +14,7 @@ UTest({
 
 
 				eq_(error.error, 'String reject');
-				eq_(Object.keys(error).length, 1);
+				deepEq_(Object.keys(error), ['error', 'code']);
 				done();
 			}))
 	},

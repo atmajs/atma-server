@@ -44,6 +44,13 @@ var WebSocket = (function(){
 				.of(namespace)
 				.on('connection', createHandler(namespace, Handler))
 				;
+		},
+		
+		of: function(namespace){
+			if (io == null) 
+				return null;
+			
+			return io.of(namespace);
 		}
 	};
 	

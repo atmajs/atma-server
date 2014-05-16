@@ -13,6 +13,7 @@
 		
 		middleware: null,
 		resources: null,
+		lib: null,
 		
 		Construct: function(proto){
 			if (proto == null) 
@@ -213,18 +214,12 @@
 				.registerPages(cfg.pages)
 				;
 			
-			
-			if (is_Debug()) {
-				app.resolve(app);
-				return;
-			}
-			
-			if (app.resources != null) {
-				// deprecated
-				logger.error('<unreachable mark>');
-				app.resolve(app);
-				return;
-			}
+			////if (app.resources != null) {
+			////	// deprecated
+			////	logger.error('<unreachable mark>');
+			////	app.resolve(app);
+			////	return;
+			////}
 			
 			resources_load(app, function(){
 				app.resolve(app);
@@ -232,11 +227,13 @@
 		}
 	}
 	
+	function resources_load_Stub(app, callback){
+		callback();
+	}
 	function resources_load(app, callback) {
-		if (is_Debug() && app.resources != null) {
-			callback();
-			return;
-		}
+		if (is_Debug() !== true) 
+			resources_load = resources_load_Stub;
+		
 		var config = app.config,
 			base = config.base,
 			env = config.env
@@ -252,6 +249,7 @@
 		app
 			.resources
 			.done(function(resp){
+				app.lib = resp;
 				
 				if (config.projects) {
 					config
