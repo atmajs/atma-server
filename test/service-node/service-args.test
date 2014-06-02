@@ -34,21 +34,32 @@ include
 				error = checkObject({
 					username: 'foo'
 				}, expect);
-				has_(error, 'password');
+				has_(error, {
+					property: 'password',
+					type: 'expect'
+				});
 				
 				'> type missmatch'
 				error = checkObject({
 					username: 20,
 					password: 'baz'
 				}, expect);
-				has_(error, 'username');
+				has_(error, {
+					property: 'username',
+					type: 'type',
+					expect: 'string'
+				});
 				
 				error = checkObject({
 					username: 'foo',
 					password: 'baz',
 					age: 'qux'
 				}, expect);
-				has_(error, 'age');
+				has_(error, {
+					property: 'age',
+					type: 'type',
+					expect: 'number'
+				});
 				
 				
 				'> miss subproperty'
@@ -57,7 +68,10 @@ include
 					password: 'baz',
 					joker: {} 
 				}, expect);
-				has_(error, 'x_joker');
+				has_(error, {
+					property: 'joker.x_joker',
+					type: 'expect'
+				});
 				
 				error = checkObject({
 					username: 'foo',
@@ -66,7 +80,11 @@ include
 						x_joker: 'hello'
 					} 
 				}, expect);
-				has_(error, 'x_joker');
+				has_(error, {
+					property: 'joker.x_joker',
+					expect: 'number',
+					type: 'type'
+				});
 				
 				'> invalid optional subproperty type'
 				error = checkObject({
@@ -77,7 +95,11 @@ include
 						y_joker: 'baz'
 					} 
 				}, expect);
-				has_(error, 'y_joker');
+				has_(error, {
+					property: 'joker.y_joker',
+					type: 'type',
+					expect: 'number'
+				});
 				
 				'> valid'
 				error = checkObject({
@@ -111,7 +133,11 @@ include
 						{ _id: 4343 },
 					]
 				}, expect);
-				has_(error, '_id');
+				has_(error, {
+					property: 'collection.2._id',
+					type: 'type',
+					expect: 'string'
+				});
 				
 				'> array'
 				expect = [ {_id: 'string' }]
@@ -134,7 +160,10 @@ include
 				error = checkObject({
 					rgx: 'as-d92'
 				}, expect);
-				has_(error, 'rgx');
+				has_(error, {
+					property: 'rgx',
+					type: 'invalid'
+				});
 			}
 			
 		})

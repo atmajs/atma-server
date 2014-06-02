@@ -71,7 +71,8 @@ UTest({
 			})
 			.done(assert.avoid(done))
 			.fail(function(xhr){
-				has_(xhr.responseText, 'String expected: username');
+				has_(xhr.responseText, 'Property: username');
+				has_(xhr.responseText, '"code":400');
 				done();
 			});
 			

@@ -21,6 +21,16 @@
 	
 	
 	function getStyles(app, ctx) {
+		if (ctx.config.build == null) {
+			logger
+				.error('<Application is not built>')
+				.warn('To execute the DEV version use `--debug` flag: `node index --debug`'.bold)
+				.warn('To build the application run `atma custom node_modules/atma-server/tools/build`')
+				;
+				
+			return;
+		}
+		
 		var array = ['/public/build/styles.css'];
 		
 		var pageData = ctx.page.data,

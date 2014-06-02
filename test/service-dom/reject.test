@@ -26,12 +26,11 @@ UTest({
 			.fail(toJSOND(function(error){
 
 
-				is_(error.stack, 'String');
-				has_(error.stack, 'service-reject.js')
-				has_(error.error, 'Native reject');
+				eq_(error.code, 500);
+				eq_(error.error, 'TypeError: Native reject');
 				
 
-				deepEq_(Object.keys(error), ['error', 'stack']);
+				deepEq_(Object.keys(error), ['error', 'code']);
 				done();
 			}))
 	},
@@ -42,11 +41,23 @@ UTest({
 			.done(assert.avoid())
 			.fail(toJSOND(function(error, code){
 
-				//eq_(code, 500);	
-				is_(error.stack, 'String');
-				has_(error.stack, 'service-reject.js')
-				has_(error.error, 'Http reject');
-				deepEq_(Object.keys(error), ['error', 'stack']);
+				eq_(error.code, 500);	
+				eq_(error.error, 'HttpError: Http reject');
+				deepEq_(Object.keys(error), ['error', 'code']);
+				done();
+			}))
+	},
+	'object error': function(done){
+		UTest
+			.server
+			.request('/reject/object')
+			.done(assert.avoid())
+			.fail(toJSOND(function(error, code){
+				
+				deepEq_(error, {
+					error: 'FooError',
+					baz: 'Lorem'
+				});	
 				done();
 			}))
 	}

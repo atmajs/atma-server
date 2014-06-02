@@ -31,10 +31,9 @@
     },
     "atma": {
         "settings": {
-            "traceur-extension": [
-                "es6",
-                "test"
-            ]
+            "atma-loader-traceur": {
+                "extensions": [ "es6", "test" ]
+            }
         },
         "plugins": [
             "atma-loader-traceur"

@@ -16,6 +16,9 @@ include
 				},
 				'/http': function(){
 					this.reject(atma.server.HttpError('Http reject'));
+				},
+				'/object': function(){
+					this.reject({ error: 'FooError', baz: 'Lorem' });
 				}
 
 			}));
