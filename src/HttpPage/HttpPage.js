@@ -26,28 +26,20 @@ server.HttpPage = (function(){
 		model: null,
 		
 		send: null,
-		
-		/**
-		 *	- data (Object)
-		 *		- template: ? page name
-		 *
-		 *	@TODO pass current route params
-		 */
-		Construct: function(mix, app){
+	
+		Construct: function(route, app){
 			
 			if (this instanceof Page === false) {
-				return page_Create(mix);
+				return page_Create(route, app);
 			}
 			
-			var cfg = __app.config;
+			var cfg = app.config;
 			
 			/**
 			 * Page can also have path url definition like '/?:pageName/?:section/?:anchor'
 			 * and then get it like ctx.page.query.pageName;
 			 */
 			this.route = cfg.page.route;
-			
-			var route = mix;
 			if (!(route && route.value)) {
 				logger
 					.error('<httppage> current route value is unedefined');

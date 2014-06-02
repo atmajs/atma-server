@@ -214,25 +214,17 @@
 				.registerPages(cfg.pages)
 				;
 			
-			////if (app.resources != null) {
-			////	// deprecated
-			////	logger.error('<unreachable mark>');
-			////	app.resolve(app);
-			////	return;
-			////}
-			
 			resources_load(app, function(){
 				app.resolve(app);
 			});
 		}
 	}
 	
-	function resources_load_Stub(app, callback){
-		callback();
-	}
 	function resources_load(app, callback) {
-		if (is_Debug() !== true) 
-			resources_load = resources_load_Stub;
+		if (is_Debug() !== true && app.resources != null) {
+			callback();
+			return;
+		}
 		
 		var config = app.config,
 			base = config.base,
@@ -242,7 +234,6 @@
 		app.resources = include
 			.instance(base)
 			.setBase(base)
-			
 			.js(env.server.scripts)
 			.js(env.both.scripts)
 			;
@@ -265,6 +256,7 @@
 			});
 	}
 	
+	//@deprecate
 	function resource_loadEmpty(app, callback){
 		callback();
 	}

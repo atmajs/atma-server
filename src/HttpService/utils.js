@@ -17,12 +17,12 @@ var secure_canAccess,
 		return user != null && (role == null || user.isInRole(role));
 	};
 	
-	service_validateArgs = function(req, args) {
+	service_validateArgs = function(req, args, isStrict) {
 		var body = req.body;
 		if (body == null) 
 			return 'Message Body is not defined';
 		
-		return Class.validate(body, args);
+		return Class.validate(body, args, isStrict);
 	};
 	
 }())

@@ -104,7 +104,7 @@ server.HttpService = (function(){
 			}
 			
 			if (args != null) {
-				var error = service_validateArgs(req, args);
+				var error = service_validateArgs(req, args, meta.strict);
 				if (error) 
 					return this.reject(RequestError(error));
 				

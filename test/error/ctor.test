@@ -1,0 +1,21 @@
+include
+	.inject('/lib/server.js')
+	.done(function(resp){
+		
+		var server = resp.server;
+		
+		UTest({
+			
+			'security ctor': function(){
+				function check(error){
+					eq_(error.toString(), 'Forbidden: Baz');
+				}
+				
+				var Ctor = server.SecurityError;
+				check(Ctor('Baz'));
+				check(new Ctor('Baz'));
+			}
+			
+		})
+		
+	})

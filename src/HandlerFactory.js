@@ -216,7 +216,7 @@ var HandlerFactory = (function(){
 		}
 		
 		if (is_Function(controller)) {
-			callback(new controller(route));
+			callback(new controller(route, factory.app));
 			return true;
 		}
 		
@@ -248,30 +248,25 @@ var HandlerFactory = (function(){
 			.js(url + '::Handler')
 			.done(function(resp){
 				
-				if (resp.Handler == null) {
+				var Handler = resp.Handler;
+				if (Handler == null) {
 					logger.error('<handler> invalid route', url);
-					
-					callback(new ErrorHandler());
+					callback(new ErrorHandler('Invalid route: ' + url));
 					return;
 				}
-				
-				if (!is_Function(resp.Handler.prototype.process)) {
+				if (!is_Function(Handler.prototype.process)) {
 					logger.error('<handler> invalid interface - process function not implemented');
-					
-					callback(new ErrorHandler());
+					callback(new ErrorHandler('Invalid interface'));
 					return;
 				}
-				
 				if (is_Debug() === false) 
-					route.value.controller = resp.Handler;
+					route.value.controller = Handler;
 				
-				
-				if (is_Object(resp.Handler) && is_Function(resp.Handler.process)) {
-					callback(resp.Handler);
+				if (is_Object(Handler) && is_Function(Handler.process)) {
+					callback(Handler);
 					return;
 				}
-				
-				callback(new resp.Handler(route));
+				callback(new Handler(route, factory.app));
 			});
 	}
 	
