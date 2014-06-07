@@ -35,7 +35,7 @@
 			this._loadConfig();
 			
 		
-			if (this.isRoot && is_Debug() !== true) 
+			if (this.isRoot && app_isDebug() !== true) 
 				logger.cfg('color', 'none');
 				
 			return this;
@@ -80,9 +80,8 @@
 			
 			WebSocket.listen(httpServer);
 			
-			return Autoreload.enableForApp(this);
+			return Autoreload.enable(this);
 		},
-		autoreloadEnabled: false,
 		
 		getSubApp: function(path){
 			var route = this.handlers.subapps.get(path);
@@ -115,10 +114,10 @@
 	function responder(app) {
 		return function (req, res, next){
 			
-			if (app.autoreloadEnabled) 
+			if (Autoreload.enabled) 
 				Autoreload.watch(req.url);
 			
-			var callback = app.middleware
+			var callback = app.middleware != null
 				? middleware_processDelegate(app.middleware)
 				: handler_process
 				;
@@ -221,7 +220,7 @@
 	}
 	
 	function resources_load(app, callback) {
-		if (is_Debug() !== true && app.resources != null) {
+		if (app_isDebug() !== true && app.resources != null) {
 			callback();
 			return;
 		}
@@ -262,15 +261,10 @@
 	}
 	
 	function response_notProcessed(error, req, res){
-		if (error) {
-			send_Error(res, error);
-			return;
-		}
-	
-		send_Content(
-			res,
-			HttpError('Request not processed ' + req.url, 422)
-		);
+		if (error == null)
+			error = HttpError('Request not handled: ' + req.url, 404);
+		
+		send_Error(res, error);
 	}
 	
 }());

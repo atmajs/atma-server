@@ -85,11 +85,10 @@ var WatcherHandler = (function(){
             fileChanged: function(path, sender){
                 
                 if (sender === 'filewatcher') {
-                    // @TODO
-                    path = '/' + path.replace(rootFolder, '');
+                    var rel = '/' + path.replace(rootFolder, '');
                     
-                    if (include.getResource(path) == null) {
-                        this.trigger('fileChange', path);
+                    if (include.getResource(rel) == null) {
+                        this.trigger('fileChange', rel, path);
                     }
                     
                     return;

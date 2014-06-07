@@ -8,7 +8,7 @@ var ConnectionSocket = Class({
 
         socket.on('disconnect', this.disconnected);
 
-        WatcherHandler.bind(this.fileChanged);
+        WatcherHandler.on('fileChange', this.fileChanged);
     },
     Self: {
         fileChanged: function(path) {
@@ -17,7 +17,7 @@ var ConnectionSocket = Class({
             this.socket.emit('filechange', path);    
         },
         disconnected: function() {
-            WatcherHandler.unbind(this.fileChanged);
+            WatcherHandler.off('fileChange', this.fileChanged);
         }
     }
 });

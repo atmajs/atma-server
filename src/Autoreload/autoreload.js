@@ -1,15 +1,20 @@
-var Autoreload = (function(){
-    
-    // import WatcherHandler.js
-    // import Connection.js
-    
-    
-    
-    var rootUri = new net.Uri(process.cwd() + '/'),
-        Autoreload
-        ;
-    
-    return Autoreload = {
+var Autoreload;
+(function(){
+    Autoreload = {
+		enabled: false,
+		enable: function(app){
+            this.enabled = true;
+            WebSocket.registerHandler('/browser', ConnectionSocket);
+            
+            var configs = new io.Directory('server/config/');
+            if (configs.exists()) 
+                configs.watch(reloadConfigDelegate(app));
+            
+			include.cfg('autoreload', this);
+            
+            return this;
+        },
+        
         watch: function(requestedUrl){
             var start = requestedUrl[0] === '/'
                     ? 1
@@ -22,11 +27,16 @@ var Autoreload = (function(){
             
             requestedUrl = requestedUrl.substring(start, end);
             
+			if (/\.[\w]+$/.test(requestedUrl) === false) {
+				// no extension
+				return;
+			}
             
             var uri = rootUri.combine(requestedUrl),
                 file = new io.File(uri);
             
-            if (!(file.uri && file.uri.file)) 
+            if (!(file.uri && file.uri.file))
+				// virtual file?
                 return;
             
             if (WatcherHandler.isWatching(file)) 
@@ -34,7 +44,6 @@ var Autoreload = (function(){
             
             if (file.exists() === false)
                 return;
-            
             
             WatcherHandler.watch(file);
         },
@@ -62,28 +71,16 @@ var Autoreload = (function(){
                 ;
         },
         
-        enableForApp: function(app){
-            
-            WebSocket.registerHandler('/browser', ConnectionSocket);
-            
-            app.autoreloadEnabled = true;
-            
-            var configs = new io.Directory('server/config/');
-            if (configs.exists()) 
-                configs.watch(reloadConfigDelegate(app));
-            
-			include.cfg('autoreload', this);
-            
-            return this;
-        },
-        
         getWatcher: function(){
             return WatcherHandler;
         }
     };
+
+    // import WatcherHandler.js
+    // import Connection.js
     
-    //= functional
-    
+    var rootUri = new net.Uri(process.cwd() + '/');
+        
     function reloadConfigDelegate(app){
         
         return function(path){
