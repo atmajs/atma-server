@@ -12,21 +12,19 @@ var configurate_Include,
 (function(){
 	
 	configurate_Include = function(cfg){
-		if (cfg.env.both.routes)
-			include
-				.routes(cfg.env.both.routes);
+		var resource = include.instance(cfg.base);
+		
+		cfg.env.both.routes
+			&& resource.routes(cfg.env.both.routes);
 
-		if (cfg.env.both.include)
-			include
-				.cfg(cfg.env.both.include.cfg);
+		cfg.env.both.include
+			&& resource.cfg(cfg.env.both.include.cfg);
 
-		if (cfg.env.server.include)
-			include
-				.cfg(cfg.env.server.include.cfg);
+		cfg.env.server.include
+			&& resource.cfg(cfg.env.server.include.cfg);
 
-		if (cfg.env.server.routes)
-			include
-				.routes(cfg.env.server.routes);
+		cfg.env.server.routes
+			&& resource.routes(cfg.env.server.routes);
 
 
 		IncludeUtils.prepair(cfg.env.server.scripts);

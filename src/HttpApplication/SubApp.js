@@ -9,7 +9,7 @@ server.HttpSubApplication = (function(){
     return Class({
         status: status_initial,
         app_: null,
-        Construct: function(path, data){
+        Construct: function(path, data, parentApp){
             
             if (path[0] !== '/') 
                 path = '/' + path;
@@ -31,8 +31,11 @@ server.HttpSubApplication = (function(){
                 
             if (is_String(controller)) {
                 this.status = status_loading;
+                
+                var base = parentApp.config.base || parentApp.base || '/';
                 include
-                    .instance()
+                    .instance(base)
+                    .setBase(base)
                     .js(controller + '::App')
                     .done(function(resp){
                         

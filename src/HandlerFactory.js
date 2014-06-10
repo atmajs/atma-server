@@ -84,7 +84,7 @@ var HandlerFactory = (function(){
 			
 			this
 				.subapps
-				.add(route, new server.HttpSubApplication(name, data))
+				.add(route, new server.HttpSubApplication(name, data, this.app))
 				;
 		},
 		
