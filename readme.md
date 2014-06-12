@@ -1,12 +1,14 @@
 Atma Node.js Server Module
 ----
 [![Build Status](https://travis-ci.org/atmajs/atma-server.svg?branch=master)](https://travis-ci.org/atmajs/atma-server)
+[![NPM version](https://badge.fury.io/js/atma-server.svg)](http://badge.fury.io/js/atma-server)
 
 - [Overview](#overview)
 - [Configuration](#configuration)
 	- [Resources](#resources)
 	- [Routing](#routing)
 - [Endpoints](#endpoints)
+	- [Sub-Application](#subapplication)
 	- [Handler](#handler)
 	- [Service](#httpservice)
 		- [Routes](#service-routes)
@@ -24,8 +26,8 @@ _Can be used as a [Connect](http://www.senchalabs.org/connect/) Middleware_
 This module uses:
 
 - [Atma.js libs](https://github.com/atmajs/atma.libs)
-- [atma.logger](https://github.com/atmajs/atma-logger)
-- [atma.io](https://github.com/atmajs/atma-io)
+- [atma-logger](https://github.com/atmajs/atma-logger)
+- [atma-io](https://github.com/atmajs/atma-io)
 - [appcfg](https://github.com/atmajs/appcfg)
 
 To setup a bootstrap project use Atma.Toolkit - ``` $ atma gen server ```
@@ -109,11 +111,16 @@ _scripts / styles_ for the NodeJS application itself and for pages. They are def
 	
 ## Endpoints
 
-There are 3 types of endpoints:
-
+There are 4 types of endpoints _in route lookup order_
+- [Sub Application](#sub-application)
 - [Handler (generic handler)](#handler)
 - [HttpService (RESTful service)](#httpservice)
 - [HttpPage](#httppage)
+
+### Sub Application
+We support application nesting, that means you can bind another server application instance for the route e.g. `/api/` and all `/api/**` requests are piped to the app.
+Each application instance has its own settings and configurations. This allows to create highly modular and composit web-applications.
+
 
 ### Handler
 
@@ -146,7 +153,6 @@ handlers:
 	'(\.es6(\.map)?$)': TraceurHandler
 ```
 
-Handler is the first endpoint that will be looked for by the responder.
 Usually, this are the low level handlers, like 'less' preprocessor. 
 But the interface ``` (Deferred + process(req, res)) ``` is same also for HttpService and HttpPage
 
@@ -154,7 +160,7 @@ But the interface ``` (Deferred + process(req, res)) ``` is same also for HttpSe
 ### HttpService
 
 ##### Service routes
-For route docs refer to [RutaJS](http://github.com/atmajs/ruta)
+_For the route docs refer to [RutaJS](http://github.com/atmajs/ruta)_
 
 Sample:
 ```javascript
@@ -171,7 +177,7 @@ module.exports = atma.server.HttpService({
 
 ```javascript
 atma.server.HttpService(/* endpoints */ {
-	// route - handler
+	// route:handler
 	'route': function(req, res, params){
 		this.resolve(/* @see Handler */);
 		this.reject(...);
@@ -191,6 +197,8 @@ atma.server.HttpService(/* endpoints */ {
 		'/route': {
 			meta: {
 				description: 'Lorem...',
+				
+				/* For request validating and the documentation */
 				arguments: {
 					// required, not empty string
 					foo: 'string',
@@ -212,6 +220,10 @@ atma.server.HttpService(/* endpoints */ {
 					// validate arrays
 					collection: [ {_id: 'string', username: 'string'} ]
 				},
+				// allow only properties which are listed in `arguments` object
+				strict: false,
+				
+				/* Documentation purpose only*/
 				response: {
 					baz: 'string',
 					...
@@ -277,11 +289,13 @@ module.exports = atma.server.HttpService({
 				this.resolve('Pushed to console');
 				return;
 			case 'file':
-				var that = this;
-				fs.write('someFile.txt', time, function(error){
-					if (error) return that.reject(error);
-					that.resolve('Saved to file');
-				});
+				io
+					.File
+					.writeAsync('someFile.txt')
+					.pipe(this, 'fail')
+					.done(() => {
+						this.resolve('Saved to file');
+					});
 				return;
 			case 'client':
 				this.resolve(time);

@@ -4,6 +4,7 @@
 	// import ../Config/Config.js
 	// import ../connect/Middleware.js
     // import SubApp.js
+	// import Message.js
 
 	server.Application = Class({
 		Extends: Class.Deferred,
@@ -74,7 +75,23 @@
 				this.config
 			);
 		},
-		
+		execute: function(url, method, body, headers){
+			var req = new Message.Request(url, method, body, headers),
+				res = new Message.Response;
+			
+			// @TODO ? middleware pipeline in RAW requests
+			//this._responders.process(
+			//	req,
+			//	res,
+			//	respond,
+			//	this.config
+			//);
+			//function respond() {
+			//	responder_Raw(req, res);
+			//}
+			respond_Raw(this, req, res);
+			return res;
+		},
 		webSockets: WebSocket,
 		autoreload: function(httpServer){
 			
@@ -134,7 +151,11 @@
 			);
 		}
 	}
-	
+	function respond_Raw(app, req, res) {
+		handler_resolve(
+			app, req, res, null, handler_processRaw
+		);
+	}
 	function middleware_processDelegate(middlewareRunner){
 		
 		return function(app, handler, req, res){
@@ -161,13 +182,11 @@
 					if (handler == null) 
 						return next();
 					
+					
 					callback(app, handler, req, res);
 				});
 		});
 	}
-	
-	
-	
 	function handler_process(app, handler, req, res) {
 		logger(95)
 			.log('<request>', req.url);
@@ -192,6 +211,13 @@
 				
 				send(res, error, statusCode || 500);
 			});
+	}
+	function handler_processRaw(app, handler, m_req, m_res) {
+		handler
+			.process(m_req, m_res, app.config)
+		if (handler.done == null) 
+			return;
+		handler.pipe(m_res);
 	}
 	
 	
