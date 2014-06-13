@@ -56,6 +56,13 @@ var obj_extend,
 					value: val
 				})
                 return val;
+            },
+            set: function(val){
+                Object.defineProperty(obj, key, {
+					enumerable: true,
+					writable: true,
+					value: val
+				});
             }
         })
     };

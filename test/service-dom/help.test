@@ -1,40 +1,33 @@
 
 UTest({
 	$config: {
-		'http.eval': function(done){
+		'http.eval': function(){
 			
-			include
-				.inject('/lib/server.js')
-				.done(function(){
-					
-					var FooService = atma.server.HttpService({
-						'$get /': {
-							meta: {
-								description: 'FooService'
-							},
-							process: function(){}
-						},
-						'$post /': {
-							meta: {
-								arguments: {
-									'username': 'string',
-									'?password': /^\d+$/
-								}
-							},
-							process: function(){
-								this.resolve('success');
-							}
+			var FooService = atma.server.HttpService({
+				'$get /': {
+					meta: {
+						description: 'FooService'
+					},
+					process: function(){}
+				},
+				'$post /': {
+					meta: {
+						arguments: {
+							'username': 'string',
+							'?password': /^\d+$/
 						}
-					});
-					
-					atma
-						.server
-						.app
-						.handlers
-						.registerService('/help-foo', FooService);
-					
-					done();
-				})
+					},
+					process: function(){
+						this.resolve('success');
+					}
+				}
+			});
+			
+			atma
+				.server
+				.app
+				.handlers
+				.registerService('/help-foo', FooService);
 		}
 	},
 	
@@ -42,7 +35,6 @@ UTest({
 		UTest
 			.server
 			.request('/help-foo?help', function(error, array){
-				debugger
 				has_(array, [{
 					method: 'GET',
 					path: '/',
@@ -75,7 +67,5 @@ UTest({
 				has_(xhr.responseText, '"code":400');
 				done();
 			});
-			
-		
 	}
 })

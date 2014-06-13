@@ -3,6 +3,7 @@ module.exports = {
 	suites: {
 		'service-dom': {
 			exec: 'dom',
+			env: 'test/service-dom/before.js',
 			tests: 'test/service-dom/**.test'
 		},
 		'service-node': {

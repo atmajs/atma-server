@@ -1,8 +1,25 @@
 UTest({
 	$config: {
-		'http.include': [
-			'test/service-dom/service-reject.js'
-		]
+		'http.eval': function(){
+			atma
+				.server
+				.app
+				.handlers
+				.registerService('^/reject', atma.server.HttpService({
+					'/string': function(){
+						this.reject('String reject');
+					},
+					'/native': function(){
+						this.reject(new TypeError('Native reject'));
+					},
+					'/http': function(){
+						this.reject(atma.server.HttpError('Http reject'));
+					},
+					'/object': function(){
+						this.reject({ error: 'FooError', baz: 'Lorem' });
+					}
+				}));
+		}
 	},
 	
 	'string error': function(done){
@@ -11,8 +28,6 @@ UTest({
 			.request('/reject/string')
 			.done(assert.avoid())
 			.fail(toJSOND(function(error){
-
-
 				eq_(error.error, 'String reject');
 				deepEq_(Object.keys(error), ['error', 'code']);
 				done();
@@ -74,10 +89,7 @@ function toJSON(xhr){
 }
 
 function toJSOND(fn){
-	
 	return function(xhr){
-		debugger
-		console.log(xhr.status, xhr.statusCode.status);
 		return fn(toJSON(xhr), xhr.statusCode);
 	}
 }

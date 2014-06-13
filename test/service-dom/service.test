@@ -1,60 +1,53 @@
 UTest({
 	$config: {
-		'http.eval': function(done){
+		'http.eval': function(){
 			
-			include
-				.inject('/lib/server.js')
-				.done(function(){
-	
-				var FooService = atma
-					.server
-					.HttpService({
-						'$get /': function(res, req){
-							this.resolve({
-								name: 'foo'
-							});
-						},
-						
-						'$get /baz': function(res, req){
-							this.resolve({
-								name: 'baz'
-							})
-						},
-						
-						'$post /echo': function(req, res){
-							if (req.body.name == null) {
-								this.reject(atma.server.HttpError('`name` expected'));
-								return;
-							}
-							
-							this.resolve({
-								name: req.body.name
-							});
-						},
-						
-						'$get /many': [
-							function(req, res, params, next){
-								req.sum = 5;
-								next();
-							},
-							
-							function(req, res, params, next){
-								this.resolve({
-									sum: req.sum + 5
-								});
-							}
-						]
-					})
-					;
-				
-				atma
-					.server
-					.app
-					.handlers
-					.registerService('^/foo', FooService);
+			var FooService = atma
+				.server
+				.HttpService({
+					'$get /': function(res, req){
+						this.resolve({
+							name: 'foo'
+						});
+					},
 					
-				done();
-			});
+					'$get /baz': function(res, req){
+						this.resolve({
+							name: 'baz'
+						})
+					},
+					
+					'$post /echo': function(req, res){
+						if (req.body.name == null) {
+							this.reject(atma.server.HttpError('`name` expected'));
+							return;
+						}
+						
+						this.resolve({
+							name: req.body.name
+						});
+					},
+					
+					'$get /many': [
+						function(req, res, params, next){
+							req.sum = 5;
+							next();
+						},
+						
+						function(req, res, params, next){
+							this.resolve({
+								sum: req.sum + 5
+							});
+						}
+					]
+				})
+				;
+			
+			atma
+				.server
+				.app
+				.handlers
+				.registerService('^/foo', FooService);
 		}
 	},
 	
