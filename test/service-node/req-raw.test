@@ -61,7 +61,7 @@ include
 					})
 					.always(done);
 			},
-			'post - invalid': function(done){
+			'!post - invalid': function(done){
 				app
 					.execute('/foo/baz', 'post', { bazValue: 10 })
 					.done(assert.avoid())

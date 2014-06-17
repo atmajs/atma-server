@@ -104,7 +104,7 @@ server.HttpService = (function(){
 			}
 			
 			if (args != null) {
-				var isGet = req.method !== 'GET',
+				var isGet = req.method === 'GET',
 					isStrict = isGet === false && meta.strict,
 					body = isGet
 						? entry.current.params

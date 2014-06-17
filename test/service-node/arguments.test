@@ -4,9 +4,7 @@ include
 		
 		function checkObject(a, b) {
 			
-			return service_validateArgs({
-				body: a
-			}, b);
+			return service_validateArgs(a, b);
 		}
 		
 		UTest({
@@ -29,7 +27,6 @@ include
 					password: 'baz'
 				}, expect);
 				eq_(error, null);
-				
 				'> miss property'
 				error = checkObject({
 					username: 'foo'
