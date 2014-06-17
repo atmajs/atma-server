@@ -3,13 +3,33 @@ var ConfigUtils = {
 };
 
 // private
-var configurate_Include,
+var cfg_prepair,
+	configurate_Include,
 	configurate_Mask,
 	configurate_Pages,
 	configurate_Plugins
 	;
 
 (function(){
+	cfg_prepair = function(base, configs, defaults){
+		if (configs == null && configs !== void 0) 
+			return null;
+		if (configs === void 0) 
+			return [ base + defaults ];
+		
+		if (typeof configs === 'string') 
+			return [ prepair(configs) ];
+		
+		return configs.map(prepair);
+	
+		// private
+		function prepair(config){
+			return path_isAbsolute(config)
+				? config
+				: net.Uri.combine(base, config)
+				;
+		}
+	};
 	
 	configurate_Include = function(cfg){
 		var resource = include.instance(cfg.base);
