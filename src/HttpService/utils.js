@@ -17,8 +17,7 @@ var secure_canAccess,
 		return user != null && (role == null || user.isInRole(role));
 	};
 	
-	service_validateArgs = function(req, args, isStrict) {
-		var body = req.body;
+	service_validateArgs = function(body, args, isStrict) {
 		if (body == null) 
 			return 'Message Body is not defined';
 		

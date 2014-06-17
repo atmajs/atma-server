@@ -104,7 +104,14 @@ server.HttpService = (function(){
 			}
 			
 			if (args != null) {
-				var error = service_validateArgs(req, args, meta.strict);
+				var isGet = req.method !== 'GET',
+					isStrict = isGet === false && meta.strict,
+					body = isGet
+						? entry.current.params
+						: req.body
+						;
+				
+				var error = service_validateArgs(body, args, isStrict);
 				if (error) 
 					return this.reject(RequestError(error));
 				

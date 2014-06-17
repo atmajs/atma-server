@@ -22,8 +22,8 @@ var Message = {};
 	
 	Message.Response = Class({
 		Extends: [
-			Class.Deferred,
-			Class.EventEmitter
+			Class.EventEmitter,			
+			Class.Deferred
 		],
 		writable: true,
 		finished: false,
