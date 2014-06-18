@@ -15,7 +15,7 @@ var cfg_prepair,
 		if (configs == null && configs !== void 0) 
 			return null;
 		if (configs === void 0) 
-			return [ base + defaults ];
+			return [ prepair(defaults) ];
 		
 		if (typeof configs === 'string') 
 			return [ prepair(configs) ];
@@ -24,10 +24,16 @@ var cfg_prepair,
 	
 		// private
 		function prepair(config){
-			return path_isAbsolute(config)
+			if (typeof config !== 'string') {
+				return {
+					config: config
+				};
+			}
+			var path = path_hasProtocol(config)
 				? config
 				: net.Uri.combine(base, config)
 				;
+			return { path: path };
 		}
 	};
 	

@@ -13,7 +13,11 @@
 		_responders: null,
 		
 		middleware: null,
+		
+		// Loaded server scripts from `config.env.scripts` and `config.env.both`
 		resources: null,
+		
+		// Stores all exports from `resources`
 		lib: null,
 		
 		Construct: function(proto){

@@ -16,32 +16,15 @@ var Config = (function() {
 			path_Build,
 			appConfig;
 		
-		if (path_base != null){
-			if (path_base[0] === '/')
-				path_base = path_base.substring(1);
-				
-			var uri = new net.Uri(path_base);
-			path_base = uri.isRelative()
-				? io
-					.env
-					.currentDir
-					.combine(uri)
-					.toString()
-				: uri.toString()
-				;
-		}
-		if (path_base == null) 
-			path_base = io.env.currentDir.toString()
+		path_base = path_base == null
+			? 'file://' + path_normalize(process.cwd()) + '/'
+			: path_resolveSystemUrl(path_base + '/')
+			;
 		
 		configs = cfg_prepair(path_base, configs, PATH);
 		
-		if (configs === void 0) {
-			//! not a `null`-check, as `null` is also acceptable
-			configs = [ path_base + PATH ];
-		}
-		
 		if (configs)
-			// is `configs` null, do not load also build values
+			// if `configs` null, do not load also build values
 			path_Build = path_base + (params.buildDirectory || BUILD_PATH);
 		
 		if (params.config) 
@@ -84,17 +67,7 @@ var Config = (function() {
 		];
 		
 		if (configs) {
-			configs.forEach(function(config){
-				if (typeof config === 'string') {
-					$sources.push({
-						path: config
-					});
-					return;
-				}
-				$sources.push({
-					config: config
-				});
-			});
+			$sources = $sources.concat(configs);
 		}
 		
 		if (Array.isArray(params.sources)) 
