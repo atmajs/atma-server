@@ -35,11 +35,6 @@ var Config = (function() {
 			{
 				config: JSON.parse(__cfgDefaults)
 			},
-			{
-				config: {
-					base: path_base
-				}
-			},
 			////// - removed. Push configs array afterwards
 			//////path_Configs
 			//////	? {
@@ -72,6 +67,13 @@ var Config = (function() {
 		
 		if (Array.isArray(params.sources)) 
 			$source = $sources.concat(params.sources);
+		
+		// do not allow to override `base` option in configuration.
+		$sources.push({
+			config: {
+				base: path_base
+			}
+		});
 		
 		return require('appcfg')
 			.fetch($sources)
