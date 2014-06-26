@@ -2,16 +2,19 @@
 (function(){
 
 	// import ../Config/Config.js
-	// import ../connect/Middleware.js
+	// import ../Business/Middleware.js
     // import SubApp.js
 	// import Message.js
 
 	server.Application = Class({
 		Extends: Class.Deferred,
 		
+		_innerPipe: null,
+		_outerPipe: null,
+		
+		//@obsolete
 		_responder: null,
 		_responders: null,
-		
 		middleware: null,
 		
 		// Loaded server scripts from `config.env.scripts` and `config.env.both`
@@ -24,9 +27,9 @@
 			if (proto == null) 
 				proto = {};
 			
-			if (this instanceof server.Application === false) {
+			if (this instanceof server.Application === false) 
 				return new server.Application(proto);
-			}
+			
 			
 			// if a root application
 			if (__app == null) 
@@ -39,46 +42,75 @@
 			this._baseConfig = proto;
 			this._loadConfig();
 			
-		
 			if (this.isRoot && app_isDebug() !== true) 
 				logger.cfg('color', 'none');
-				
+			
+			this.process = this.process.bind(this);
 			return this;
 		},
 		
-		//> ConnectJS middleware scenario
+		//@obsolete
 		respond: function(req, res, next){
-			if (this._responder == null) 
-				this.responder();
-				
-			this._responder(req, res, next);
+			this.process(req, res, next);
 		},
+		//@obsolete
 		responder: function(data){
-			
-			this.middleware = new MiddlewareRunner(data && data.middleware);
-			return (this._responder = responder(this));
+			this._innerPipe = MiddlewareRunner.create(data && data.middleware);
+			return responder(this);
 		},
 		
 		//> Generic HttpServer scenario, responder should be also used in the middleware
+		//@obsolete
 		responders: function(array){
-			this._responders = new MiddlewareRunner(array);
+			this._outerPipe = new MiddlewareRunner(array);
 		},
 		
+		/**
+		 * :before - Array|Function - Middleware fns in OUTER pipe, before main responder
+		 * :middleware - Arrat|Function - Middleware fns in INNER pipe, before the Handler
+		 * :after - Array|Function - Middlewarefns in OUTER pipe, after the Handler
+		 */
+		processor: function(data){
+			data = data || {};
+			
+			var before = data.before,
+				after = data.after,
+				middleware = data.middleware;
+				
+			this._outerPipe = MiddlewareRunner.create(before || []);
+			this._innerPipe = MiddlewareRunner.create(middleware);
+			
+			this._outerPipe.add(responder(this));
+			this._outerPipe.add(after);
+			
+			return this.process;
+		},
 		process: function(req, res, next){
+			if (this._outerPipe == null) 
+				this.processor();
 			
-			if (this._responders == null) {
-				this.responders([
-					this.responder()
-				]);
-			}
-			
-			this._responders.process(
-				req,
-				res,
-				next || response_notProcessed,
-				this.config
+			this._outerPipe.process(
+				req
+				, res
+				, next || response_notProcessed
+				, this.config
 			);
 		},
+		//process: function(req, res, next){
+		//	
+		//	if (this._responders == null) {
+		//		this.responders([
+		//			this.responder()
+		//		]);
+		//	}
+		//	
+		//	this._responders.process(
+		//		req,
+		//		res,
+		//		next || response_notProcessed,
+		//		this.config
+		//	);
+		//},
 		execute: function(url, method, body, headers){
 			var req = new Message.Request(url, method, body, headers),
 				res = new Message.Response;
@@ -138,8 +170,8 @@
 			if (Autoreload.enabled) 
 				Autoreload.watch(req.url);
 			
-			var callback = app.middleware != null
-				? middleware_processDelegate(app.middleware)
+			var callback = app._innerPipe != null
+				? middleware_processDelegate(app._innerPipe)
 				: handler_process
 				;
 			
@@ -161,19 +193,16 @@
 		);
 	}
 	function middleware_processDelegate(middlewareRunner){
-		
 		return function(app, handler, req, res){
 			
-			middlewareRunner
-				.process(req, res, function(error){
-				
-					if (error) {
-						send_Error(res, error);
-						return;
-					}
-					
-					handler_process(app, handler, req, res);
-				});
+			middlewareRunner.process(req, res, done);
+			function done(error){
+				if (error) {
+					send_Error(res, error);
+					return;
+				}
+				handler_process(app, handler, req, res);
+			}
 		};
 	}
 	
