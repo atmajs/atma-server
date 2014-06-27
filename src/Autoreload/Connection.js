@@ -12,9 +12,11 @@ var ConnectionSocket = Class({
     },
     Self: {
         fileChanged: function(path) {
-            logger.log('<autoreload> path', path);
-            
-            this.socket.emit('filechange', path);    
+            var socket = this.socket;
+            setTimeout(function(){
+                logger.log('<autoreload sockets> path', path);
+                socket.emit('filechange', path);
+            }, 50);   
         },
         disconnected: function() {
             WatcherHandler.off('fileChange', this.fileChanged);

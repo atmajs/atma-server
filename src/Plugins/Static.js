@@ -7,14 +7,19 @@ var Static;
 
 	var _staticContent;
 	function initialize(){
-		return (_staticContent = require('static-content'));
+		_staticContent = require('static-content');
+		
+		if (is_Debug()) {
+			_staticContent.on('file', function(file){
+				Autoreload.watchFile(file)
+			});
+		}
+		return _staticContent;
 	}
-	
 	Autoreload.getWatcher().on('fileChange', function(path, f){
 		if (_staticContent == null) 
 			return;
 		
-		logger.log('fileChange', path, f);
 		_staticContent.Cache.remove(f);
 	})
 }());

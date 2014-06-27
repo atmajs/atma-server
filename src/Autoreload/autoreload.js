@@ -35,18 +35,21 @@ var Autoreload;
             var uri = rootUri.combine(requestedUrl),
                 file = new io.File(uri);
             
-            if (!(file.uri && file.uri.file))
+           this.watchFile(file);
+		},
+		watchFile: function(file){
+			if (!(file.uri && file.uri.file))
 				// virtual file?
-                return;
-            
-            if (WatcherHandler.isWatching(file)) 
-                return;
-            
-            if (file.exists() === false)
-                return;
-            
-            WatcherHandler.watch(file);
-        },
+				return;
+			
+			if (WatcherHandler.isWatching(file)) 
+				return;
+			
+			if (file.exists() === false)
+				return;
+			
+			WatcherHandler.watch(file);
+		},
         unwatch: function(path){
             
             WatcherHandler.unwatch(new io.File(path));

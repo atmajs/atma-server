@@ -35,12 +35,6 @@ var Config = (function() {
 			{
 				config: JSON.parse(__cfgDefaults)
 			},
-			////// - removed. Push configs array afterwards
-			//////path_Configs
-			//////	? {
-			//////		path: path_Configs
-			//////	}
-			//////	: null,
 			path_Build
 				? {
 					path: path_Build,
