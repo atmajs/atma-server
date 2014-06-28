@@ -224,8 +224,9 @@
 		logger(95)
 			.log('<request>', req.url);
 		
+		var config = app.config;
 		handler
-			.process(req, res, app.config);
+			.process(req, res, config);
 			
 		if (handler.done == null)
 			// Handler responds to the request itself
@@ -233,16 +234,12 @@
 		
 		handler
 			.done(function(content, statusCode, mimeType, headers){
-				
 				var send = handler.send || send_Content;
-				
 				send(res, content, statusCode, mimeType, headers);
 			})
 			.fail(function(error, statusCode){
-				
 				var send = handler.sendError || send_Error;
-				
-				send(res, error, statusCode || 500);
+				send(res, error, statusCode || 500, config);
 			});
 	}
 	function handler_processRaw(app, handler, m_req, m_res) {

@@ -89,8 +89,8 @@ server.HttpPage = (function(){
 			return this;
 		},
 		
-		sendError: function(res, mix, statusCode){
-			var pageCfg = __app.config.page,
+		sendError: function(res, mix, statusCode, config){
+			var pageCfg = config.page,
 				errorPages = pageCfg.errors,
 				genericPage = pageCfg.error
 				;
@@ -118,7 +118,7 @@ server.HttpPage = (function(){
 				return;
 			}
 			
-			this.masterPath = __app.config.$getMaster(pageData) + '::Master';
+			this.masterPath = config.$getMaster(pageData) + '::Master';
 			this.templatePath = pageData.template + '::Template';
 			this.compoPath = null;
 			this.model = error;

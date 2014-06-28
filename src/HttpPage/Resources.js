@@ -3,16 +3,12 @@ var Resources = (function(){
 	
 	
 	var Resources = {
-		getScripts: function(){
-			return __app
-				.config
-				.$getScripts(this.data.id);
+		getScripts: function(config){
+			return config.$getScripts(this.data.id);
 		},
 		
-		getStyles: function(){
-			return __app
-				.config
-				.$getStyles(this.data.id);
+		getStyles: function(config){
+			return config.$getStyles(this.data.id);
 		}
 	};
 	

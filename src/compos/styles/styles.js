@@ -13,7 +13,7 @@
 		renderStart: function(model, ctx){
 			
 			this.model = DEBUG
-				? ctx.page.getStyles()
+				? ctx.config.$getStyles(ctx.page.data.id)
 				: getStyles(app, ctx)
 				;
 		}
