@@ -115,13 +115,16 @@ var cfg_prepair,
 					x;
 				while (true) {
 					x = base.combine(path);
-					if (io.File.exists(x)) 
-						return x.toString();
+					if (io.File.exists(x)) {
+						path = x.toString();
+						break;
+					}
 					
 					base = base.combine('../');
 					if (base.path === '' || base.path === '/') 
-						return path;
+						break;
 				}
+				return path + '::' + name;
 			});
 		
 		include
