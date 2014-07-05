@@ -163,7 +163,7 @@
 					description: '<is not supported>'
 				},
 				process: function(){
-					this.reject(HttError('`PATCH` is not supported for collections'));
+					this.reject(HttpError('`PATCH` is not supported for collections'));
 				}
 			};
 			

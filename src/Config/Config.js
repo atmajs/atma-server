@@ -60,7 +60,7 @@ var Config = (function() {
 		}
 		
 		if (Array.isArray(params.sources)) 
-			$source = $sources.concat(params.sources);
+			$sources = $sources.concat(params.sources);
 		
 		// do not allow to override `base` option in configuration.
 		$sources.push({

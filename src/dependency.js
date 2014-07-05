@@ -5,6 +5,7 @@ var atma,
     ruta,
     mask,
     include,
+    includeLib,
     Routes,
     logger;
 
@@ -42,13 +43,14 @@ if (io == null) {
 
 
 
-net     = atma.net;
-Class   = atma.Class;
-ruta    = atma.ruta;
-mask    = atma.mask;
-include = atma.include;
-Routes  = ruta.Collection;
-logger  = global.logger;
+net         = atma.net;
+Class       = atma.Class;
+ruta        = atma.ruta;
+mask        = atma.mask;
+include     = atma.include;
+includeLib  = atma.includeLib;
+Routes      = ruta.Collection;
+logger      = global.logger;
     
     
     

@@ -1,53 +1,7 @@
-var WatcherHandler = (function(){
+var WatcherHandler;
+(function(){
     
-    var rootFolder = net
-        .Uri
-        .combine(process.cwd(), '/')
-        .replace(/\\/g, '/');
-    
-    var FileWatcher = Class({
-        Base: Class.EventEmitter,
-        Construct: function(path){
-            
-            this.active = false;
-            this.file = new io.File(path);
-        },
-        Self: {
-            fileChanged: function(path){
-                logger.log('<watcher:changed>', path);
-                
-                this.trigger('fileChange', path, 'filewatcher')
-            }
-        },
-        
-        bind: function(callback){
-            this.on('fileChange', callback);
-            
-            if (this.active) 
-                return;
-            
-            io
-                .watcher
-                .watch(this.file.uri.toLocalFile(), this.fileChanged);
-                
-            this.active = true;
-        },
-        unbind: function(callback) {
-            this.off('fileChange', callback);
-            
-            if (this._listeners.length === 0) {
-                io
-                    .watcher
-                    .unwatch(this.file.uri.toLocalFile());
-            }
-        }
-    });
-    
-   
-    
-    var _watchers = {};
-    
-    return new new Class({
+    WatcherHandler = new (Class({
         Base: Class.EventEmitter,
         
         watch: function(file){
@@ -61,9 +15,8 @@ var WatcherHandler = (function(){
             watcher.bind(this.fileChanged);
             
             _watchers[path] = watcher;
-                
         },
-        unwatch: function(file){
+        unwatch: function(file, callback){
             var path = file.uri.toString();
             
             if (_watchers[path] == null) {
@@ -137,6 +90,51 @@ var WatcherHandler = (function(){
             return this
                 .off('fileChange', callback);
         }
+    }));
+    
+    var rootFolder = path_normalize(process.cwd() + '/');
+    
+    var FileWatcher = Class({
+        Base: Class.EventEmitter,
+        Construct: function(path){
+            
+            this.active = false;
+            this.file = new io.File(path);
+        },
+        Self: {
+            fileChanged: function(path){
+                logger.log('<watcher:changed>', path);
+                
+                this.trigger('fileChange', path, 'filewatcher')
+            }
+        },
+        
+        bind: function(callback){
+            this.on('fileChange', callback);
+            
+            if (this.active) 
+                return;
+            
+            io
+                .watcher
+                .watch(this.file.uri.toLocalFile(), this.fileChanged);
+                
+            this.active = true;
+        },
+        unbind: function(callback) {
+            this.off('fileChange', callback);
+            
+            if (this._listeners.length === 0) {
+                io
+                    .watcher
+                    .unwatch(this.file.uri.toLocalFile());
+            }
+        }
     });
+    
+   
+    
+    var _watchers = {};
+   
     
 }());

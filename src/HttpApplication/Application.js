@@ -2,8 +2,7 @@
 (function(){
 
 	// import ../Config/Config.js
-	// import ../Business/Middleware.js
-    // import SubApp.js
+	// import SubApp.js
 	// import Message.js
 
 	server.Application = Class({

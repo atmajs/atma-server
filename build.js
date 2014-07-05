@@ -76,7 +76,7 @@ function JSHint() {
 			"maxstatements": false,
 			"maxcomplexity": false,
 			"maxlen": false,
-			"asi": false,
+			"asi": true,
 			"boss": true,
 			"debug": true,
 			"eqnull": true,

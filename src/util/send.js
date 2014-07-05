@@ -9,11 +9,10 @@ var send_JSON,
 	
 	send_JSON = function(res, json, statusCode, headers){
 		
+		var text;
 		try {
-			
-			var text = JSON.stringify(json);
+			text = JSON.stringify(json);
 		}catch(error){
-			
 			return send_Error(res, RuntimeError('Json Serialization'));
 		}
 		
