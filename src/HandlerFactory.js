@@ -259,7 +259,7 @@ var HandlerFactory = (function(){
 					callback(new ErrorHandler('Invalid interface'));
 					return;
 				}
-				if (is_Debug() === false) 
+				if (app_isDebug() === false) 
 					route.value.controller = Handler;
 				
 				if (is_Object(Handler) && is_Function(Handler.process)) {

@@ -27,7 +27,8 @@
         "atma": "latest",
         "atma-loader-traceur": "latest",
         "mongodb": "latest",
-        "connect": "latest"
+        "connect": "latest",
+        "body-parser": "latest"
     },
     "atma": {
         "settings": {

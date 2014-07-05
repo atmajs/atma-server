@@ -9,7 +9,7 @@ var Static;
 	function initialize(){
 		_staticContent = require('static-content');
 		
-		if (is_Debug()) {
+		if (app_isDebug()) {
 			_staticContent.on('file', function(file){
 				Autoreload.watchFile(file)
 			});

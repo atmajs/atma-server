@@ -31,15 +31,15 @@ global.app = atma
 	})
 	.done(function(app){
 		
-		var connect = require('connect'),
+		var bodyParser = require('body-parser'),
 			server = require('http')
 				.createServer(app.responder({
 					middleware: [
 						function (req, res, next) {
-							logger.log(req.url);
+							logger.log('Request:', req.url);
 							next()
 						},
-						connect.json()
+						bodyParser.json()
 					]
 				}));
 			

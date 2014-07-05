@@ -26,6 +26,7 @@ var is_String,
         
         var debug;
         return function(){
+            logger.warn('@obsolete: is_Debug for app_isDebug');
             if (debug == null) 
                 debug = Boolean(__app.args.debug || __app.config.debug);
             
