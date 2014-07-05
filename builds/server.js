@@ -44,6 +44,7 @@
 	
 	// import /src/Autoreload/autoreload.js
 	// import /src/Plugins/exports.js
+	// import /src/middleware/middleware.js
 	
 	
 	// import /src/compos/exports.js
