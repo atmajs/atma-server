@@ -194,7 +194,7 @@
 	function middleware_processDelegate(middlewareRunner){
 		return function(app, handler, req, res){
 			
-			middlewareRunner.process(req, res, done);
+			middlewareRunner.process(req, res, done, app.config);
 			function done(error){
 				if (error) {
 					send_Error(res, error);
