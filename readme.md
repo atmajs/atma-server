@@ -59,7 +59,8 @@ atma
 					function(req, res, next){ next() },
 					require('body-parser').json(),
 				],
-				// otherwise
+				// otherwise, if response was not completed by any middleware or any endpoint before
+				// continue with this middleware pipeline.
 				after: [
 					function(req, res, next){ next() },
 					atma.server.middleware.static
@@ -104,6 +105,7 @@ _scripts / styles_ for the NodeJS application itself and for the web pages. They
 #### Routing
 
 - **subapps** ` config/app.yml `
+
 	```yml
 	subapps:
 		// all `rest/*` requests are piped to the Api Application

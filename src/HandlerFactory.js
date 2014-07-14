@@ -126,7 +126,7 @@ var HandlerFactory = (function(){
 				var path = handler_path(handler, handlerCfg);
 				include
 					.instance()
-					.js(Handler + '::Handler')
+					.js(handler + '::Handler')
 					.done(function(resp){
 						
 						WebSocket.registerHandler(namespace, resp.Handler);

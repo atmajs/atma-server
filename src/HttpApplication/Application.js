@@ -173,6 +173,9 @@
 			if (WebSocket.hasHandlers()) 
 				WebSocket.listen(this._server);
 			
+			if (app_isDebug() && this.isRoot) 
+				this.autoreload();
+	
 			return this._server;
 		},
 		getSubApp: function(path){
