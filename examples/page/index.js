@@ -43,5 +43,7 @@ global.app = atma
 					]
 				}));
 			
-		server.listen(app.config.port || 5778);
+		var port = app.config.port || 5778;
+		server.listen(port);
+		console.log('Server on', port);
 	});

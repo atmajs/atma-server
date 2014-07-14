@@ -15,7 +15,7 @@
     "dependencies": {
         "atma-logger": ">0.0.81",
         "atma-io": ">0.1.75",
-        "atma-libs": ">=0.9.44",
+        "atma-libs": ">0.9.51",
         "appcfg": ">0.1.25",
         "static-content": "~1.0.9",
         "socket.io": ">1.0.0"
@@ -27,7 +27,6 @@
         "atma": "latest",
         "atma-loader-traceur": "latest",
         "mongodb": "latest",
-        "connect": "latest",
         "body-parser": "latest"
     },
     "atma": {
