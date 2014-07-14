@@ -8,7 +8,19 @@
 	server.Application = Class({
 		Extends: Class.Deferred,
 		
+		// <Boolean>, if instance is the root application, and not one of the subapps
+		isRoot: false,
+		
+		// <HandlerFactory>, stores all endpoints of this application
+		handlers: null,
+		
+		// <http.Server> , in case `listen` was called.
+		_server: null,
+		
+		// run this middlewares when the endpoint is found. (Runs before the endpoint handler)
 		_innerPipe: null,
+		
+		// run this middlewares by all requests. Conains also endpoint resolver
 		_outerPipe: null,
 		
 		//@obsolete
@@ -129,12 +141,40 @@
 		},
 		webSockets: WebSocket,
 		autoreload: function(httpServer){
-			
-			WebSocket.listen(httpServer);
-			
+			this._server = this._server || httpServer;
 			return Autoreload.enable(this);
 		},
-		
+		listen: function(){
+			var port, server;
+			var i = arguments.length,
+				mix;
+			while (--i > -1){
+				mix = arguments[i];
+				if (typeof mix === 'number') {
+					port = mix;
+					continue;
+				}
+				if (mix != null && mix.listen) {
+					server = mix;
+					continue;
+				}
+			}
+			if (port == null) 
+				port = this.config.$get('port');
+			
+			if (server == null)
+				server = require('http').createServer();
+			
+			this._server = server
+				.on('request', this.process)
+				.listen(port)
+				;
+			
+			if (WebSocket.hasHandlers()) 
+				WebSocket.listen(this._server);
+			
+			return this._server;
+		},
 		getSubApp: function(path){
 			var route = this.handlers.subapps.get(path);
 			
@@ -206,18 +246,19 @@
 	}
 	
 	function handler_resolve(app, req, res, next, callback){
-		resources_load(app, function(){
-			app
-				.handlers
-				.get(app, req, function(handler){
-					
-					if (handler == null) 
-						return next();
-					
-					
+		//++ moved resource loading into inner function
+		app
+			.handlers
+			.get(app, req, function(handler){
+				
+				if (handler == null) 
+					return next();
+				
+				resources_load(app, function(){
 					callback(app, handler, req, res);
 				});
-		});
+			});
+		
 	}
 	function handler_process(app, handler, req, res) {
 		logger(95)
@@ -262,11 +303,15 @@
 			
 			app
 				.handlers
+				.registerPages(cfg.pages, cfg.page)
 				.registerSubApps(cfg.subapps, cfg.subapp)
 				.registerHandlers(cfg.handlers, cfg.handler)
 				.registerServices(cfg.services, cfg.service)
-				.registerPages(cfg.pages)
+				.registerWebsockets(cfg.websockets, cfg.websocket)
 				;
+				
+			if (app_isDebug()) 
+				include.cfg('autoreload', true);
 			
 			resources_load(app, function(){
 				app.resolve(app);

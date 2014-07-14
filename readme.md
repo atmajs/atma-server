@@ -4,6 +4,7 @@ Atma Node.js Server Module
 [![NPM version](https://badge.fury.io/js/atma-server.svg)](http://badge.fury.io/js/atma-server)
 
 - [Overview](#overview)
+- [Application](#httpapplication)
 - [Configuration](#configuration)
 	- [Resources](#resources)
 	- [Routing](#routing)
@@ -19,6 +20,8 @@ Atma Node.js Server Module
 	- [Page](#httppage)
 		- [Master View](#master-view)
 		- [Page View](#page-view)
+		
+- [Proprocessors](#Preprocessors)
 
 ## Overview
 _Can be used as a [Connect](http://www.senchalabs.org/connect/) Middleware_
@@ -32,16 +35,66 @@ This module uses:
 
 To setup a bootstrap project use Atma.Toolkit - ``` $ atma gen server ```
 
+## HttpApplication
+```javascript
+var atma = require('atma-server');
+atma
+	.server
+	.Application({
+		base:__dirname,
+		configs: '/server/config/**.yml'
+	})
+	.done(function(app){
+		// configuration and resources are loaded
+		app
+			.processor({
+				// pipeline is executed on every request
+				before: [
+					function(req, res, next){ next() },
+				]
+				// this pipeline is executed only if the application finds any endpoint
+				// (server, handler, page, subapp)
+				moddleware: [
+					// refer to connectjs middleware documentation
+					function(req, res, next){ next() },
+					require('body-parser').json(),
+				],
+				// otherwise
+				after: [
+					function(req, res, next){ next() },
+					atma.server.middleware.static
+				]
+			})
+			
+			// start server, portnumber is taken from the configuration
+			.listen();
+		
+		// or start the server manually:
+		var server = require('http')
+			.createServer(app.process)
+			.listen(app.config.$get('port'));
+			
+		if (app.config.debug)
+			app.autoreload(server);
+	});
+```
+
 ## Configuration
-[appcfg](https://github.com/atmajs/appcfg) module is used to load the configurations and routings. The default path is the ``` /server/config/**.yml ```.
+[appcfg](https://github.com/atmajs/appcfg) module is used to load the configurations and the routings. Default path is the ``` /server/config/**.yml ```.
 
 The default configuration can be viewed here - [link](https://github.com/atmajs/atma-server/tree/master/src/ConfigDefaults)
 
 #### Resources
-_scripts / styles_ for the NodeJS application itself and for pages. They are defined in
-- `config/env/both.yml`   - shared resources
-- `config/env/server.yml` - resources for the nodejs application, e.g. server side components paths.
-- `config/env/client.yml` - resources, that should be loaded on the client.
+_scripts / styles_ for the NodeJS application itself and for the web pages. They are defined in:
+- `config.both.scripts<Object|Array>`
+	
+	`config/env/both.yml`   - shared resources
+- `config.both.scripts<Object|Array>`
+	
+	`config/env/server.yml` - resources for the nodejs application, e.g. server side components paths.
+- `config.both.scripts<Object|Array>`, `config.both.styles<Object|Array>`
+	
+	`config/env/client.yml` - resources, that should be loaded on the client.
 	
 	In the DEV Mode all client-side scripts/styles/components are served to browsers without concatenation.
 	For the production compile resources with `atma custom node_modules/atma-server/tools/compile`
@@ -50,6 +103,13 @@ _scripts / styles_ for the NodeJS application itself and for pages. They are def
 
 #### Routing
 
+- **subapps** ` config/app.yml `
+	```yml
+	subapps:
+		// all `rest/*` requests are piped to the Api Application
+		// `Api.js` should export the `atma.server.Application` instance
+		'rest': '/../Api.js'
+	```
 - **handlers** ` config/handlers.yml `
 	```yml
 	handler:
@@ -408,6 +468,16 @@ pages:
 		id: hello
 ```
 
+
+### Preprocessors
+
+To use for example `traceur-compiler` for the EcmaScript6, or `Less` files, please include this by installing plugins
+```bash
+# atma.toolkit, is only a helper util to intall plugins (more is not required)
+$ npm i atma -g
+$ atma plugin install atma-loader-traceur
+$ atma plugin install atma-loader-less
+```
 
 ----
 (c) 2014 MIT

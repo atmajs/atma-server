@@ -1,0 +1,5 @@
+websocket:
+	location: /server/http/websocket/{0}.js
+
+websockets:
+	

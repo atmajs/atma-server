@@ -30,7 +30,6 @@ var HandlerFactory = (function(){
 				if (page.controller == null) {
 					page.controller = server.HttpPage;
 				}
-				
 				else if (is_String(page.controller)) {
 					page.controller = this
 						.app
@@ -38,19 +37,15 @@ var HandlerFactory = (function(){
 						.$getController(page)
 						;
 				}
-				
 				this.pages.add(page.route, page);
 			}
-			
 			return this;
 		},
 		
 		registerHandlers: function(routes, handlerCfg){
-			
 			for (var key in routes) {
 				this.registerHandler(key, routes[key], handlerCfg);
 			}
-			
 			return this;
 		},
 		registerHandler: function(path, handler, handlerCfg) {
@@ -123,12 +118,12 @@ var HandlerFactory = (function(){
 			for(var namespace in routes){
 				this.registerWebsocket(namespace, routes[namespace]);
 			}
-			
 			return this;
 		},
-		registerWebsocket: function(namespace, Handler){
+		registerWebsocket: function(namespace, handler, handlerCfg){
 			
-			if (is_String(Handler)) {
+			if (is_String(handler)) {
+				var path = handler_path(handler, handlerCfg);
 				include
 					.instance()
 					.js(Handler + '::Handler')
@@ -138,7 +133,7 @@ var HandlerFactory = (function(){
 					});
 				return;
 			}
-			WebSocket.registerHandler(namespace, Handler);
+			WebSocket.registerHandler(namespace, handler);
 		},
 		
 		get: function(app, req, callback){
