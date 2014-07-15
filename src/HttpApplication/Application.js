@@ -34,6 +34,9 @@
 		// Stores all exports from `resources`
 		lib: null,
 		
+		// webSockets
+		webSockets: null,
+		
 		Construct: function(proto){
 			if (proto == null) 
 				proto = {};
@@ -48,8 +51,9 @@
 			
 			this.isRoot = this === __app;
 			this.handlers = new HandlerFactory(this);
-			this.args = obj_extend(proto.args, cli_arguments());
+			this.webSockets = WebSocket(this);
 			
+			this.args = obj_extend(proto.args, cli_arguments());
 			this._baseConfig = proto;
 			this._loadConfig();
 			
@@ -93,8 +97,7 @@
 			
 			this._outerPipe.add(responder(this));
 			this._outerPipe.add(after);
-			
-			return this.process;
+			return this;
 		},
 		process: function(req, res, next){
 			if (this._outerPipe == null) 
@@ -139,7 +142,6 @@
 			respond_Raw(this, req, res);
 			return res;
 		},
-		webSockets: WebSocket,
 		autoreload: function(httpServer){
 			this._server = this._server || httpServer;
 			return Autoreload.enable(this);
@@ -170,8 +172,8 @@
 				.listen(port)
 				;
 			
-			if (WebSocket.hasHandlers()) 
-				WebSocket.listen(this._server);
+			if (this.webSockets.hasHandlers()) 
+				this.webSockets.listen(this._server);
 			
 			if (app_isDebug() && this.isRoot) 
 				this.autoreload();

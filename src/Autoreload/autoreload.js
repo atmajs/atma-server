@@ -4,7 +4,10 @@ var Autoreload;
 		enabled: false,
 		enable: function(app){
             this.enabled = true;
-            WebSocket.registerHandler('/browser', ConnectionSocket);
+            app
+				.webSockets
+				.registerHandler('/browser', ConnectionSocket)
+				;
             
             var configs = new io.Directory('server/config/');
             if (configs.exists()) 

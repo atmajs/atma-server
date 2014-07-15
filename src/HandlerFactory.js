@@ -121,7 +121,7 @@ var HandlerFactory = (function(){
 			return this;
 		},
 		registerWebsocket: function(namespace, handler, handlerCfg){
-			
+			var socket = this.app.webSockets;
 			if (is_String(handler)) {
 				var path = handler_path(handler, handlerCfg);
 				include
@@ -129,11 +129,11 @@ var HandlerFactory = (function(){
 					.js(handler + '::Handler')
 					.done(function(resp){
 						
-						WebSocket.registerHandler(namespace, resp.Handler);
+						socket.registerHandler(namespace, resp.Handler);
 					});
 				return;
 			}
-			WebSocket.registerHandler(namespace, handler);
+			socket.registerHandler(namespace, handler);
 		},
 		
 		get: function(app, req, callback){
