@@ -144,7 +144,10 @@
 		},
 		autoreload: function(httpServer){
 			this._server = this._server || httpServer;
-			return Autoreload.enable(this);
+			if (this._server == null) 
+				return;
+			
+			Autoreload.enable(this);
 		},
 		listen: function(){
 			var port, server;
@@ -175,7 +178,7 @@
 			if (this.webSockets.hasHandlers()) 
 				this.webSockets.listen(this._server);
 			
-			if (app_isDebug() && this.isRoot) 
+			if (app_isDebug()) 
 				this.autoreload();
 	
 			return this._server;
