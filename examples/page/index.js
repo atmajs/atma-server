@@ -30,20 +30,19 @@ global.app = atma
 		}
 	})
 	.done(function(app){
+		app.processor({
+			before: [
+				function (req, res, next) {
+					logger.log('Request:', req.url);
+					next()
+				},
+				require('body-parser').json()
+			]
+		});
 		
-		var bodyParser = require('body-parser'),
-			server = require('http')
-				.createServer(app.responder({
-					middleware: [
-						function (req, res, next) {
-							logger.log('Request:', req.url);
-							next()
-						},
-						bodyParser.json()
-					]
-				}));
-			
-		var port = app.config.port || 5778;
-		server.listen(port);
-		console.log('Server on', port);
+		require('http')
+			.createServer(app.process)
+			.listen(app.config.port || 5778)
+			;
+		console.log('Server on', app.config.port || 5778);
 	});

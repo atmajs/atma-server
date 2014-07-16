@@ -11,7 +11,7 @@ var WatcherHandler;
                 return;
             
             var watcher
-            watcher = new FileWatcher(path);
+            watcher = new FileWatcher(file);
             watcher.bind(this.fileChanged);
             
             _watchers[path] = watcher;
@@ -35,10 +35,10 @@ var WatcherHandler;
             return _watchers[path] != null;
         },
         Self: {
-            fileChanged: function(path, sender){
+            fileChanged: function(path, sender, requestedUrl){
                 
                 if (sender === 'filewatcher') {
-                    var rel = '/' + path.replace(rootFolder, '');
+                    var rel = requestedUrl || ('/' + path.replace(rootFolder, ''));
                     
                     if (include.getResource(rel) == null) 
                         this.trigger('fileChange', rel, path);
@@ -96,16 +96,16 @@ var WatcherHandler;
     
     var FileWatcher = Class({
         Base: Class.EventEmitter,
-        Construct: function(path){
+        Construct: function(file){
             
             this.active = false;
-            this.file = new io.File(path);
+            this.file = file;//-new io.File(path);
         },
         Self: {
             fileChanged: function(path){
                 logger.log('<watcher:changed>', path);
                 
-                this.trigger('fileChange', path, 'filewatcher')
+                this.trigger('fileChange', path, 'filewatcher', this.file.requestedUrl)
             }
         },
         

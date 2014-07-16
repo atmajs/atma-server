@@ -82,10 +82,10 @@ var WebSocket;
 		io_listen = function(io, namespace, Handler){
 			io.of(namespace).on(
 				'connection'
-				, io_handlerDelegate(namespace, Handler)
+				, io_handlerDelegate(io, namespace, Handler)
 			);
 		};
-		io_handlerDelegate = function(namespace, Handler) {
+		io_handlerDelegate = function(io, namespace, Handler) {
 			return function(socket) {
 				new Handler(socket, io);
 			};

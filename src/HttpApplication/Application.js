@@ -215,7 +215,7 @@
 		return function (req, res, next){
 			
 			if (Autoreload.enabled) 
-				Autoreload.watch(req.url);
+				Autoreload.watch(req.url, app.config);
 			
 			var callback = app._innerPipe != null
 				? middleware_processDelegate(app._innerPipe)
