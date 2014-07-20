@@ -14,6 +14,12 @@ module.exports = {
 		'examples': {
 			exec: 'browser',
 			tests: 'test/examples/**.test'
+		},
+		
+		'page': {
+			exec: 'node',
+			env: '/lib/server.js',
+			tests: 'test/page/**.test'
 		}
 	}
 };

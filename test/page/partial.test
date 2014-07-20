@@ -1,0 +1,51 @@
+var PageController = atma.server.HttpPage({
+	master: 'layout:master #stab;',
+	template: `
+		:document {
+			body {
+				header > 'Header'
+				section > 'Section'
+			}
+		}
+	`
+});
+var app = atma.server.Application({
+	configs: null,
+	config: {
+		pages: {
+			'/page': {
+				controller: PageController
+			}
+		}
+	}
+});
+var srv = require('supertest')(
+	require('http').createServer(app.process)
+);
+
+UTest({
+	'render full': function(done){
+		srv
+			.get('/page')
+			.expect('Content-Type', 'text/html;charset=utf-8')
+			.expect(200)
+			.end(function(err, res){
+				eq_(err, null);
+				has_(res.text, '<header>Header</header>')
+				has_(res.text, '<section>Section</section>')
+				done();
+			});
+	},
+	'render partial': function(done){
+		srv
+			.get('/page?partial=section')
+			.expect('Content-Type', 'text/html;charset=utf-8')
+			.expect(200)
+			.end(function(err, res){
+				eq_(err, null);
+				hasNot_(res.text, '<header>Header</header>')
+				has_(res.text, '<section>Section</section>')
+				done();
+			});
+	}
+})
