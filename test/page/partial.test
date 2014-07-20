@@ -24,6 +24,9 @@ var srv = require('supertest')(
 );
 
 UTest({
+	$before: function(done){
+		app.done(done);
+	},
 	'render full': function(done){
 		srv
 			.get('/page')
