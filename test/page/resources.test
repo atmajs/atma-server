@@ -52,6 +52,7 @@ UTest({
 				eq_(err, null);
 				
 				has_(res.text, 'href="style-page.css"');
+				has_(res.text, 'src="include-stub"');
 				// scripts are loaded via includejs in debug
 				has_(res.text, "cfg()");
 				has_(res.text, "routes({})");

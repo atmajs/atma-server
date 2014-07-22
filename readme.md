@@ -21,7 +21,7 @@ Atma Node.js Server Module
 		- [Master View](#master-view)
 		- [Page View](#page-view)
 		
-- [Proprocessors](#Preprocessors)
+- [Preprocessors](#preprocessors)
 
 ## Overview
 _Can be used as a [Connect](http://www.senchalabs.org/connect/) Middleware_
@@ -473,9 +473,12 @@ pages:
 
 ### Preprocessors
 
-To use for example `traceur-compiler` for the EcmaScript6, or `Less` files, please include this by installing plugins
+E.g., to use `ES6` or `Less` files, please install server plugins
+- [TraceurCompiler](https://github.com/atmajs/atma-loader-traceur)
+- [Less](https://github.com/atmajs/atma-loader-less)
+
 ```bash
-# atma.toolkit, is only a helper util to intall plugins (more is not required)
+# atma.toolkit, is only a helper util to intall plugins (further on is not required)
 $ npm i atma -g
 $ atma plugin install atma-loader-traceur
 $ atma plugin install atma-loader-less

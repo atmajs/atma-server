@@ -111,7 +111,7 @@ var EnvUtils = (function() {
 
 			if (!include.src) {
 				console.error('[CLIENT CONFIGURATION ERROR]');
-				console.error('- Include PATH is not specified in `env.client.include.src`');
+				console.error('- Include PATH is not specified in `env:client:include:src`');
 			}
 
 			incl_extend(include, {
