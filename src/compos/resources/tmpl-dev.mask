@@ -1,12 +1,13 @@
 
-<script type='text/javascript' src='%INCLUDE%'></script>
-<script type='text/javascript'>
+script type='text/javascript' src='~[include.src]';
+
+script type='text/javascript' > :html > '''
 	window.DEBUG = true;
 	
 	include
-		.cfg(%CFG%)
-		.routes(%ROUTES%)
-		.js(%SCRIPTS%)
+		.cfg(~[include.cfg])
+		.routes(~[include.routes])
+		.js(~[scripts])
 		.done(function(){
 			
 			var start = new Date(),
@@ -14,13 +15,9 @@
 					compos: {}
 				});
 				
-				
 			window.app = new App;
-			
-			
 			mask.Compo.bootstrap(document.body, app);
-			
 			console.log('Render - ', new Date() - start);
 		});
 	
-</script>
+'''

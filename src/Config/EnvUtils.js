@@ -109,8 +109,10 @@ var EnvUtils = (function() {
 			incl_extend(include, env.both.include);
 			incl_extend(include, env.client.include);
 
-			if (!include.src)
-				console.error('[FATAL ERROR] Include PATH is not specified, use in client.yml/json include: { src: "PATH" }')
+			if (!include.src) {
+				console.error('[CLIENT CONFIGURATION ERROR]');
+				console.error('- Include PATH is not specified in `env.client.include.src`');
+			}
 
 			incl_extend(include, {
 				routes: env.both.routes

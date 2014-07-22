@@ -2,6 +2,8 @@
 function initilizeEmbeddedComponents(app) {
 	initilizeEmbeddedComponents = function(){};
 	
-	// import styles/styles.js
-	// import scripts/scripts.js	
+	var DEBUG = app.config.$is('debug'),
+		BUILD_DIR = '/public/build/'
+		;
+	// import resources/exports.js
 }

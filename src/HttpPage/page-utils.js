@@ -6,6 +6,8 @@ var page_Create,
 	
 	page_pathAddAlias,
 	
+	page_getPartial,
+	
 	pageError_sendDelegate,
 	pageError_failDelegate
 	;
@@ -117,6 +119,26 @@ var page_Create,
 			path = path.slice(0, -i);
 		
 		return path + '::' + alias;
+	};
+	
+	page_getPartial = function(nodes, selector, page){
+		var arr = [],
+			selectors = selector.split(';'),
+			imax = selectors.length,
+			i = -1,
+			x;
+		while(++i < imax){
+			x = jmask(nodes).find(selectors[i]);
+			if (x == null) {
+				logger.warn('<HttpPage.partial> Not found `%s`', selectors[i]);
+				continue;
+			}
+			arr.push(x);
+		}
+		arr.push(mask.parse('atma:styles partial'));
+		arr.push(mask.parse('atma:scripts:partial'));
+		
+		return arr;
 	};
 	
 	pageError_sendDelegate = function(res, error){

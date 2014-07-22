@@ -26,7 +26,12 @@ server.HttpPage = (function(){
 		model: null,
 		
 		send: null,
-	
+		
+		// Page information contianer (got from configuration)
+		data: {
+			id: null
+		},
+		
 		Construct: function(route, app){
 			
 			if (this instanceof Page === false) {

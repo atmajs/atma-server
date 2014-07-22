@@ -49,7 +49,7 @@ var WebSocket;
 				if (io == null) {
 					console.error(
 						'Emitting to the websockets (%s), but server is not started'
-						, namesace
+						, namespace
 					);
 					return;
 				}
