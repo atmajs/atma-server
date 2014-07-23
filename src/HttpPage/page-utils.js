@@ -6,7 +6,8 @@ var page_Create,
 	
 	page_pathAddAlias,
 	
-	page_getPartial,
+	page_process,
+	page_processPartial,
 	
 	pageError_sendDelegate,
 	pageError_failDelegate
@@ -121,25 +122,98 @@ var page_Create,
 		return path + '::' + alias;
 	};
 	
-	page_getPartial = function(nodes, selector, page){
-		var arr = [],
-			selectors = selector.split(';'),
-			imax = selectors.length,
-			i = -1,
-			x;
-		while(++i < imax){
-			x = jmask(nodes).find(selectors[i]);
-			if (x == null) {
-				logger.warn('<HttpPage.partial> Not found `%s`', selectors[i]);
-				continue;
-			}
-			arr.push(x);
-		}
-		arr.push(mask.parse('atma:styles partial'));
-		arr.push(mask.parse('atma:scripts:partial'));
+	page_process = function(page, nodes, onSuccess){
+		var html = mask.render(
+			nodes,
+			page.model,
+			page.ctx,
+			null,
+			page
+		);
 		
-		return arr;
+		if (page.ctx._rewrite != null) {
+			__app
+				.handlers
+				.get(page.ctx._rewrite, page_rewriteDelegate(page));
+			return;
+		}
+		
+		if (page.ctx.async) {
+			page
+				.ctx
+				.done(onSuccess)
+				.fail(page.rejectDelegate());
+			return;
+		}
+		
+		onSuccess(html)
 	};
+	(function(){
+		page_processPartial = function(page, nodes, selectors){
+			nodes = __getTemplate(page, nodes, selectors);
+			
+			__getResources(page, page.ctx.config, function(meta){
+				
+				if (meta.templates) {
+					var node = jmask(':html').text(meta.templates);
+					nodes.push(node);
+				}
+				
+				page_process(page, nodes, function(html){
+					var json = {
+						type: 'partial',
+						html: html,
+						scripts: meta.scripts,
+						styles: meta.styles
+					};
+					page_resolve(page
+						, json
+						, 'application/json'
+						, 200
+					);
+				});
+			});
+		};
+		function __getTemplate(page, nodes, selector){
+			var arr = [],
+				selectors = selector.split(';'),
+				imax = selectors.length,
+				i = -1,
+				x;
+			while(++i < imax){
+				selector = selectors[i];
+				if (selector === '') 
+					continue;
+				
+				x = jmask(nodes).find(selector);
+				if (x == null) {
+					logger.warn('<HttpPage.partial> Not found `%s`', selectors[i]);
+					continue;
+				}
+				arr.push(x);
+			}
+			return arr;
+		};
+		function __getResources(page, config, cb){
+			if (Scripts == null) 
+				Scripts = mask.getHandler('atma:scripts');
+			
+			if (Styles == null) 
+				Styles = mask.getHandler('atma:styles');
+			
+			var styles = Styles.getModel(page, config, true)
+			
+			Scripts.getModel(page, config, true, function(scripts){
+				cb({
+					scripts: scripts.scripts,
+					styles: styles
+				});
+			})
+		};
+		
+		var Scripts, Styles;
+	}());
+	
 	
 	pageError_sendDelegate = function(res, error){
 		

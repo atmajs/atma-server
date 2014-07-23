@@ -106,25 +106,10 @@
 			this._outerPipe.process(
 				req
 				, res
-				, next || response_notProcessed
+				, next || this._404 //response_notProcessed
 				, this.config
 			);
 		},
-		//process: function(req, res, next){
-		//	
-		//	if (this._responders == null) {
-		//		this.responders([
-		//			this.responder()
-		//		]);
-		//	}
-		//	
-		//	this._responders.process(
-		//		req,
-		//		res,
-		//		next || response_notProcessed,
-		//		this.config
-		//	);
-		//},
 		execute: function(url, method, body, headers){
 			var req = new Message.Request(url, method, body, headers),
 				res = new Message.Response;
@@ -192,20 +177,34 @@
 		Self: {
 			_loadConfig: function(){
 				
-				var proto = this._baseConfig;
+				var definition = this._baseConfig;
 				
-				this.config = Config(proto, this);
-				this
-					.config
+				this.config = Config(definition, this);
+				this.config
 					.done(cfg_doneDelegate(this))
 					.fail(function(error){
-						
 						logger
 							.warn('Configuration Error')
 							.error(error);
 					})
 					;
 				return this;
+			},
+			
+			_404: function(error, req, res){
+				error = error == null
+					? HttpError('Endpoint not found: ' + req.url, 404)
+					: HttpError.create(error)
+					;
+				
+				var accept = req.headers['accept'];
+				if (accept == null || accept.indexOf('text/html') !== -1) {
+					server.HttpErrorPage.send(error, req, res, this.config);
+					return;
+				}
+				
+				// send json	
+				send_Error(res, error);
 			}
 		}
 	});
@@ -223,7 +222,7 @@
 				;
 			
 			if (next == null) 
-				next = fn_delegate(response_notProcessed, null, req, res);
+				next = app._404; //fn_delegate(response_notProcessed, null, req, res);
 			
 			handler_resolve(
 				app,
@@ -272,9 +271,7 @@
 		logger(95)
 			.log('<request>', req.url);
 		
-		var config = app.config;
-		handler
-			.process(req, res, config);
+		handler.process(req, res, app.config);
 			
 		if (handler.done == null)
 			// Handler responds to the request itself
@@ -286,8 +283,12 @@
 				send(res, content, statusCode, mimeType, headers);
 			})
 			.fail(function(error, statusCode){
-				var send = handler.sendError || send_Error;
-				send(res, error, statusCode || 500, config);
+				error = HttpError.create(error, statusCode);
+				if (handler.sendError) {
+					handler.sendError(error, req, res, app.config);
+					return;
+				}
+				send_Error(res, error);
 			});
 	}
 	function handler_processRaw(app, handler, m_req, m_res) {

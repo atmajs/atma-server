@@ -5,7 +5,7 @@ var model_getScripts,
 	model_getStyles = function(page, config, partial){
 		var pageId = _getPageId(page);
 		if (DEBUG) {
-			return partial
+			return partial !== true
 				? config.$getStyles(pageId)
 				: config.$getStylesForPageOnly(pageId)
 				;

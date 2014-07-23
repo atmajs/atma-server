@@ -8,12 +8,21 @@ include
 			
 			'security ctor': function(){
 				function check(error){
-					eq_(error.toString(), 'Forbidden: Baz');
+					eq_(error.toString(), 'SecurityError: Baz');
 				}
 				
 				var Ctor = server.SecurityError;
 				check(Ctor('Baz'));
 				check(new Ctor('Baz'));
+			},
+			
+			'proper stacktrace': function(){
+				
+				var err = server.SecurityError('baz');
+				eq_(err.message, 'baz');
+				eq_(err.name, 'SecurityError');
+				eq_(String(err), 'SecurityError: baz');
+				has_(err.stack.split('\n')[1], 'proper stacktrace')
 			}
 			
 		})

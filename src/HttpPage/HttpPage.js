@@ -1,9 +1,9 @@
 server.HttpPage = (function(){
 	
-	// import page-utils.js
-	// import Resources.js	
-	// import HttpContext.js
-	
+	// import ./page-utils.js
+	// import ./Resources.js	
+	// import ./HttpContext.js
+	// import ./HttpErrorPage.js
 	
 	var Page = Class({
 		
@@ -23,6 +23,7 @@ server.HttpPage = (function(){
 		compoPath: null,
 		
 		route: null,
+		query: null,
 		model: null,
 		
 		send: null,
@@ -32,34 +33,38 @@ server.HttpPage = (function(){
 			id: null
 		},
 		
-		Construct: function(route, app){
+		Construct: function(mix, app){
 			
-			if (this instanceof Page === false) {
-				return page_Create(route, app);
+			if (this instanceof Page === false) 
+				return page_Create(mix);
+			
+			if (mix == null) 
+				return this;
+			
+			var route = mix;
+			if (route.value == null) {
+				logger.error(
+					'<HttpPage> Route value is undefined'
+				);
+				return this;
 			}
 			
-			var cfg = app.config;
-			
-			/**
-			 * Page can also have path url definition like '/?:pageName/?:section/?:anchor'
-			 * and then get it like ctx.page.query.pageName;
-			 */
-			this.route = cfg.page.route;
-			if (!(route && route.value)) {
-				logger
-					.error('<httppage> current route value is unedefined');
+			var cfg = app.config,
+				data = route.value;
 				
-				return;
-			}
-			
-			
-			var data = this.data = route.value;
+			this.route = cfg.page.route;
 			this.query = route.current && route.current.params;
+			this._setPageData(data, cfg);
 			
-			if (data.masterPath) 
+			return this;
+		},
+		_setPageData: function(data, cfg){
+			this.data = data;
+			
+			if (data.masterPath != null) 
 				this.masterPath = data.masterPath;
 			
-			if (data.templatePath) 
+			if (data.templatePath != null) 
 				this.templatePath = data.templatePath;
 			
 			if (data.master) 
@@ -77,9 +82,8 @@ server.HttpPage = (function(){
 			
 			if (this.master == null && this.masterPath == null)
 				this.masterPath = cfg.$getMaster(data);
-				
+			
 		},
-		
 		process: function(req, res, config){
 			
 			if (this.middleware == null) 
@@ -94,46 +98,8 @@ server.HttpPage = (function(){
 			return this;
 		},
 		
-		sendError: function(res, mix, statusCode, config){
-			var pageCfg = config.page,
-				errorPages = pageCfg.errors,
-				genericPage = pageCfg.error
-				;
-			
-			var error;
-			if (mix instanceof Error) {
-				error = mix;
-			}
-			else if (is_String(mix)) {
-				error = new HttpError(mix, statusCode);
-			}
-			else if (is_Object(mix)) {
-				error = new HttpError(JSON.stringify(mix), statusCode);
-			}
-			
-			var pageData = (errorPages && errorPages[error.statusCode]) || genericPage,
-				page;
-				
-			
-			if (pageData == null) {
-				pageError_failDelegate
-					(res, error)
-					('No Error Page in Configuration')
-					;
-				return;
-			}
-			
-			this.masterPath = config.$getMaster(pageData) + '::Master';
-			this.templatePath = pageData.template + '::Template';
-			this.compoPath = null;
-			this.model = error;
-			this
-				.defer()
-				.done(pageError_sendDelegate(res, error))
-				.fail(pageError_failDelegate(res, error))
-				._load()
-				;
-			
+		sendError: function(error, req, res, config){
+			HttpErrorPage.send(error, req, res, config);
 		},
 		
 		_load: function(){
@@ -157,7 +123,7 @@ server.HttpPage = (function(){
 				template = resp.load.Template || this.template,
 				Component = resp.Compo;
 			
-			if (master == null) {
+			if (master == null && this.masterPath !== '') {
 				this.reject(HttpError('Page: Masterpage not found'));
 				return;
 			}
@@ -202,46 +168,36 @@ server.HttpPage = (function(){
 			
 			var nodes = this.nodes || template;
 			if (this.query.partial) {
-				var arr = [],
-					selectors = this.query.partial.split(';'),
-					imax = selectors.length,
-					i = -1,
-					x;
-				while(++i < imax){
-					x = jmask(nodes).find(selectors[i]);
-					if (x == null) {
-						logger.warn('<HttpPage.partial> Not found `%s`', selectors[i]);
-						continue;
-					}
-					arr.push(x);
-				}
-				nodes = arr;
-			}
-			
-			var html = mask.render(
-				nodes,
-				this.model,
-				this.ctx,
-				null,
-				this
-			);
-			
-			if (this.ctx._rewrite != null) {
-				__app
-					.handlers
-					.get(this.ctx._rewrite, page_rewriteDelegate(this));
+				page_processPartial(this, nodes, this.query.partial);
 				return;
 			}
 			
-			if (this.ctx.async) {
-				this
-					.ctx
-					.done(fn_delegate(page_resolve, this))
-					.fail(this.rejectDelegate());
-				return;
-			}
-			
-			page_resolve(this, html)
+			page_process(this, nodes, fn_delegate(page_resolve, this))
+			//
+			//var html = mask.render(
+			//	nodes,
+			//	this.model,
+			//	this.ctx,
+			//	null,
+			//	this
+			//);
+			//
+			//if (this.ctx._rewrite != null) {
+			//	__app
+			//		.handlers
+			//		.get(this.ctx._rewrite, page_rewriteDelegate(this));
+			//	return;
+			//}
+			//
+			//if (this.ctx.async) {
+			//	this
+			//		.ctx
+			//		.done(fn_delegate(page_resolve, this))
+			//		.fail(this.rejectDelegate());
+			//	return;
+			//}
+			//
+			//page_resolve(this, html)
 		}
 	
 	});

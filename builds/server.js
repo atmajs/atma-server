@@ -12,8 +12,9 @@
 	var __app,
 		__cfgDefaults;
 	
-	// import /src/vars.js
 	// import /src/dependency.js
+	// import /src/vars.js
+	
 	
 	// import /src/const/mime.js
 	

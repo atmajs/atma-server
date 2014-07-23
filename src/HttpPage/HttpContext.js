@@ -26,4 +26,4 @@ HttpContext.prototype = {
 		
 		this._rewrite = url;
 	}
-}
+};
