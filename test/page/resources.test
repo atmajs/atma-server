@@ -58,7 +58,7 @@ UTest({
 				has_(res.text, "routes({})");
 				has_(res.text, "'script-both.js'");
 				has_(res.text, "'script-client.js'");
-				has_(res.text, "model:{}");
+				has_(res.text, "<body><!--m", "m definition should be direct inside body");
 				done();
 			});
 	}
