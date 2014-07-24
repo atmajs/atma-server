@@ -11,6 +11,12 @@ module.exports = {
 			tests: 'test/service-node/**.test'
 		},
 		
+		'errors': {
+			exec: 'node',
+			env: '/lib/server.js',
+			tests: 'test/error/**.test'
+		},
+		
 		'examples': {
 			exec: 'browser',
 			tests: 'test/examples/**.test'

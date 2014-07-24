@@ -15,7 +15,11 @@ include
 				check(Ctor('Baz'));
 				check(new Ctor('Baz'));
 			},
-			
+			'valid inheritance': function(){
+				var error = server.RequestError('txt');
+				assert(error instanceof Error, 'instanceof Error');
+				assert(error instanceof server.HttpError, 'instanceof HttpError');
+			},
 			'proper stacktrace': function(){
 				
 				var err = server.SecurityError('baz');

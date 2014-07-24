@@ -14,13 +14,15 @@ var HttpError,
 	
 	server.HttpError = HttpError = Class({
 		Base: Error,
+		_error: null,
+		_json: null,
 		Construct: function(message, statusCode){
 			
 			if (this instanceof HttpError === false) 
 				return new HttpError(message, statusCode);
 			
 			this._error = Error(message);
-			this.message = message;
+			this.message = String(message);
 			
 			if (statusCode != null) 
 				this.statusCode = statusCode;
@@ -55,28 +57,42 @@ var HttpError,
 				: this.name
 				;
 		},
-		
+		toJSON: function(){
+			if (this._json != null) 
+				return this._json;
+			
+			return {
+				name: this.name,
+				error: this.message,
+				code: this.statusCode
+			};
+		},
 		Static: {
 			create: function(mix, statusCode){
-				if (mix instanceof HttpError) 
-					return mix;
-				
-				if (mix instanceof Error) {
-					mix.statusCode = statusCode || 500;
-					return mix;
-				}
 				if (is_String(mix)) 
 					return HttpError(mix, statusCode);
 				
+				if (mix._error != null) /* instanceof HttpError (weakness of instanceof)*/ 
+					return mix;
+				
+				if (mix instanceof Error) {
+					var error = HttpError(mix.message, statusCode || 500);
+					error._error = mix;
+					return error;
+				}
+				
 				if (is_Object(mix)) {
-					var msg = mix.message,
-						code = statusCode || mix.statusCode || mix.status;
-					if (msg == null) {
-						msg = JSON.stringify(mix);
+					if (mix.toString !== _obj_toString) {
+						return HttpError(
+							mix.toString() , statusCode || mix.statusCode || mix.status
+						);
 					}
-					var error = HttpError(msg, code);
-					obj_extend(error, mix);
+					var msg = mix.message,
+						code = statusCode || mix.statusCode || mix.status,
+						error;
 					
+					error = HttpError(msg, code);
+					error._json = mix;
 					return error;
 				}
 				return RuntimeError('Invalid error object: ' + mix);
@@ -91,6 +107,9 @@ var HttpError,
 	
 	
 	// PRIVATE
+	
+	var _obj_toString = Object.prototype.toString;
+	
 	function createError(id, code) {
 		var Ctor = server[id] = Class({
 			Base: HttpError,

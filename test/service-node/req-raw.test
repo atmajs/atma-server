@@ -69,10 +69,7 @@ include
 						eq_(statusCode, 400);
 						has_(error, {
 							name: 'RequestError',
-							message: {
-								expect: 'string',
-								property: 'bazValue'
-							}
+							message: 'Invalid type. Expect: string Property: bazValue'
 						});
 					})
 					.always(done);

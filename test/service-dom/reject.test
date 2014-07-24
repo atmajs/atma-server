@@ -27,9 +27,9 @@ UTest({
 			.server
 			.request('/reject/string')
 			.done(assert.avoid())
-			.fail(toJSOND(function(error){
+			.fail(toJSON_Delegate(function(error){
 				eq_(error.error, 'String reject');
-				deepEq_(Object.keys(error), ['error', 'code']);
+				deepEq_(Object.keys(error), ['name', 'error', 'code']);
 				done();
 			}))
 	},
@@ -38,14 +38,12 @@ UTest({
 			.server
 			.request('/reject/native')
 			.done(assert.avoid())
-			.fail(toJSOND(function(error){
-
+			.fail(toJSON_Delegate(function(error){
 
 				eq_(error.code, 500);
-				eq_(error.error, 'TypeError: Native reject');
+				eq_(error.error, 'Native reject');
 				
-
-				deepEq_(Object.keys(error), ['error', 'code']);
+				deepEq_(Object.keys(error), ['name', 'error', 'code']);
 				done();
 			}))
 	},
@@ -54,11 +52,11 @@ UTest({
 			.server
 			.request('/reject/http')
 			.done(assert.avoid())
-			.fail(toJSOND(function(error, code){
+			.fail(toJSON_Delegate(function(error, code){
 
 				eq_(error.code, 500);	
-				eq_(error.error, 'HttpError: Http reject');
-				deepEq_(Object.keys(error), ['error', 'code']);
+				eq_(error.error, 'Http reject');
+				deepEq_(Object.keys(error), ['name', 'error', 'code']);
 				done();
 			}))
 	},
@@ -67,7 +65,7 @@ UTest({
 			.server
 			.request('/reject/object')
 			.done(assert.avoid())
-			.fail(toJSOND(function(error, code){
+			.fail(toJSON_Delegate(function(error, code){
 				
 				deepEq_(error, {
 					error: 'FooError',
@@ -88,7 +86,7 @@ function toJSON(xhr){
 	}
 }
 
-function toJSOND(fn){
+function toJSON_Delegate(fn){
 	return function(xhr){
 		return fn(toJSON(xhr), xhr.statusCode);
 	}

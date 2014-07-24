@@ -5,8 +5,6 @@ var send_JSON,
 	
 (function(){
 	
-	var obj_toString = Object.prototype.toString;
-	
 	send_JSON = function(res, json, statusCode, headers){
 		
 		var text;
@@ -20,29 +18,12 @@ var send_JSON,
 	};
 	
 	send_Error = function(res, error, headers){
-		
-		var body;
-		if (typeof error === 'string') {
-			body = {
-				error: error,
-				code: 500
-			};
+		if (error instanceof HttpError === false) {
+			error = HttpError.create(error);
 		}
-		
-		else if (error.toString === obj_toString) {
-			body = error;
-		}
-		
-		else {
-			body = {
-				error: error.toString(),
-				code: error.statusCode || 500
-			};
-		}
-		
 		send_Content(
 			res
-			, JSON.stringify(body)
+			, JSON.stringify(error)
 			, error.statusCode || 500
 			, mime_JSON
 			, headers
