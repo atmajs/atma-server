@@ -46,21 +46,29 @@ var WebSocket;
 					: io.of(namespace);
 			},
 			emit: function(namespace /* ..args */){
+				var args = _Array_slice.call(arguments, 1),
+					cb = args[args.length - 1];
 				if (io == null) {
 					console.error(
 						'Emitting to the websockets (%s), but server is not started'
 						, namespace
 					);
+					cb && cb({ message: 'Server is not started' });
 					return;
 				}
 				if (SocketListeners[namespace] == null) {
 					console.error(
 						'No handlers are bound to the namespace', namespace
 					);
+					cb && cb({ message: 'No handlers' });
 					return;
 				}
-				var args = _Array_slice.call(arguments, 1),
-					nsp = io.of(namespace);
+				if (typeof cb === 'function') {
+					args.pop();
+					io_emitMany(this.clients(namespace), args, cb);
+					return;
+				}
+				var nsp = io.of(namespace);
 				nsp.emit.apply(nsp, args);
 			}
 		}
@@ -68,7 +76,8 @@ var WebSocket;
 	
 	var io_create,
 		io_handlerDelegate,
-		io_listen;
+		io_listen,
+		io_emitMany;
 	(function(){
 		io_create = function(httpServer, listeners) {
 			var io = require('socket.io')(httpServer, {
@@ -89,6 +98,27 @@ var WebSocket;
 			return function(socket) {
 				new Handler(socket, io);
 			};
+		};
+		io_emitMany = function(clients, args, cb){
+			var count = clients.length,
+				results = [];
+			if (count === 0) {
+				cb(null, results);
+				return;
+			}
+			var imax = count,
+				i = -1,
+				x;
+			args.push(complete);
+			while(++i < count){
+				x = clients[i];
+				x.emit.apply(x, args);
+			}
+			function complete(data){
+				results.push(data);
+				if (--count < 1) 
+					cb(null, results);
+			}
 		};
 	}());
 	
