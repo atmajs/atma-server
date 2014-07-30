@@ -235,7 +235,14 @@
 	}
 	function respond_Raw(app, req, res) {
 		handler_resolve(
-			app, req, res, null, handler_processRaw
+			app
+			, req
+			, res
+			, function(){
+				res.writeHead(500);
+				res.end('Not Found');
+			}
+			, handler_processRaw
 		);
 	}
 	function middleware_processDelegate(middlewareRunner){
@@ -292,8 +299,11 @@
 			});
 	}
 	function handler_processRaw(app, handler, m_req, m_res) {
-		handler
-			.process(m_req, m_res, app.config)
+		if (handler instanceof server.HttpSubApplication) {
+			handler.execute(m_req, m_res);
+			return;
+		}
+		handler.process(m_req, m_res, app.config)
 		if (handler.done == null) 
 			return;
 		handler.pipe(m_res);

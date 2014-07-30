@@ -20,15 +20,20 @@ var EnvUtils = (function() {
 				return null;
 			}
 
-			if (page.scripts) {
+			if (page.scripts != null) {
 				scripts = scripts.concat(getResources(
-					'page',
-					this.env,
-					page.scripts,
-					page.routes)
-				);
+					'page'
+					, this.env
+					, page.scripts
+					, page.routes
+				));
 			}
-
+			if (page.env != null) {
+				scripts = scripts.concat(getResources(
+					'scripts'
+					, page.env
+				));
+			}
 
 			if (page.view && page.view.controller) {
 				var path = this.$formatPath(
@@ -65,7 +70,18 @@ var EnvUtils = (function() {
 			}
 
 			if (page.styles) {
-				styles = styles.concat(getResources('page', cfg.env, page.styles, page.routes));
+				styles = styles.concat(getResources(
+					'page'
+					, cfg.env
+					, page.styles
+					, page.routes
+				));
+			}
+			if (page.env) {
+				styles = styles.concat(getResources(
+					'styles'
+					, page.env
+				));
 			}
 
 			if (page.compo) {
@@ -178,23 +194,20 @@ var EnvUtils = (function() {
 		function register(obj) {
 			if (obj == null)
 				return;
-
 			for (var key in obj) {
 				Routes.register(key, obj[key]);
 			}
 		}
-
 		function resolve(pckg) {
 			if (pckg == null)
 				return;
-
 			Routes.each('js', pckg, function(namespace, route) {
 				array.push(route.path);
 			});
 		}
 
-		register(env.client.routes);
-		register(env.both.routes);
+		register(env.client && env.client.routes);
+		register(env.both   && env.both.routes);
 
 		switch (type) {
 
@@ -207,14 +220,15 @@ var EnvUtils = (function() {
 				resolve(env.client.debug);
 				break;
 
+			case 'scripts':
+			case 'styles':
+				resolve(env.client && env.client[type]);
+				resolve(env.both   && env.both[type]);
+				break;
 			default:
-				// scripts
-				resolve(env.client[type]);
-				resolve(env.both[type]);
+				logger.error('Unsupported type', type);
 				break;
 		}
-
-
 
 		return array;
 	});

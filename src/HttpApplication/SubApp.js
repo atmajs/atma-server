@@ -109,10 +109,19 @@ server.HttpSubApplication = (function(){
                 return;
             }
             
-            req.url = req.url.replace(this.path_, '/');
+            prepairUrl(req, this);
             
             this.app_.process(req, res);
+        },
+        
+        /* execute raw request */
+        execute: function(req, res){
+            prepairUrl(req, this);
+			respond_Raw(this.app_, req, res);
         }
     });
 
+    function prepairUrl(req, subapp){
+        req.url = req.url.replace(subapp.path_, '/');
+    }
 }());

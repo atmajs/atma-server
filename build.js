@@ -82,7 +82,7 @@ function JSHint() {
 			"eqnull": true,
 			"esnext": true,
 			"evil": true,
-			"expr": false,
+			"expr": true,
 			"funcscope": false,
 			"gcl": false,
 			"globalstrict": true,

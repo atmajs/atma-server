@@ -64,6 +64,9 @@ var Message = {};
 			this.statusCode = code;
 			obj_extend(this.headers, headers);
 		},
+		setHeader: function(){
+			// do_Nothing
+		},
 		end: function(content){
 			if (this.finished === true) 
 				return;

@@ -6,11 +6,11 @@
 			responder = server.StaticContent.respond
 		
 		responder(req, res, next, config);
-	};
+	}
 	
 	Static.config = function(config){
 		return (responder = server.StaticContent.create(config));
-	}
+	};
 	
 	var responder;
 }());

@@ -193,7 +193,7 @@ var page_Create,
 				arr.push(x);
 			}
 			return arr;
-		};
+		}
 		function __getResources(page, config, cb){
 			if (Scripts == null) 
 				Scripts = mask.getHandler('atma:scripts');
@@ -209,7 +209,7 @@ var page_Create,
 					styles: styles
 				});
 			})
-		};
+		}
 		
 		var Scripts, Styles;
 	}());

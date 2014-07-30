@@ -104,14 +104,25 @@ server.HttpPage = (function(){
 		
 		_load: function(){
 			
+			var env = this.data.env,
+				env_server,
+				env_both;
+			if (env != null) {
+				env_both = env.both;
+				env_server = env.server;
+			}
+			var base = this.ctx.config.base;
 			this.resource = include
-				.instance()
+				.instance(base)
+				.setBase(base)
 				.load(
 					page_pathAddAlias(this.masterPath, 'Master'),
 					page_pathAddAlias(this.templatePath, 'Template'))
 				.js(
 					page_pathAddAlias(this.compoPath, 'Compo')
 				)
+				.js(env_both)
+				.js(env_server)
 				.done(fn_proxy(this._response, this));
 			return this;
 		},
@@ -172,32 +183,11 @@ server.HttpPage = (function(){
 				return;
 			}
 			
-			page_process(this, nodes, fn_delegate(page_resolve, this))
-			//
-			//var html = mask.render(
-			//	nodes,
-			//	this.model,
-			//	this.ctx,
-			//	null,
-			//	this
-			//);
-			//
-			//if (this.ctx._rewrite != null) {
-			//	__app
-			//		.handlers
-			//		.get(this.ctx._rewrite, page_rewriteDelegate(this));
-			//	return;
-			//}
-			//
-			//if (this.ctx.async) {
-			//	this
-			//		.ctx
-			//		.done(fn_delegate(page_resolve, this))
-			//		.fail(this.rejectDelegate());
-			//	return;
-			//}
-			//
-			//page_resolve(this, html)
+			page_process(
+				this
+				, nodes
+				, fn_delegate(page_resolve, this)
+			);
 		}
 	
 	});
