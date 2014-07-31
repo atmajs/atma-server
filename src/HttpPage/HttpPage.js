@@ -15,6 +15,7 @@ server.HttpPage = (function(){
 		template: null,
 		master: null,
 		
+		app: null,
 		ctx: null,
 		middleware: null,
 		
@@ -51,7 +52,8 @@ server.HttpPage = (function(){
 			
 			var cfg = app.config,
 				data = route.value;
-				
+			
+			this.app = app;
 			this.route = cfg.page.route;
 			this.query = route.current && route.current.params;
 			this._setPageData(data, cfg);
@@ -111,9 +113,10 @@ server.HttpPage = (function(){
 				env_both = env.both;
 				env_server = env.server;
 			}
-			var base = this.ctx.config.base;
+			var base = this.ctx.config.base,
+				parent = this.app.resources;
 			this.resource = include
-				.instance(base)
+				.instance(base, parent)
 				.setBase(base)
 				.load(
 					page_pathAddAlias(this.masterPath, 'Master'),
