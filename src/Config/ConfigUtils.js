@@ -7,7 +7,8 @@ var cfg_prepair,
 	configurate_Include,
 	configurate_Mask,
 	configurate_Pages,
-	configurate_Plugins
+	configurate_Plugins,
+	configurate_Projects
 	;
 
 (function(){
@@ -86,7 +87,6 @@ var cfg_prepair,
 					;
 			}
 			
-			
 			if (page.route == null) 
 				page.route = key;
 			
@@ -140,6 +140,6 @@ var cfg_prepair,
 			});
 		
 		return dfr;
-	}
+	};
 	
 }());

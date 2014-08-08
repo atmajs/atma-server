@@ -1,5 +1,5 @@
-
 (function(){
+	var _emitter = new Class.EventEmitter;
 
 	// import ../Config/Config.js
 	// import SubApp.js
@@ -106,7 +106,7 @@
 			this._outerPipe.process(
 				req
 				, res
-				, next || this._404 //response_notProcessed
+				, next || this._404
 				, this.config
 			);
 		},
@@ -152,6 +152,9 @@
 			if (port == null) 
 				port = this.config.$get('port');
 			
+			if (port == null) 
+				throw Error('Port number is not defined');
+			
 			if (server == null)
 				server = require('http').createServer();
 			
@@ -166,11 +169,11 @@
 			if (app_isDebug()) 
 				this.autoreload();
 	
+			_emitter.trigger('listen', this);
 			return this._server;
 		},
 		getSubApp: function(path){
 			var route = this.handlers.subapps.get(path);
-			
 			return route && route.value && route.value.app_;
 		},
 		
@@ -206,6 +209,12 @@
 				// send json	
 				send_Error(res, error);
 			}
+		},
+		Static: {
+			on: _emitter.on.bind(_emitter),
+			off: _emitter.off.bind(_emitter),
+			once: _emitter.once.bind(_emitter),
+			trigger: _emitter.trigger.bind(_emitter)
 		}
 	});
 	
@@ -222,7 +231,7 @@
 				;
 			
 			if (next == null) 
-				next = app._404; //fn_delegate(response_notProcessed, null, req, res);
+				next = app._404;
 			
 			handler_resolve(
 				app,
@@ -264,10 +273,10 @@
 		app
 			.handlers
 			.get(app, req, function(handler){
-				
-				if (handler == null) 
-					return next();
-				
+				if (handler == null) {
+					next();
+					return;
+				}
 				resources_load(app, function(){
 					callback(app, handler, req, res);
 				});
@@ -308,18 +317,12 @@
 			return;
 		handler.pipe(m_res);
 	}
-	
-	
-	
 	function cfg_doneDelegate(app) {
 		return function() {
-			
-			var cfg = app.config;	
-			logger(90)
-				.log('<app.config>', cfg);
+			_emitter.trigger('configurate', app);
 			
 			initilizeEmbeddedComponents(app);
-			
+			var cfg = app.config;
 			app
 				.handlers
 				.registerPages(cfg.pages, cfg.page)
@@ -360,30 +363,17 @@
 			.done(function(resp){
 				app.lib = resp;
 				
-				if (config.projects) {
-					config
-						.projects
-						.forEach(function(name){
-							var res = resp[name];
-							if (res != null && typeof res.attach === 'function')
-								res.attach(app);
-						});
+				var projects = config.projects;
+				if (projects) {
+					for(var name in projects){
+						var res = resp[name];
+						if (res != null && typeof res.attach === 'function')
+							res.attach(app);
+					}
 				}
 				
 				callback();
 			});
-	}
-	
-	//@deprecate
-	function resource_loadEmpty(app, callback){
-		callback();
-	}
-	
-	function response_notProcessed(error, req, res){
-		if (error == null)
-			error = HttpError('Request not handled: ' + req.url, 404);
-		
-		send_Error(res, error);
 	}
 	
 }());

@@ -1,6 +1,6 @@
-var PathUtils = (function() {
-
-	return {
+var PathUtils;
+(function() {
+	PathUtils = {
 		/**
 		 *	Format Path / location as in IncludeJS
 		 */
@@ -9,8 +9,6 @@ var PathUtils = (function() {
 				// /
 				return path;
 			}
-
-
 
 			var params,
 				route,
@@ -36,8 +34,6 @@ var PathUtils = (function() {
 						index = template.length - 1;
 					}
 
-
-
 					path += template[index];
 
 					if (i === route.length - 2) {
@@ -47,9 +43,7 @@ var PathUtils = (function() {
 					}
 				}
 			}
-
 			return path;
 		}
 	};
-
 }());

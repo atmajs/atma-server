@@ -45,7 +45,7 @@ var Config = (function() {
 				config: ConfigUtils
 			},
 			{
-				path: 'package.json',
+				path: path_base + 'package.json',
 				getterProperty: 'atma',
 				optional: true
 			},
@@ -75,20 +75,20 @@ var Config = (function() {
 				throw new Error('<app:configuration>', error);
 			})
 			.done(function() {
-			
-			var cfg = this;
-			cfg.defer();
-			
-			new Class.Await(
-				configurate_Mask(cfg),
-				configurate_Include(cfg),
-				configurate_Pages(cfg, app),
-				configurate_Plugins(cfg, app)
-			)
-			.always(function(){
-				cfg.resolve();
+				
+				var cfg = this;
+				cfg.defer();
+				
+				new Class.Await(
+					configurate_Mask(cfg),
+					configurate_Include(cfg),
+					configurate_Pages(cfg, app),
+					configurate_Plugins(cfg, app)
+				)
+				.always(function(){
+					cfg.resolve();
+				});
 			});
-		});
 	}
 
 	return Config;

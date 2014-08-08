@@ -9,6 +9,7 @@ var atma,
     include,
     includeLib,
     Routes,
+    Log,
     logger;
 
 // <assign first>
@@ -49,4 +50,4 @@ Compo       = mask.Compo;
 include     = atma.include;
 includeLib  = atma.includeLib;
 Routes      = ruta.Collection;
-    
+Log         = logger('atma-server');
