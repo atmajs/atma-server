@@ -206,13 +206,16 @@ var cfg_prepair,
 			}
 			
 			if (name.indexOf('/') !== -1) {
+				if (/\.\w+$/.test(name) === false) 
+					name += '.js';
+				
 				paths.push(
 					'/'
 					+ dirName
 					+ '/'
 					+ name
-					+ '.js'
-					+ alias);
+					+ alias
+				);
 				return;
 			}
 			
