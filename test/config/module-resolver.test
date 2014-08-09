@@ -1,0 +1,56 @@
+UTest({
+	'should load commonjs module' (done) {
+		atma
+			.server
+			.Application({
+				configs: null,
+				config: {
+					env: {
+						server: {
+							scripts: {
+								npm: [
+									'atma-io'
+								]
+							}
+						}
+					}
+				}
+			})
+			.done(app => {
+				var scripts = app.config.env.server.scripts.__npm;
+				
+				has_(scripts, [
+					'/node_modules/atma-io/./lib/io.min.js'
+				]);
+				is_(app.lib.io, 'Object');
+				done();
+			})
+	},
+	'should load commonjs module with alias' (done) {
+		atma
+			.server
+			.Application({
+				configs: null,
+				config: {
+					env: {
+						server: {
+							scripts: {
+								npm: [
+									'atma-io::Foo'
+								]
+							}
+						}
+					}
+				}
+			})
+			.done(app => {
+				var scripts = app.config.env.server.scripts.__npm;
+				
+				has_(scripts, [
+					'/node_modules/atma-io/./lib/io.min.js::Foo'
+				]);
+				is_(app.lib.Foo, 'Object');
+				done();
+			})
+	}
+})

@@ -26,6 +26,12 @@ module.exports = {
 			exec: 'node',
 			env: '/lib/server.js',
 			tests: 'test/page/**.test'
+		},
+		
+		'config': {
+			exec: 'node',
+			env: '/lib/server.js',
+			tests: 'test/config/**.test'
 		}
 	}
 };

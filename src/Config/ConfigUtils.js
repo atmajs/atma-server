@@ -8,7 +8,8 @@ var cfg_prepair,
 	configurate_Mask,
 	configurate_Pages,
 	configurate_Plugins,
-	configurate_Projects
+	configurate_Projects,
+	configurate_BowerAndCommonJS
 	;
 
 (function(){
@@ -142,4 +143,120 @@ var cfg_prepair,
 		return dfr;
 	};
 	
+	configurate_BowerAndCommonJS = function(cfg, app){
+		var await = new Class.Await;
+		for(var type in _types){
+			handleAllEnvironments(cfg, type, await.delegate());
+		}
+		return await;
+	};
+	
+	// === private
+	var _types = {
+		bower: {
+			dir: 'bower_components',
+			package: 'bower.json'
+		},
+		npm: {
+			dir: 'node_modules',
+			package: 'package.json'
+		}
+	};
+	function handleAllEnvironments(config, type, cb){
+		var await = new Class.Await;
+		[
+			'client',
+			'server',
+			'both'
+		].forEach(function(envType){
+			var env = config.env[envType],
+				scripts = env.scripts,
+				x = scripts && scripts[type];
+			if (x == null) 
+				return;
+			
+			var done = await.delegate();
+			handleModulePaths(config, type, x, function(paths){
+				// prevent routes to be handled if registered
+				scripts[type] = null;
+				scripts['__' + type] = paths;
+				done();
+			});
+		});
+		await.always(cb);
+	}
+	function handleModulePaths(config, type, arr, cb){
+		var base = new net.Uri(config.base),
+			paths = [];
+		
+		var data = _types[type];
+		if (data == null) 
+			throw Error('Support:' + Object.keys(_types) + ' Got:' + type);
+		
+		var await = new Class.Await;
+		var dirName = data.dir,
+			packageName = data.package;
+		arr.forEach(function(name){
+			
+			var aliasIndex = name.indexOf('::'),
+				alias = '';
+			if (aliasIndex !== -1) {
+				alias = name.substring(aliasIndex);
+				name  = name.substring(0, aliasIndex);
+			}
+			
+			if (name.indexOf('/') !== -1) {
+				paths.push(
+					'/'
+					+ dirName
+					+ '/'
+					+ name
+					+ '.js'
+					+ alias);
+				return;
+			}
+			
+			var pckgPath = resolveModulePath(
+				base, dirName + '/' + name + '/' + packageName
+			);
+			io
+				.File
+				.readAsync(pckgPath)
+				.done(function (pckg) {
+					
+					paths.push(
+						'/'
+						+ dirName
+						+ '/'
+						+ name
+						+ '/'
+						+ pckg.main
+						+ alias
+					);
+				})
+				.fail(logger.error)
+				.always(await.delegate(name, false))
+				;
+		});
+		await.always(function(){
+			cb(paths);
+		});
+	}
+	function resolveModulePath(base, path){
+		var x;
+		while (true) {
+			x = base.combine(path);
+			if (io.File.exists(x)) {
+				path = x.toString();
+				break;
+			}
+			
+			base = base.combine('../');
+			if (base.path === '' || base.path === '/') {
+				logger.error('<Module path is not resolved>', path);
+				break;
+			}
+		}
+		return path;
+	}
 }());

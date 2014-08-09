@@ -182,10 +182,11 @@
 				
 				var definition = this._baseConfig;
 				
-				this.config = Config(definition, this);
-				this.config
-					.done(cfg_doneDelegate(this))
-					.fail(function(error){
+				this.config = Config(
+					definition
+					, this
+					, cfg_doneDelegate(this)
+					, function(error){
 						logger
 							.warn('Configuration Error')
 							.error(error);

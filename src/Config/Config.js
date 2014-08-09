@@ -1,5 +1,5 @@
-var Config = (function() {
-
+var Config;
+(function() {
 	var PATH = 'server/config/**.yml',
 		BUILD_PATH = 'public/build/stats.json';
 
@@ -8,7 +8,7 @@ var Config = (function() {
 	// import EnvUtils.js
 	// import IncludeUtils.js
 		
-	function Config(params, app) {
+	Config = function(params, app, done, fail) {
 		params = params || {};
 		
 		var path_base = params.base,
@@ -72,24 +72,20 @@ var Config = (function() {
 		return require('appcfg')
 			.fetch($sources)
 			.fail(function(error){
+				// fail(error)
 				throw new Error('<app:configuration>', error);
 			})
 			.done(function() {
-				
 				var cfg = this;
-				cfg.defer();
 				
 				new Class.Await(
 					configurate_Mask(cfg),
 					configurate_Include(cfg),
 					configurate_Pages(cfg, app),
-					configurate_Plugins(cfg, app)
+					configurate_Plugins(cfg, app),
+					configurate_BowerAndCommonJS(cfg, app)
 				)
-				.always(function(){
-					cfg.resolve();
-				});
+				.always(done);
 			});
-	}
-
-	return Config;
+	};
 }());
