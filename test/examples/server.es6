@@ -10,7 +10,6 @@ var spawnServer,
 			
 		if (global.testServer) {
 			global.testServer.on('close', function(error){
-				logger.log('CLOSED'.cyan.bold);
 				global.testServer = null;
 				spawnServer(name, cb);
 			});
@@ -35,7 +34,7 @@ var spawnServer,
 		
 		testServer.on('error', function(error){
 			logger.error(error);
-		})
+		});
 		
 		setTimeout(()=> cb(), 500);
 	}

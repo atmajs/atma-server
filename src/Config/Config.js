@@ -85,7 +85,9 @@ var Config;
 					configurate_Plugins(cfg, app),
 					configurate_BowerAndCommonJS(cfg, app)
 				)
-				.always(done);
+				.always(function(){
+					process.nextTick(done);
+				});
 			});
 	};
 }());
