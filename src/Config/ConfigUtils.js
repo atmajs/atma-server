@@ -192,17 +192,32 @@ var cfg_prepair,
 				return null;
 			
 			var dfr = new Class.Deferred;
-			resolvePaths(config, resourceType, packageSystem, paths, function(paths){
-				// prevent routes to be handled if registered
-				resources[packageSystem] = null;
-				resources['__' + packageSystem] = paths;
+			resolvePaths(config, resourceType, packageSystem, paths, function(mappings){
+				var arr = resources[packageSystem],
+					imax = arr.length,
+					i = -1, j = -1, x;
+				while( ++i < imax ){
+					x = mappings[arr[i]];
+					if (is_String(x)) {
+						arr[i] = x;
+						continue;
+					}
+					if (is_Array(x)) {
+						arr.splice.apply(arr, [i, 1].concat(x));
+						i += x.length - 1;
+						imax += x.length - 1;
+						continue;
+					}
+					logger.error('Module path mapping is not defined', arr[i]);
+				}
 				dfr.resolve();
 			});
 			return dfr;
 		}
 		function resolvePaths(config, resourceType, packageSystem, arr, cb){
 			var base = new net.Uri(config.base),
-				paths = [];
+				paths = [],
+				mappings = {};
 			
 			var data = _types[packageSystem];
 			if (data == null) 
@@ -213,6 +228,7 @@ var cfg_prepair,
 				packageName = data.package;
 			arr.forEach(function(name){
 				
+				var map = name;
 				var aliasIndex = name.indexOf('::'),
 					alias = '';
 				if (aliasIndex !== -1) {
@@ -224,13 +240,12 @@ var cfg_prepair,
 					if (/\.\w+$/.test(name) === false) 
 						name += '.' + _resourceTypeExtensions[resourceType];
 					
-					paths.push(
-						'/'
+					mappings[map] = '/'
 						+ dirName
 						+ '/'
 						+ name
 						+ alias
-					);
+						;
 					return;
 				}
 				
@@ -248,11 +263,11 @@ var cfg_prepair,
 							main = 'index.js';
 							
 						if (is_String(main)) {
-							pushPath(paths, main, base, alias);
+							mapPath(mappings, map, main, base, alias);
 							return;
 						}
 						if (is_Array(main)) {
-							pushPathMany(paths, main, base, alias, resourceType);
+							mapPathMany(mappings, map, main, base, alias, resourceType);
 							return;
 						}
 						logger.error('Main is not defined', pckgPath);
@@ -262,20 +277,22 @@ var cfg_prepair,
 					;
 			});
 			await.always(function(){
-				cb(paths);
+				cb(mappings);
 			});
 		}
-		function pushPathMany(paths, mainArr, base, alias, resourceType){
+		function mapPathMany(mappings, str, mainArr, base, alias, resourceType){
 			var imax = mainArr.length,
-				i = -1, ext;
+				i = -1, ext,
+				arr = [];
 			while( ++i < imax ){
 				ext = _file_getExt(mainArr[i]);
 				if (_extensionTypes[ext] === resourceType) 
-					paths.push(base + mainArr[i] + alias);
+					arr.push(base + mainArr[i] + alias);
 			}
+			mappings[str] = arr;
 		}
-		function pushPath(paths, main, base, alias){
-			paths.push(base + main + alias);
+		function mapPath(mappings, str, main, base, alias){
+			mappings[str] = base + main + alias;
 		}
 		function resolveModulePath(base, path){
 			var x;
