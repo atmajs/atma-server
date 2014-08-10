@@ -69,12 +69,12 @@ UTest({
 					]
 				}
 			});
-			io.File.Factory.registerHandler(
+			io.File.getFactory().registerHandler(
 				this.path.package, this.package
 			);
 		},
 		$after () {
-			io.File.Factory.unregisterHandler(this.path.package);
+			io.File.getFactory().unregisterHandler(this.path.package);
 		},
 		'javascripts and styles' (done) {
 			atma
