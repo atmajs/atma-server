@@ -1,6 +1,5 @@
 include.exports = {
 	process: function(config, done){
-		
 		io
 			.File
 			.getFactory()

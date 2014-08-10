@@ -9,7 +9,7 @@ UTest({
 						server: {
 							scripts: {
 								npm: [
-									'atma-io'
+									'appcfg'
 								]
 							}
 						}
@@ -20,9 +20,9 @@ UTest({
 				var scripts = app.config.env.server.scripts.__npm;
 				
 				has_(scripts, [
-					'/node_modules/atma-io/./lib/io.min.js'
+					'/node_modules/appcfg/lib/config.js'
 				]);
-				is_(app.lib.io, 'Object');
+				is_(app.lib.config, 'Function');
 				done();
 			})
 	},
@@ -36,7 +36,7 @@ UTest({
 						server: {
 							scripts: {
 								npm: [
-									'atma-io::Foo'
+									'appcfg::Foo'
 								]
 							}
 						}
@@ -47,10 +47,73 @@ UTest({
 				var scripts = app.config.env.server.scripts.__npm;
 				
 				has_(scripts, [
-					'/node_modules/atma-io/./lib/io.min.js::Foo'
+					'/node_modules/appcfg/lib/config.js::Foo'
 				]);
-				is_(app.lib.Foo, 'Object');
+				is_(app.lib.Foo, 'Function');
 				done();
 			})
+	},
+	'should support array as `main` property': {
+		$before () {
+			this.path = {
+				package: /body-parser\/package\.json$/
+			};
+			this.package = Class({
+				Base: io.File,
+				exists: () => true,
+				content: {
+					main: [
+						'foo.js',
+						'baz.js',
+						'quux.css'
+					]
+				}
+			});
+			io.File.Factory.registerHandler(
+				this.path.package, this.package
+			);
+		},
+		$after () {
+			io.File.Factory.unregisterHandler(this.path.package);
+		},
+		'javascripts and styles' (done) {
+			atma
+				.server
+				.Application({
+					configs: null,
+					config: {
+						env: {
+							server: {
+								scripts: {
+									npm: [
+										'body-parser'
+									]
+								}
+							},
+							client: {
+								styles: {
+									npm: [
+										'body-parser'
+									]
+								}
+							}
+						}
+					}
+				})
+				.done(app => {
+					var scripts = app.config.env.server.scripts.__npm,
+						styles = app.config.env.client.styles.__npm
+					
+					has_(scripts, [
+						'/node_modules/body-parser/foo.js',
+						'/node_modules/body-parser/baz.js',
+					]);
+					has_(styles, [
+						'/node_modules/body-parser/quux.css'
+					]);
+					done();
+				})
+		}
 	}
+	
 })
