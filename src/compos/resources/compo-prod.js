@@ -2,7 +2,7 @@ var Prod_Scripts = Compo({
 	template:[
 		// import:string tmpl-prod.mask
 	][0],
-	model: 'server:all',
+	mode: 'server:all',
 	cache: {
 		byProperty: 'ctx.page.id'
 	},

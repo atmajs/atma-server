@@ -12,5 +12,5 @@
 		return (responder = server.StaticContent.create(config));
 	};
 	
-	var responder;
+	var responder = null;
 }());

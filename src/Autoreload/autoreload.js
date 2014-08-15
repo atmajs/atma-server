@@ -46,7 +46,7 @@ var Autoreload;
 			if (WatcherHandler.isWatching(file)) 
 				return;
 			
-			if (file.exists() === false)
+			if (io.File.prototype.exists.call(file) === false)
 				return;
 			
 			WatcherHandler.watch(file);
