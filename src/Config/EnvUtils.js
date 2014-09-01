@@ -31,6 +31,7 @@ var EnvUtils = (function() {
 			if (page.env != null) {
 				scripts = scripts.concat(getResources(
 					'scripts'
+					, this.env
 					, page.env
 				));
 			}
@@ -80,6 +81,7 @@ var EnvUtils = (function() {
 			if (page.env) {
 				styles = styles.concat(getResources(
 					'styles'
+					, cfg.env
 					, page.env
 				));
 			}
@@ -208,11 +210,11 @@ var EnvUtils = (function() {
 
 		register(env.client && env.client.routes);
 		register(env.both   && env.both.routes);
-
+		register(routes);
+		
 		switch (type) {
 
 			case 'page':
-				register(routes);
 				resolve(pckg);
 				break;
 
@@ -222,8 +224,9 @@ var EnvUtils = (function() {
 
 			case 'scripts':
 			case 'styles':
-				resolve(env.client && env.client[type]);
-				resolve(env.both   && env.both[type]);
+				var obj = pckg || env;
+				resolve(obj.client && obj.client[type]);
+				resolve(obj.both   && obj.both[type]);
 				break;
 			default:
 				logger.error('Unsupported type', type);
@@ -256,8 +259,6 @@ var EnvUtils = (function() {
 
 		if (source.routes)
 			obj_extend(include.routes, source.routes);
-
-
 
 		return include;
 	}
