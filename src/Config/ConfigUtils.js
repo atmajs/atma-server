@@ -155,7 +155,8 @@ var cfg_prepair,
 		var _types = {
 			'bower': {
 				'dir': 'bower_components',
-				'package': 'bower.json'
+				'package': 'bower.json',
+				'alternate': 'component.json'
 			},
 			'npm': {
 				'dir': 'node_modules',
@@ -252,6 +253,17 @@ var cfg_prepair,
 				var pckgPath = resolveModulePath(
 					base, dirName + '/' + name + '/' + packageName
 				);
+				if (pckgPath == null) {
+					if (data.alternate) {
+						pckgPath = resolveModulePath(
+							base, dirName + '/' + name + '/' + data.alternate
+						);
+					}
+					if (pckgPath == null) {
+						logger.error('<Module is not resolved>', name);
+						return;
+					}
+				}
 				io
 					.File
 					.readAsync(pckgPath)
@@ -304,10 +316,8 @@ var cfg_prepair,
 				}
 				
 				base = base.combine('../');
-				if (base.path === '' || base.path === '/') {
-					logger.error('<Module path is not resolved>', path);
-					break;
-				}
+				if (base.path === '' || base.path === '/') 
+					return null;
 			}
 			return path;
 		}
