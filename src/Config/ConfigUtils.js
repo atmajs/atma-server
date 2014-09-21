@@ -228,6 +228,10 @@ var cfg_prepair,
 			var dirName = data.dir,
 				packageName = data.package;
 			arr.forEach(function(name){
+				if (name == null) {
+					// could be when conditional configuration item is falsy
+					return;
+				}
 				
 				var map = name;
 				var aliasIndex = name.indexOf('::'),
