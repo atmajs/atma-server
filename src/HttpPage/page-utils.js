@@ -56,7 +56,7 @@ var page_Create,
 			}
 			
 			rewrittenHandler
-				.process(ctx.req, ctx.res)
+				.process(ctx.req, ctx.res, ctx.config)
 				.done(page.resolveDelegate())
 				.fail(page.rejectDelegate())
 				;
@@ -86,7 +86,15 @@ var page_Create,
 		}
 		
 		page.ctx = new HttpContext(page, config, req, res);
-		
+		if ('redirect' in page.data) {
+			page.ctx.redirect(page.data.redirect);
+			return page;
+		}
+		if ('rewrite' in page.data) {
+			req.url = page.data.rewrite;
+			page.app.handlers.get(page.app, req, page_rewriteDelegate(page));
+			return page;
+		}
 		if ('secure' in page.data) {
 			
 			var user = req.user,

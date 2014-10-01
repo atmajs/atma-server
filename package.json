@@ -1,46 +1,46 @@
 {
-    "name": "atma-server",
-    "description": "Server Application",
-    "author": {
-        "name": "Alexander Kit",
-        "email": "alex.kit@atmajs.com"
-    },
-    "version": "0.1.19",
-    "main": "./lib/server.js",
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/atmajs/atma-server.git"
-    },
-    "license": "MIT",
-    "dependencies": {
-        "atma-logger": ">0.0.81",
-        "atma-io": ">0.1.82",
-        "atma-libs": ">0.9.51",
-        "appcfg": ">=0.1.41",
-        "static-content": "~1.0.16",
-        "socket.io": ">1.0.0"
-    },
-    "scripts": {
-        "test": "atma test"
-    },
-    "devDependencies": {
-        "atma": "latest",
-        "atma-loader-traceur": "latest",
-        "mongodb": "latest",
-        "body-parser": "latest",
-        "supertest": "~0.13.0"
-    },
-    "atma": {
-        "settings": {
-            "atma-loader-traceur": {
-                "extensions": [
-                    "es6",
-                    "test"
-                ]
-            }
-        },
-        "plugins": [
-            "atma-loader-traceur"
+  "name": "atma-server",
+  "description": "Server Application",
+  "author": {
+    "name": "Alexander Kit",
+    "email": "alex.kit@atmajs.com"
+  },
+  "version": "0.1.19",
+  "main": "./lib/server.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/atmajs/atma-server.git"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "atma-logger": ">0.0.81",
+    "atma-io": "~0.1.86",
+    "atma-libs": ">0.9.51",
+    "appcfg": ">=0.1.41",
+    "static-content": "~1.0.16",
+    "socket.io": ">1.0.0"
+  },
+  "scripts": {
+    "test": "atma test"
+  },
+  "devDependencies": {
+    "atma": "latest",
+    "atma-loader-traceur": "latest",
+    "mongodb": "latest",
+    "body-parser": "latest",
+    "supertest": "~0.13.0"
+  },
+  "atma": {
+    "settings": {
+      "atma-loader-traceur": {
+        "extensions": [
+          "es6",
+          "test"
         ]
-    }
+      }
+    },
+    "plugins": [
+      "atma-loader-traceur"
+    ]
+  }
 }
