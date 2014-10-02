@@ -15,6 +15,7 @@ var Autoreload;
             
 			include.cfg('autoreload', this);
             
+			this.base = app.config.base;
             return this;
         },
         
@@ -58,7 +59,7 @@ var Autoreload;
         
         fileChanged: function(path, sender){
             
-            WatcherHandler.fileChanged(path, sender);
+            WatcherHandler.fileChanged(path, sender, null, this.base);
         },
         
         isWatching: function(file){
