@@ -169,6 +169,12 @@ _scripts / styles_ for the NodeJS application itself and for the web pages. They
 			# any other data, which then is accessable via javascript or mask
 			# `ctx.page.data.title`
 			title: String
+
+			# rewrite the page request to some other route
+			rewrite: String
+
+			# redirect the page request to some other route
+			redirect: String
 	```
 	
 ## Endpoints
@@ -485,4 +491,4 @@ $ atma plugin install atma-loader-less
 ```
 
 ----
-(c) 2014 MIT
+:copyright: ``` 2014-2015; MIT; The Atma.js Project ```
