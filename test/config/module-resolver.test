@@ -69,6 +69,11 @@ UTest({
 					]
 				}
 			});
+			this.file = Class({
+				Base: io.File,
+				exists: () => true,
+				content: 'Foo'
+			});
 			io.File.getFactory().registerHandler(
 				this.path.package, this.package
 			);

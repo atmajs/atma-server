@@ -51,7 +51,7 @@ UTest({
 			})
 	},
 	
-	'!service meta check - fail': function(done){
+	'service meta check - fail': function(done){
 		$
 			.ajax({
 				url: '/help-foo',

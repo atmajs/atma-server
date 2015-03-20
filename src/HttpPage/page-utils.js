@@ -131,30 +131,24 @@ var page_Create,
 	};
 	
 	page_process = function(page, nodes, onSuccess){
-		var html = mask.render(
-			nodes,
-			page.model,
-			page.ctx,
-			null,
-			page
-		);
-		
-		if (page.ctx._rewrite != null) {
-			__app
-				.handlers
-				.get(page.ctx._rewrite, page_rewriteDelegate(page));
-			return;
-		}
-		
-		if (page.ctx.async) {
-			page
-				.ctx
-				.done(onSuccess)
-				.fail(page.rejectDelegate());
-			return;
-		}
-		
-		onSuccess(html)
+		mask
+			.renderAsync(
+				nodes,
+				page.model,
+				page.ctx,
+				null,
+				page
+			)
+			.done(function(html){
+				if (page.ctx._rewrite != null) {
+					__app
+						.handlers
+						.get(page.ctx._rewrite, page_rewriteDelegate(page));
+					return;
+				}
+				onSuccess(html);
+			})
+			.fail(page.rejectDelegate());
 	};
 	(function(){
 		page_processPartial = function(page, nodes, selectors){

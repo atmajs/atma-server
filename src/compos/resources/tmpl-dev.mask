@@ -10,14 +10,10 @@ script type='text/javascript' > :html > '''
 		.js(~[scripts])
 		.done(function(){
 			
-			var start = new Date(),
-				App = Compo({
-					compos: {}
-				});
-				
-			window.app = new App;
-			mask.Compo.bootstrap(document.body, app);
-			console.log('Render - ', new Date() - start);
+			var start = Date.now();
+			
+			window.app =  mask.Compo.bootstrap(document.body);
+			console.log('Render - ', Date.now() - start);
 		});
 	
 '''

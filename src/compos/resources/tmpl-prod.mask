@@ -6,13 +6,8 @@ each(scripts){
 	script type='text/javascript' src='~[.]';
 }
 
-script type='text/javascript' > :html > '''
-	
-	include
-		.allDone(function(){
-			var App = Compo({ compos: {} });
-				
-			window.app = new App;
-			mask.Compo.bootstrap(document.body, app);
-		});
-'''
+script {	
+	include.allDone(function(){
+		window.app = Compo.bootstrap(document.body);
+	});
+}
