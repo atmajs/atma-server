@@ -5,7 +5,7 @@
     "name": "Alexander Kit",
     "email": "alex.kit@atmajs.com"
   },
-  "version": "0.1.20",
+  "version": "0.1.21",
   "main": "./lib/server.js",
   "repository": {
     "type": "git",
@@ -17,7 +17,7 @@
     "atma-io": "~0.1.86",
     "atma-libs": "^0.9.66",
     "atma-logger": ">0.0.81",
-    "socket.io": ">1.0.0",
+    "socket.io": "^1.3.5",
     "static-content": "~1.0.16"
   },
   "scripts": {
