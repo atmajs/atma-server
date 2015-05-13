@@ -2,7 +2,9 @@ var Dev_Scripts = Compo({
 	template:[
 		// import:string tmpl-dev.mask
 	][0],
-	mode: 'server:all',
+	meta: {
+		mode: 'server',
+	},
 	onRenderStart: function(model, ctx){
 		model = model_getScripts(
 			ctx.page, ctx.config
