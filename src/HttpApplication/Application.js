@@ -299,9 +299,13 @@
 			// Handler responds to the request itself
 			return;
 		
+		var headers__ = handler.meta && handler.meta.headers;
 		handler
 			.done(function(content, statusCode, mimeType, headers){
 				var send = handler.send || send_Content;
+				if (headers__ != null) {
+					headers = obj_defaults(headers, headers__);
+				}
 				send(res, content, statusCode, mimeType, headers);
 			})
 			.fail(function(error, statusCode){
@@ -310,7 +314,7 @@
 					handler.sendError(error, req, res, app.config);
 					return;
 				}
-				send_Error(res, error);
+				send_Error(res, error, headers__);
 			});
 	}
 	function handler_processRaw(app, handler, m_req, m_res) {
