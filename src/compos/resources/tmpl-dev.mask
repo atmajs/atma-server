@@ -6,7 +6,7 @@ script type='text/javascript' > :html > '''
 	window.DEBUG = true;
 	
 	include
-		.cfg(~[: "a" + include.config])
+		.cfg(~[include.config])
 		.routes(~[include.routes])
 		.js(~[scripts])
 		.done(function(){
