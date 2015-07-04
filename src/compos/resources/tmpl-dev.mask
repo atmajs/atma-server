@@ -1,11 +1,12 @@
 
 script type='text/javascript' src='~[include.src]';
 
-script type='text/javascript' > '''
+
+script type='text/javascript' > :html > '''
 	window.DEBUG = true;
 	
 	include
-		.cfg(~[include.config])
+		.cfg(~[: "a" + include.config])
 		.routes(~[include.routes])
 		.js(~[scripts])
 		.done(function(){
