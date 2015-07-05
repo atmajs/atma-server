@@ -1,6 +1,3 @@
-require('atma-libs/globals-dev');
-require('atma-logger/lib/global-dev');
-require('atma-io');
 require('../../lib/server.js');
 
 var TestController = atma.server.HttpPage({
@@ -33,7 +30,7 @@ global.app = atma
 		app.processor({
 			before: [
 				function (req, res, next) {
-					logger.log('Request:', req.url);
+					console.log('Request:', req.url);
 					next()
 				},
 				require('body-parser').json()
