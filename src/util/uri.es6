@@ -1,5 +1,5 @@
 var Uri;
-(function(){
+(function () {
 	
 	Uri = mask.class.create({
 		protocol: null,		
@@ -149,7 +149,7 @@ var Uri;
                     path = uri.path,
                     forward;
                 while (path) {
-                    if (this.path.indexOf(path) == 0) {
+                    if (this.path.indexOf(path) === 0) {
                         forward = this.path.replace(path, '');
                         break;
                     }
@@ -176,7 +176,7 @@ var Uri;
         toDir () {
         	 var str = this.protocol ? this.protocol + '://' : '';
             
-            return str + util_combinePathes(this.host, this.path, '/')
+            return str + util_combinePathes(this.host, this.path, '/');
         },
         isRelative () {
             return !(this.protocol || this.host);
@@ -187,10 +187,9 @@ var Uri;
 	});
 
     var rgx_protocol = /^([a-zA-Z]+):\/\//,
-		rgx_fileWithExt = /([^\/]+(\.[\w\d]+)?)$/i,
 		rgx_extension = /\.([\w\d]+)$/i,
-		rgx_win32Drive = /(^\/?\w{1}:)(\/|$)/
-		
+		rgx_win32Drive = /(^\/?\w{1}:)(\/|$)/,
+		rgx_fileWithExt = /([^\/]+(\.[\w\d]+)?)$/i
 		;
 
 	function util_isUri(object) {

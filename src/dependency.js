@@ -27,14 +27,14 @@ var io,
                 ? (dev  || '/lib/' + name + '.js')
                 : (prod || '/lib/' + name + '.min.js')
                 ;
-        };
-    });
+        }
+    }());
     
     logger      = require('atma-logger');
-    io          = require('atma-io');
-    Class       = require('atma-class');
-    ruta        = require('ruta').ruta;
-    mask        = require('maskjs');
+    io          = global.io && global.io.File ? global.io : require('atma-io');
+    Class       = global.Class || require('atma-class');
+    ruta        = global.ruta  || require('ruta').ruta;
+    mask        = global.mask  || require('maskjs');
     jmask       = mask.jmask;
     Compo       = mask.Compo;
     Routes      = ruta.Collection;
@@ -45,32 +45,5 @@ var io,
     }
     include     = global.include;
     includeLib  = global.includeLib;
-    
-    return;
-
-    // logger
-    if (global.logger)
-        logger = global.logger;
-    
-    if (logger == null) 
-        logger = require('atma-logger')
-    
-    // io
-    if (global.io && global.io.File) 
-        io = global.io;
-    
-    if (io == null) 
-        io = require('atma-io');
-    
-    
-    Class       = atma.Class;
-    ruta        = atma.ruta;
-    mask        = atma.mask;
-    jmask       = mask.jmask;
-    Compo       = mask.Compo;
-    include     = atma.include;
-    includeLib  = atma.includeLib;
-    Routes      = ruta.Collection;
-    Log         = logger('atma-server');
 
 }());
