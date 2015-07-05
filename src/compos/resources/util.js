@@ -87,7 +87,7 @@ var model_getScripts,
 		return model;
 	};
 	
-	var combine_ = net.Uri.combine;
+	var combine_ = Uri.combine;
 	
 	function _getPageId(page){
 		var id = page.data && page.data.id;

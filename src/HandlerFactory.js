@@ -218,7 +218,7 @@ var HandlerFactory = (function(){
 		if (is_String(controller)) {
 			var path = path_hasProtocol(controller)
 				? controller
-				: net.Uri.combine(base, controller)
+				: Uri.combine(base, controller)
 				;
 			
 			processor_loadAndInit(factory, path, route, callback);

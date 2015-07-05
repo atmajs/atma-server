@@ -155,14 +155,14 @@ var EnvUtils = (function() {
 				location = this.page.location.template,
 				path = this.$formatPath(location, template)
 				;
-			return net.Uri.combine(this.base, path);
+			return Uri.combine(this.base, path);
 		},
 		$getMaster: function(pageData) {
 			var master = pageData.master || this.page.index.master,
 				location = this.page.location.master,
 				path = this.$formatPath(location, master)
 				;
-			return net.Uri.combine(this.base, path);
+			return Uri.combine(this.base, path);
 		},
 		$getController: function(pageData) {
 			var controller = pageData.controller || this.page.index.controller;
@@ -172,7 +172,7 @@ var EnvUtils = (function() {
 			var location = this.page.location.controller,
 				path = this.$formatPath(location, controller)
 				;
-			return net.Uri.combine(this.base, path);
+			return Uri.combine(this.base, path);
 		},
 		$getCompo: function(pageData) {
 			var compo = pageData.compo;
@@ -182,7 +182,7 @@ var EnvUtils = (function() {
 			var location = this.page.location.compo || this.page.location.controller,
 				path = this.$formatPath(location, compo)
 				;
-			return net.Uri.combine(this.base, path);
+			return Uri.combine(this.base, path);
 		}
 	};
 

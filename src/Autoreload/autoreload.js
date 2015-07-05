@@ -30,7 +30,7 @@ var Autoreload;
 				requestedUrl = requestedUrl.substring(0, q);
 			
 			var root = config.static || config.base || '/',
-				path = net.Uri.combine(root, requestedUrl),
+				path = Uri.combine(root, requestedUrl),
             	file = new io.File(path)
 				;
             file.requestedUrl = requestedUrl;

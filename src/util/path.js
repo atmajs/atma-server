@@ -28,7 +28,7 @@ var path_hasProtocol,
 		if (base_ == null) 
 			ensureBase();
 			
-		return net.Uri.combine(base_, path);
+		return Uri.combine(base_, path);
 	};
 	
 	var base_;

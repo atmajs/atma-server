@@ -14,9 +14,12 @@
   "license": "MIT",
   "dependencies": {
     "appcfg": ">=0.1.41",
+    "atma-class": "^1.1.69",
     "atma-io": "~0.1.86",
-    "atma-libs": "^0.9.66",
     "atma-logger": ">0.0.81",
+    "includejs": "^0.9.14",
+    "maskjs": "^0.51.34",
+    "ruta": "^0.1.17",
     "socket.io": "^1.3.5",
     "static-content": "^1.0.22"
   },

@@ -48,7 +48,7 @@ var WatcherHandler;
                     return;
                 }
                 if (base) {
-                    base = new net.Uri(base).toLocalFile();
+                    base = new Uri(base).toLocalFile();
                     path = path.replace(base, '');
                 }
                 

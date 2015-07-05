@@ -33,7 +33,7 @@ var cfg_prepair,
 			}
 			var path = path_hasProtocol(config)
 				? config
-				: net.Uri.combine(base, config)
+				: Uri.combine(base, config)
 				;
 			return { path: path };
 		}
@@ -111,7 +111,7 @@ var cfg_prepair,
 		
 		var dfr = new Class.Await,
 			sources = cfg.plugins.map(function(name){
-				var base = new net.Uri(cfg.base),
+				var base = new Uri(cfg.base),
 					path = 'node_modules/' + name + '/index.js',
 					x;
 				while (true) {
@@ -216,7 +216,7 @@ var cfg_prepair,
 			return dfr;
 		}
 		function resolvePaths(config, resourceType, packageSystem, arr, cb){
-			var base = new net.Uri(config.base),
+			var base = new Uri(config.base),
 				paths = [],
 				mappings = {};
 			
