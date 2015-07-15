@@ -2,20 +2,13 @@ var host = 'http://localhost:5888'
 UTest({
 	
 	'$config': {
-		'http.eval': function(done) {
-			
-			include
-				.instance(io.env.currentDir.combine('test/examples/').toDir())
-				.inject('server.es6')
-				.done(function(){
-					
-					spawnServer('page', function() {
-						
-						done();
-					});
-				});
-		}
-		
+		'http.process': {
+			command: {
+				command: 'node index --port 5888',
+				cwd: 'examples/page'
+			},
+			matchReady: '/Server on/'
+		},
 	},
 	'get': function(done){
 		UTest

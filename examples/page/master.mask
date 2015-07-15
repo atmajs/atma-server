@@ -1,6 +1,7 @@
-layout:master #default >
+layout:master default >
 	
 	:document {
 		body >
-			@placeholder #body;
+			@body;
+		
 	}
