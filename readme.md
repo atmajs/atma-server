@@ -240,14 +240,14 @@ module.exports = atma.server.HttpService({
 })
 ```
 
-##### Service endpoints
-###### Function
+#### Service endpoints
+##### Function
 
 ```javascript
-atma.server.HttpService(/* endpoints */ {
+atma.server.HttpService(/*endpoints*/ {
 	// route:handler
 	'route': function(req, res, params){
-		this.resolve(/* @see Handler */);
+		this.resolve(/*@see Handler*/);
 		this.reject(...);
 	},
 	
@@ -257,7 +257,7 @@ atma.server.HttpService(/* endpoints */ {
 })
 ```
 
-###### Meta - help & validation
+##### Meta - help & validation
  - **help** - list all endpoints of a service with there meta information. `http://127.0.0.1/rest/user?help`
  - **validation** - when sending data with `post`/`put`, httpservice will validate it before processing
 	```javascript
@@ -300,6 +300,20 @@ atma.server.HttpService(/* endpoints */ {
 			process: function(req, res, params) { ... }
 		}
 	})
+	```
+	- *Headers* Set default headers for the service
+	```javascript
+	atma.server.HttpService({
+		'/route': {
+			meta: {
+				headers: {
+					'Access-Control-Allow-Origin': '*',
+					'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+				}
+			},
+			process: function(req, res, params) { ... }
+		}
+	});
 	```
 
 ###### Barricades (_Middlewares_)
@@ -402,7 +416,8 @@ Some things we remind:
 	{ req: <Request>, res: <Response>, page: <HttpPage (current instance)> }
 	```
 - **Render-mode**
-	- ```javascript
+	-
+	```javascript
 		mode: 'server' | 'client' | 'both' // @default is 'both'
 		modeModel: 'server' // if `server` is defined, the model wont be serialized
 	```
