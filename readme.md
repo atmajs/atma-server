@@ -412,15 +412,18 @@ so that the logic could be moved to each component. We wont explain what a compo
 Some things we remind:
 
 - **Context**
+	
 	```javascript
-	{ req: <Request>, res: <Response>, page: <HttpPage (current instance)> }
+		{ req: <Request>, res: <Response>, page: <HttpPage (current instance)> }
 	```
+	
 - **Render-mode**
-	-
+	
 	```javascript
 		mode: 'server' | 'client' | 'both' // @default is 'both'
 		modeModel: 'server' // if `server` is defined, the model wont be serialized
 	```
+	
 - **Cache**
 	Each components output could be cached and the conditions could be defined.
 	- `byProperty`: For each unique value from model or ct
