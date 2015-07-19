@@ -414,14 +414,14 @@ Some things we remind:
 - **Context**
 	
 	```javascript
-		{ req: <Request>, res: <Response>, page: <HttpPage (current instance)> }
+	{ req: <Request>, res: <Response>, page: <HttpPage (current instance)> }
 	```
 	
 - **Render-mode**
 	
 	```javascript
-		mode: 'server' | 'client' | 'both' // @default is 'both'
-		modeModel: 'server' // if `server` is defined, the model wont be serialized
+	mode: 'server' | 'client' | 'both' // @default is 'both'
+	modeModel: 'server' // if `server` is defined, the model wont be serialized
 	```
 	
 - **Cache**
