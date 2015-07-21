@@ -18,7 +18,7 @@
     "atma-io": "~0.1.86",
     "atma-logger": ">0.0.81",
     "includejs": "^0.9.14",
-    "maskjs": "^0.52.1",
+    "maskjs": "^0.52.2",
     "ruta": "^0.2.19",
     "socket.io": "^1.3.5",
     "static-content": "^1.1.23"
