@@ -33,7 +33,7 @@ var io,
     logger      = require('atma-logger');
     io          = global.io && global.io.File ? global.io : require('atma-io');
     Class       = global.Class || require('atma-class');
-    ruta        = global.ruta  || require('ruta').ruta;
+    ruta        = global.ruta  || require('ruta');
     mask        = global.mask  || require('maskjs');
     jmask       = mask.jmask;
     Compo       = mask.Compo;
