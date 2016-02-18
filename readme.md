@@ -87,13 +87,13 @@ The default configuration can be viewed here - [link](https://github.com/atmajs/
 
 #### Resources
 _scripts / styles_ for the NodeJS application itself and for the web pages. They are defined in:
-- `config.both.scripts<Object|Array>`
+- `config.env.both.scripts<Object|Array>`
 	
 	`config/env/both.yml`   - shared resources
-- `config.both.scripts<Object|Array>`
+- `config.env.server.scripts<Object|Array>`
 	
 	`config/env/server.yml` - resources for the nodejs application, e.g. server side components paths.
-- `config.both.scripts<Object|Array>`, `config.both.styles<Object|Array>`
+- `config.env.client.scripts<Object|Array>`, `config.env.client.styles<Object|Array>`
 	
 	`config/env/client.yml` - resources, that should be loaded on the client.
 	

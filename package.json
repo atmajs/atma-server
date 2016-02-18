@@ -18,7 +18,7 @@
     "atma-io": "~0.1.86",
     "atma-logger": ">0.0.81",
     "includejs": "^0.9.14",
-    "maskjs": "^0.52.3",
+    "maskjs": ">=0.54.23",
     "ruta": "^0.2.19",
     "socket.io": "^1.3.5",
     "static-content": "^1.1.23"
@@ -28,14 +28,14 @@
   },
   "devDependencies": {
     "atma": "latest",
-    "atma-loader-traceur": "latest",
+    "atma-loader-babel": "latest",
     "mongodb": "latest",
     "body-parser": "latest",
     "supertest": "~0.13.0"
   },
   "atma": {
     "settings": {
-      "atma-loader-traceur": {
+      "atma-loader-babel": {
         "extensions": [
           "es6",
           "test"
@@ -43,7 +43,7 @@
       }
     },
     "plugins": [
-      "atma-loader-traceur"
+      "atma-loader-babel"
     ]
   }
 }
