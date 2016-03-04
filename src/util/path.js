@@ -6,7 +6,7 @@ var path_hasProtocol,
 	path_hasProtocol = function(path){
 		return /^(file|https?):/.test(path);
 	};
-	
+
 	path_normalize = function(path) {
 		return path
 			.replace(/\\/g, '/')
@@ -14,31 +14,31 @@ var path_hasProtocol,
 			.replace(/([^:\/])\/{2,}/g, '$1/')
 			;
 	};
-	path_resolveSystemUrl = function(path){
+	path_resolveSystemUrl = function(path, base){
 		path = path_normalize(path);
-		if (path_hasProtocol(path)) 
+		if (path_hasProtocol(path))
 			return path;
-		
-		if (path[0] === '.' && path[1] === '/') 
+
+		if (path[0] === '.' && path[1] === '/')
 			path = path.substring(2);
-		
-		if (hasSystemRoot(path)) 
+
+		if (hasSystemRoot(path))
 			return 'file://' + path;
-		
-		if (base_ == null) 
+
+		if (base_ == null)
 			ensureBase();
-			
-		return Uri.combine(base_, path);
+
+		return Uri.combine(base || base_, path);
 	};
-	
+
 	var base_;
 	function ensureBase() {
 		base_ = 'file://' + path_normalize(process.cwd() + '/');
 	}
 	function hasSystemRoot(path) {
-		if (path[0] === '/') 
+		if (path[0] === '/')
 			return true;
-		
+
 		return /^[A-Za-z]:[\/\\]/.test(path);
 	}
 }());
