@@ -8,6 +8,7 @@ module.exports = {
 		},
 		'service-node': {
 			exec: 'node',
+			env: '/lib/server.js',
 			tests: 'test/service-node/**.test'
 		},
 

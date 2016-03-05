@@ -1,0 +1,96 @@
+var srv;
+
+UTest({
+	$before (done) {
+		server
+			.Application({
+				configs: null
+			})
+			.done(app => {
+				app
+					.handlers
+					.registerService('^/reject', atma.server.HttpService({
+						'/string': function(){
+							this.reject('String reject');
+						},
+						'/native': function(){
+							this.reject(new TypeError('Native reject'));
+						},
+						'/http': function(){
+							this.reject(atma.server.HttpError('Http reject', 503));
+						},
+						'/object': function(){
+							this.reject({ error: 'FooError', baz: 'Lorem' });
+						}
+					}));
+
+				srv = require('supertest')(
+					require('http').createServer(app.process)
+				);
+				done();
+			})
+	},
+
+	'string error': function(done){
+		srv
+			.get('/reject/string')
+			.expect('Content-Type', 'application/json;charset=utf-8')
+			.expect(500)
+			.end(function(err, res){
+				eq_(err, null);
+
+				var error = JSON.parse(res.text);
+				eq_(error.code, 500);
+				eq_(error.error, 'String reject');
+				deepEq_(Object.keys(error), ['name', 'error', 'code']);
+				done();
+			});
+	},
+	'native error': function(done){
+		srv
+			.get('/reject/native')
+			.expect('Content-Type', 'application/json;charset=utf-8')
+			.expect(500)
+			.end(function(err, res){
+				eq_(err, null);
+
+				var error = JSON.parse(res.text);
+				eq_(error.code, 500);
+				eq_(error.error, 'Native reject');
+
+				deepEq_(Object.keys(error), ['name', 'error', 'code']);
+				done();
+			});
+
+	},
+	'http error': function(done){
+		srv
+			.get('/reject/http')
+			.expect('Content-Type', 'application/json;charset=utf-8')
+			.expect(503)
+			.end(function(err, res){
+				eq_(err, null);
+
+				var error = JSON.parse(res.text);
+				eq_(error.code, 503);
+				eq_(error.error, 'Http reject');
+				deepEq_(Object.keys(error), ['name', 'error', 'code']);
+				done();
+			});
+	},
+	'object error': function(done){
+		srv
+			.get('/reject/object')
+			.expect('Content-Type', 'application/json;charset=utf-8')
+			.expect(500)
+			.end(function(err, res){
+				eq_(err, null);
+				var error = JSON.parse(res.text);
+				deepEq_(error, {
+					error: 'FooError',
+					baz: 'Lorem'
+				});
+				done();
+			});
+	}
+})
