@@ -299,7 +299,8 @@
 			// Handler responds to the request itself
 			return;
 
-		var headers__ = handler.meta && handler.meta.headers;
+		var headers__ = handler_resolveDefaultHeaders(app, handler);
+		
 		handler
 			.done(function(content, statusCode, mimeType, headers){
 				var send = handler.send || send_Content;
@@ -316,6 +317,19 @@
 				}
 				send_Error(res, error, headers__);
 			});
+	}
+	function handler_resolveDefaultHeaders (app, handler) {
+		var headers_Handler = handler.meta && handler.meta.headers,
+			headers_App = app.config.headers;
+
+		if (headers_Handler == null && headers_App == null) {
+			return null;
+		}
+
+		var headers;
+		headers = headers_Handler ? obj_create(headers_Handler) : null;
+		headers = obj_defaults(headers, headers_App);
+		return headers;
 	}
 	function handler_processRaw(app, handler, m_req, m_res) {
 		if (handler instanceof server.HttpSubApplication) {
