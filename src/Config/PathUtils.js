@@ -7,6 +7,9 @@ var PathUtils;
 		format: function path_format(location, path) {
 			if (path.charCodeAt(0) === 47) {
 				// /
+				if (/\.\w{1,7}$/.test(path) === false) {
+					path += '.mask';
+				}
 				return path;
 			}
 

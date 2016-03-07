@@ -78,13 +78,10 @@ server.HttpPage = (function(){
 			if (data.compo)
 				this.compoPath = cfg.$getCompo(data);
 
-
-			if (this.template == null && this.compoPath == null && this.templatePath == null)
+			// Generate default template path
+			if (this.template == null && this.compoPath == null && this.templatePath == null) {
 				this.templatePath = cfg.$getTemplate(data);
-
-			if (this.master == null && this.masterPath == null && data.master !== null /*strict*/)
-				this.masterPath = cfg.$getMaster(data);
-
+			}
 		},
 		process: function(req, res, config){
 

@@ -300,7 +300,7 @@
 			return;
 
 		var headers__ = handler_resolveDefaultHeaders(app, handler);
-		
+
 		handler
 			.done(function(content, statusCode, mimeType, headers){
 				var send = handler.send || send_Content;
@@ -327,7 +327,7 @@
 		}
 
 		var headers;
-		headers = headers_Handler ? obj_create(headers_Handler) : null;
+		headers = headers_Handler ? Object.create(headers_Handler) : null;
 		headers = obj_defaults(headers, headers_App);
 		return headers;
 	}
