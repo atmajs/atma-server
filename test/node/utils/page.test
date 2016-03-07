@@ -24,8 +24,13 @@ include
 
 				var pages = page_flatternPageViewRoutes(definition, settings);
 				has_(pages, {
-					'_foo': {
-
+					'/foo/sub-a': {
+						template: 'templateMain',
+						category: 'viewSubA'
+					},
+					'/foo/sub-b': {
+						template: 'templateMain',
+						category: 'viewSubB'
 					}
 				});
 			}
