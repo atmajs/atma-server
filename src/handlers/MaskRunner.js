@@ -5,12 +5,12 @@
 
 		app: null,
 
-		Construct (route, app) {
+		Construct: function (route, app) {
 			this.app = app;
 			this.route = route;
 		},
 
-		process (req, res, config) {
+		process: function (req, res, config) {
 			var url = req.url.replace(/\.\w+$/, '');
 			//var path = server.StaticContent.utils.resolvePath(url, config);
 			//if (typeof path !== 'string') {
@@ -30,7 +30,7 @@
 			page
 				.process(req, res, config)
 				.pipe(this);
-				
+
 			return this;
 		}
 	});
