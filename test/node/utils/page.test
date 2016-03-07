@@ -1,0 +1,34 @@
+include
+	.inject('/src/util/page.js')
+	.done(() => {
+
+		UTest({
+			'should flattern subcategories' () {
+				var definition = {
+					'/foo': {
+						template: 'templateMain',
+						view: 'viewMain',
+						category: {
+							'sub-a': {
+								view: 'viewSubA'
+							},
+							'sub-b': {
+								view: 'viewSubB'
+							}
+						}
+					}
+				};
+				var settings = {
+					pattern: '/:view/:category'
+				};
+
+				var pages = page_flatternPageViewRoutes(definition, settings);
+				has_(pages, {
+					'_foo': {
+
+					}
+				});
+			}
+		})
+
+	})

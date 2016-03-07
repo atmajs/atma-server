@@ -20,13 +20,13 @@ var HandlerFactory = (function(){
 			}
 		},
 
-		registerPages: function(pages){
-			var page, id;
-
+		registerPages: function(pages_, pageCfg){
+			var pages = page_flatternPageViewRoutes(pages_, pageCfg),
+				id, page;
 			for (id in pages) {
 
 				page = pages[id];
-
+				
 				if (page.controller == null) {
 					page.controller = server.HttpPage;
 				}
@@ -394,8 +394,6 @@ var HandlerFactory = (function(){
 			return this.reject('Invalid Routing');
 		}
 	});
-
-
 
 	return HandlerFactory;
 }());

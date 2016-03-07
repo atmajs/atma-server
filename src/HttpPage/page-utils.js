@@ -74,9 +74,9 @@ var page_Create,
 	};
 
 	page_proccessRequest = function(page, req, res, config) {
-		if (page.route) {
+		if (page.pattern) {
 			var query = ruta
-				.parse(page.route, req.url)
+				.parse(page.pattern, req.url)
 				.params;
 
 			for(var key in query){

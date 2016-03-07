@@ -21,6 +21,9 @@ page:
 	
 	urls:
 		login: /login
+		
+	pattern: '/:view/:category/:section'
+	
 pages:
 	
 	/:
