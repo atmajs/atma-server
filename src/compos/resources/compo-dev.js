@@ -9,7 +9,9 @@ var Dev_Scripts = Compo({
 		model = model_getScripts(
 			ctx.page, ctx.config
 		);
-		
+
+		var resources = model_getResources(ctx.config);
+
 		this.model = {
 			include: {
 				src: model.include.src,
@@ -20,7 +22,7 @@ var Dev_Scripts = Compo({
 				.map(function(x){
 					return "'" + x + "'";
 				})
-				.join(',\n')
+				.join(',\n'),
 		};
 	}
 });

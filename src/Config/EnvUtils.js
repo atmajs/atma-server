@@ -10,7 +10,7 @@ var EnvUtils = (function() {
 
 			return scripts;
 		}),
-		
+
 		$getScriptsForPageOnly: Class.Fn.memoize(function(pageID) {
 			var page = this.pages[pageID],
 				scripts = [];
@@ -90,13 +90,13 @@ var EnvUtils = (function() {
 				var path = this.$getCompo(page),
 					resource = include.getResource(path);
 				if (resource != null) {
-					
+
 					resource.includes.forEach(function(x){
 						if (x.resource.type === 'css')
 							styles.push(x.resource.url);
 					});
 				}
-				
+
 				else {
 					logger
 						.error('<page:styles> compo resource is undefined', path);
@@ -135,7 +135,7 @@ var EnvUtils = (function() {
 			incl_extend(include, {
 				routes: env.both.routes
 			});
-			
+
 			incl_extend(include, {
 				routes: env.client.routes
 			});
@@ -166,9 +166,9 @@ var EnvUtils = (function() {
 		},
 		$getController: function(pageData) {
 			var controller = pageData.controller || this.page.index.controller;
-			if (controller == null) 
+			if (controller == null)
 				return null;
-			
+
 			var location = this.page.location.controller,
 				path = this.$formatPath(location, controller)
 				;
@@ -176,13 +176,45 @@ var EnvUtils = (function() {
 		},
 		$getCompo: function(pageData) {
 			var compo = pageData.compo;
-			if (compo == null) 
+			if (compo == null)
 				return null;
-			
+
 			var location = this.page.location.compo || this.page.location.controller,
 				path = this.$formatPath(location, compo)
 				;
 			return Uri.combine(this.base, path);
+		},
+		$getImports: function(targetEnv){
+			var both = this.env.both.imports,
+				target = this.env[targetEnv].imports;
+
+			var types = {
+				'mask': ' mask ',
+				'script': ' js es6 jsx ',
+				'style': ' css less sass scss '
+			};
+			function getType(path) {
+				var ext = /\w+$/.exec(path);
+				if (ext == null) {
+					logger.error('Not parsable extension', path);
+					return 'unknown';
+				}
+				for(var type in types) {
+					if (types[type].indexOf(ext) > -1) {
+						return type;
+					}
+				}
+				logger.error('Unknown extension', path);
+				return 'uknown';
+			}
+
+			return _flatternResources(both).concat(_flatternResources(target))
+				.map(function(path) {
+					return {
+						path: path,
+						type: getType(path)
+					};
+				});
 		}
 	};
 
@@ -211,7 +243,7 @@ var EnvUtils = (function() {
 		register(env.client && env.client.routes);
 		register(env.both   && env.both.routes);
 		register(routes);
-		
+
 		switch (type) {
 
 			case 'page':
@@ -281,6 +313,46 @@ var EnvUtils = (function() {
 		return target;
 	}
 
+	var _flatternResources;
+	(function(){
+		_flatternResources = function(mix, base) {
+			if (mix == null) {
+				return [];
+			}
+			if (typeof mix === 'string') {
+				return _combinePath(base, mix);
+			}
+			if (mask.is.Array(mix)) {
+				return _fromArray(mix, base);
+			}
+			if (mask.is.Object(mix)) {
+				return _fromObj(mix, base);
+			}
+		};
+		function _fromObj(json, base) {
+			var arr = [];
+			for (var key in json) {
+				arr = arr.concat(_flatternResources(json[key], _combinePath(base, key)));
+			}
+			return arr;
+		}
+		function _fromArray(arr, base) {
+			var out = [],
+				imax = arr.length,
+				i = -1;
+			while( ++i < imax ) {
+				out = out.concat(_flatternResources(arr[i], base));
+			}
+			return out;
+		}
+
+		function _combinePath(a, b){
+			if (a == null || b == null) {
+				return a || b;
+			}
+			return Uri.combine(a, b);
+		}
+	}());
 
 	return EnvUtils;
 }());

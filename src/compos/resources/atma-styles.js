@@ -1,9 +1,11 @@
 var Styles = Compo({
-	mode: 'server:all',
+	meta: {
+		mode: 'server:all',
+	},
 	nodes: mask.parse(
 		"each (.) > link type='text/css' rel='stylesheet' href='~[.]';"
 	),
-	cache: DEBUG 
+	cache: DEBUG
 		? { byProperty: 'ctx.page.id' }
 		: null
 		,

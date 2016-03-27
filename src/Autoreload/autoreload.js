@@ -14,6 +14,7 @@ var Autoreload;
                 configs.watch(reloadConfigDelegate(app));
             
 			include.cfg('autoreload', this);
+            mask.cfg('allowCache', false);
             
 			this.base = app.config.base;
             return this;

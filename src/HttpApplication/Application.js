@@ -220,7 +220,8 @@
 			on: _emitter.on.bind(_emitter),
 			off: _emitter.off.bind(_emitter),
 			once: _emitter.once.bind(_emitter),
-			trigger: _emitter.trigger.bind(_emitter)
+			trigger: _emitter.trigger.bind(_emitter),
+			Config: Config
 		}
 	});
 
@@ -382,6 +383,18 @@
 			.js(env.server.scripts)
 			.js(env.both.scripts)
 			;
+
+		config.$getImports('server').forEach(function(x){
+			if (x.type === 'script') {
+				app.resources.js(x.path);
+				return;
+			}
+			if (x.type === 'mask') {
+				app.resources.mask(x.path);
+				return;
+			}
+		});
+
 		app
 			.resources
 			.done(function(resp){
