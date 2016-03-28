@@ -1,12 +1,15 @@
 script type='text/javascript' src='~[include.src]';
-script type='text/javascript' > :html > '''
+script type='text/javascript' > <:html>
 	window.DEBUG = true;
-	
+
 	include
 		.cfg(~[include.config])
 		.routes(~[include.routes])
 		.js(~[scripts])
+
+		~[imports || '']
+
 		.done(function(){
 			window.app =  mask.Compo.bootstrap(document.body);
 		});
-'''
+</:html>

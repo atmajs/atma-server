@@ -35,6 +35,13 @@ module.exports = {
 			tests: 'test/config/**.test'
 		},
 
+		'compo': {
+			exec: 'node',
+			env: '/lib/server.js',
+			tests: 'test/compo/**.test'
+		},
+
+
 		'handlers': {
 			exec: 'node',
 			env: '/lib/server.js',

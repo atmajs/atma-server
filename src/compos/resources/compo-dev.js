@@ -10,8 +10,21 @@ var Dev_Scripts = Compo({
 			ctx.page, ctx.config
 		);
 
-		var resources = model_getResources(ctx.config);
-
+		var importsArr = ctx.config.$getImports('client');
+		var importsStr;
+		if (importsArr.length) {
+			importsStr = importsArr.map(function(x){
+				if (x.type === 'script') {
+					return ".js('" + x.path + "')"
+				}
+				if (x.type === 'style') {
+					return ".css('" + x.path + "')"
+				}
+				if (x.type === 'mask') {
+					return ".mask('" + x.path + "')"
+				}
+			}).join('\n');
+		}
 		this.model = {
 			include: {
 				src: model.include.src,
@@ -23,6 +36,7 @@ var Dev_Scripts = Compo({
 					return "'" + x + "'";
 				})
 				.join(',\n'),
+			imports: importsStr
 		};
 	}
 });

@@ -1,19 +1,18 @@
-
 include
 	.load('dev.html')
 	.done(function(resp){
-	
+
 	include.exports = Compo({
 		mode: 'server:all',
-		
+
 		scripts: null,
 		renderStart: function(model, ctx){
-			
+
 			this.include = app
 				.config
 				.page
 				.getInclude();
-			
+
 			this.scripts = app
 				.config
 				.page
@@ -22,7 +21,7 @@ include
 					return "'" + x + "'";
 				})
 				.join(',\n');
-				
+
 		},
 		toHtml: function(){
 			return resp
@@ -33,6 +32,6 @@ include
 				.replace('%SCRIPTS%', this.scripts);
 		}
 	});
-	
+
 
 });
