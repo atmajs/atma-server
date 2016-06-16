@@ -29,14 +29,16 @@ var Dev_Scripts = Compo({
 			include: {
 				src: model.include.src,
 				routes: JSON.stringify(model.include.routes, null, 4),
-				config: JSON.stringify(model.include.cfg, null, 4)
+				config: JSON.stringify(model.include.cfg, null, 4),
+				maskSrc: model.mask.src
 			},
 			scripts: model.scripts
 				.map(function(x){
 					return "'" + x + "'";
 				})
 				.join(',\n'),
-			imports: importsStr
+			imports: importsStr,
+			mask: model.mask
 		};
 	}
 });

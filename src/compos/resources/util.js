@@ -1,7 +1,7 @@
 var model_getScripts,
 	model_getStyles;
 (function(){
-	
+
 	model_getStyles = function(page, config, partial){
 		var pageId = _getPageId(page);
 		if (DEBUG) {
@@ -10,21 +10,21 @@ var model_getScripts,
 				: config.$getStylesForPageOnly(pageId)
 				;
 		}
-		
+
 		var array = partial !== true
 			? [ _formatPagePath('styles.css', config) ]
 			: []
 			;
 		var buildData = _getBuildData(pageId, config);
-		if (buildData == null) 
+		if (buildData == null)
 			return array;
-		
-		if (buildData.styles) 
+
+		if (buildData.styles)
 			array.push(_formatPagePath(pageId  + '/styles.css', config));
-		
+
 		return array;
 	};
-	
+
 	model_getScripts = function(page, config, partial, cb){
 		var pageId = _getPageId(page),
 			model = {
@@ -35,14 +35,15 @@ var model_getScripts,
 					cfg: null,
 					routes: null
 				},
+				mask: config.env.client.mask,
 				buildVersion: config.buildVersion,
 			};
 		if (DEBUG) {
 			// includejs information
 			var includeMeta = config.$getInclude();
-			if (includeMeta) 
+			if (includeMeta)
 				model.include = includeMeta;
-				
+
 			model.scripts = partial !== true
 				? config.$getScripts(pageId)
 				: config.$getScriptsForPageOnly(pageId)
@@ -50,10 +51,10 @@ var model_getScripts,
 			cb && cb(model);
 			return model;
 		}
-		
+
 		var base = config.static || config.base,
 			tmpls = [];
-			
+
 		if (partial !== true) {
 			model.scripts.push(
 				_formatPagePath('scripts.js', config)
@@ -75,7 +76,7 @@ var model_getScripts,
 				);
 			}
 		}
-		
+
 		include
 			.instance()
 			.load(tmpls)
@@ -83,12 +84,12 @@ var model_getScripts,
 				model.templates = (resp.load.App  || '') + (resp.load.Page || '');
 				cb && cb(model);
 			});
-			
+
 		return model;
 	};
-	
+
 	var combine_ = Uri.combine;
-	
+
 	function _getPageId(page){
 		var id = page.data && page.data.id;
 		if (id == null) {
@@ -114,7 +115,7 @@ var model_getScripts,
 			);
 			return null;
 		}
-		
+
 		return buildData;
 	}
 	function _formatPagePath(path, config){

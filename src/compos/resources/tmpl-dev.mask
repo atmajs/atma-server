@@ -1,4 +1,7 @@
 script type='text/javascript' src='~[include.src]';
+if (mask.src) {
+	script type='text/javascript' src='~[mask.src]';
+}
 script type='text/javascript' > <:html>
 	window.DEBUG = true;
 
