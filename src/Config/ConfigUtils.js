@@ -7,6 +7,7 @@ var cfg_prepair,
 	configurate_Include,
 	configurate_Mask,
 	configurate_Pages,
+	configurate_PageFiles,
 	configurate_Plugins,
 	configurate_Projects,
 	configurate_BowerAndCommonJS
@@ -100,6 +101,28 @@ var cfg_prepair,
 			//
 			//delete pages[key];
 		}
+	};
+	
+	configurate_PageFiles = function (cfg, app) {
+		var folder = cfg.page.location.pageFiles;
+		var base = cfg.$get('base');
+		var pageFilesFolder = Uri.combine(base, folder);
+		return io
+			.Directory
+			.readFilesAsync(pageFilesFolder, '**.html.mask')
+			.then(function (files) {
+				files.forEach(file => {
+					var rel = file.uri.toRelativeString(pageFilesFolder);
+					console.log(rel);
+					var i = rel.indexOf(/\.|\//);
+					var name = rel.substring(0, i);
+					
+					i = rel.lastIndexOf('/');
+					var path = rel.substring(0, i);
+					cfg.rewrites[ name ] = Uri.combine(folder, path);
+					logger.log(cfg.rewrites)
+				})				
+			});
 	};
 
 	configurate_Plugins = function(cfg, app){

@@ -77,12 +77,13 @@ var Config;
 				// fail(error)
 				throw new Error('<app:configuration>', error);
 			})
-			.done(function() {
+			.then (function() {
 				var cfg = this;
 
-				new Class.Await(
+				return new Class.Await(
 					configurate_Mask(cfg),
 					configurate_Include(cfg),
+					configurate_PageFiles(cfg, app),
 					configurate_Pages(cfg, app),
 					configurate_Plugins(cfg, app),
 					configurate_BowerAndCommonJS(cfg, app)

@@ -1,0 +1,34 @@
+UTest({
+    'should resolve imports from `both`'() {
+        var imports = {
+            '/public': {
+                'foo/baz': [
+                    'a.js', 'b.mask'
+                ]
+            }
+        };
+        var config = new atma.server.Application.Config({
+            base: './examples/',
+            configs: null,
+            config: {
+                env: {
+                    both: {
+                        imports: imports
+                    },
+                    client: {}
+                },
+                page: {
+                    location: {
+                        pageFiles: 'pages/'
+                    }
+                }
+            },
+            disablePackageJson: true
+        });
+
+
+        return config.then(config => {
+            console.log('OK');
+        })
+    }
+})
