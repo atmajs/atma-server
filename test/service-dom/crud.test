@@ -1,4 +1,3 @@
-
 var Foo = Class({
 	Base: Class.Serializable,
 	Store: Class.Remote('/rest/foo/?:_id'),
@@ -130,15 +129,15 @@ UTest({
 				has_(json, [
 					{
 						method: 'GET',
-						path: '/foo/:id'
+						path: '$get /foo/:id'
 					},
 					{
 						method: 'POST',
-						path: '/foo'
+						path: '$post /foo'
 					},
 					{
 						method: 'PUT',
-						path: '/foo/:id',
+						path: '$put /foo/:id',
 						arguments: {
 							'?_id': null,
 							'?name': 'string'
@@ -146,7 +145,7 @@ UTest({
 					},
 					{
 						method: 'PATCH',
-						path: '/foo/:id'
+						path: '$patch /foo/:id'
 					}
 				]);
 				

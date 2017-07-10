@@ -48,6 +48,7 @@ server.HttpService = (function(){
 					method: endpoint.method || '*',
 					path: endpoint.definition
 				};
+				logger.log('>>>>>', endpoint);
 
 				meta = endpoint.value.meta;
 				if (meta) {
