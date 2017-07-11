@@ -1,8 +1,10 @@
+import Class from 'atma-class'
+
 const Utils = require('atma-utils');
 
 export const logger = require('atma-logger');
 export const io          = global.io && global.io.File ? global.io : require('atma-io');
-export const Class       = require('atma-class');
+
 export const ruta        = global.ruta  || require('ruta');
 export const mask        = global.mask  || require('maskjs');
 export const jmask       = mask.jmask;
@@ -19,3 +21,6 @@ if (global.include == null) {
 export const include     = global.include;
 export const includeLib  = global.includeLib;
 
+
+
+export { Class }

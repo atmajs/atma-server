@@ -1,13 +1,29 @@
-import { server } from '../export'
-import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_Object } from '../dependency'
+import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_Object, obj_extend } from '../dependency'
+import { Request, Response } from './Message'
+import { cli_arguments } from '../util/cli'
+import { app_isDebug } from '../util/app'
+import { HttpError } from '../HttpError/HttpError'
+import HandlerFactory from '../HandlerFactory'
+import WebSocket from '../WebSocket'
+import Config from '../Config/Config'
+import SubApp from './SubApp'
+import MiddlewareRunner from '../Business/Middleware'
+import Autoreload from '../Autoreload/Autoreload'
+import { initilizeEmbeddedComponents } from '../compos/exports'
 
-	var _emitter = new Class.EventEmitter;
 
-	// import ../Config/Config.js
-	// import SubApp.js
-	// import Message.js
 
-	class Application extends Class.Deferred {
+var _emitter = new Class.EventEmitter;
+
+	
+	interface IApplicationConfig {
+		args?: {
+			[key: string]: string
+		}
+	}
+	
+
+	class Application extends Class.Deferred<Application> {
 		
 		// <Boolean>, if instance is the root application, and not one of the subapps
 		isRoot = false
@@ -38,20 +54,22 @@ import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_O
 		// webSockets
 		webSockets = null
 
-		constructor (proto = {}){
-			super();
+		config: any
+		args: {
+			[key: string]: string
+		}
+		_baseConfig: IApplicationConfig
 
-			if (this instanceof server.Application === false)
-				return new server.Application(proto);
-
+		constructor (proto:IApplicationConfig = {}){
+			super();		
 
 			// if a root application
-			if (__app == null)
-				__app = this;
+			if (Application.current == null)
+				Application.current = this;
 
-			this.isRoot = this === __app;
+			this.isRoot = this === Application.current;
 			this.handlers = new HandlerFactory(this);
-			this.webSockets = WebSocket(this);
+			this.webSockets = new WebSocket(this);
 
 			this.args = obj_extend(proto.args, cli_arguments());
 			this._baseConfig = proto;
@@ -62,32 +80,31 @@ import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_O
 
 			this.process = this.process.bind(this);
 			return this;
-		},
+		}
 
 		//@obsolete
-		respond: function(req, res, next){
+		respond (req, res, next){
 			this.process(req, res, next);
-		},
+		}
 		//@obsolete
-		responder: function(data){
+		responder(data){
 			this._innerPipe = MiddlewareRunner.create(data && data.middleware);
 			return responder(this);
-		},
+		}
 
 		//> Generic HttpServer scenario, responder should be also used in the middleware
 		//@obsolete
-		responders: function(array){
+		responders(array){
 			this._outerPipe = new MiddlewareRunner(array);
-		},
+		}
 
 		/**
 		 * :before - Array|Function - Middleware fns in OUTER pipe, before main responder
 		 * :middleware - Arrat|Function - Middleware fns in INNER pipe, before the Handler
 		 * :after - Array|Function - Middlewarefns in OUTER pipe, after the Handler
 		 */
-		processor: function(data){
-			data = data || {};
-
+		processor(data: {before?: Function[], after?: Function[], middleware?: Function[]} = {}){
+			
 			var before = data.before,
 				after = data.after,
 				middleware = data.middleware;
@@ -98,8 +115,8 @@ import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_O
 			this._outerPipe.add(responder(this));
 			this._outerPipe.add(after);
 			return this;
-		},
-		process: function(req, res, next){
+		}
+		process(req, res, next){
 			if (this._outerPipe == null)
 				this.processor();
 
@@ -109,10 +126,10 @@ import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_O
 				, next || this._404
 				, this.config
 			);
-		},
-		execute: function(url, method, body, headers){
-			var req = new Message.Request(url, method, body, headers),
-				res = new Message.Response;
+		}
+		execute(url, method, body, headers){
+			var req = new Request(url, method, body, headers),
+				res = new Response;
 
 			// @TODO ? middleware pipeline in RAW requests
 			//this._responders.process(
@@ -126,15 +143,15 @@ import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_O
 			//}
 			respond_Raw(this, req, res);
 			return res;
-		},
-		autoreload: function(httpServer){
+		}
+		autoreload(httpServer?){
 			this._server = this._server || httpServer;
 			if (this._server == null)
 				return;
 
 			Autoreload.enable(this);
-		},
-		listen: function(){
+		}
+		listen(){
 			var port, server;
 			var i = arguments.length,
 				mix;
@@ -176,14 +193,14 @@ import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_O
 
 			_emitter.trigger('listen', this);
 			return this._server;
-		},
-		getSubApp: function(path){
+		}
+		getSubApp(path){
 			var route = this.handlers.subapps.get(path);
 			return route && route.value && route.value.app_;
-		},
+		}
 
-		Self: {
-			_loadConfig: function(){
+		//Self: {
+			_loadConfig(){
 
 				var definition = this._baseConfig;
 
@@ -198,9 +215,9 @@ import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_O
 					})
 					;
 				return this;
-			},
+			}
 
-			_404: function(error, req, res){
+			_404(error, req, res){
 				error = error == null
 					? HttpError('Endpoint not found: ' + req.url, 404)
 					: HttpError.create(error)
@@ -215,20 +232,20 @@ import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_O
 				// send json
 				send_Error(res, error);
 			}
-		},
-		Static: {
-			on: _emitter.on.bind(_emitter),
-			off: _emitter.off.bind(_emitter),
-			once: _emitter.once.bind(_emitter),
-			trigger: _emitter.trigger.bind(_emitter),
-			Config: Config,
-			clean () {
-				__app = null;
+		
+		static current: Application = null
+		static on = _emitter.on.bind(_emitter)
+		static off = _emitter.off.bind(_emitter),
+		static once = _emitter.once.bind(_emitter),
+		static trigger = _emitter.trigger.bind(_emitter),
+		static Config = Config,
+		static clean () {
+				Application.current = null;
 				_emitter = new  Class.EventEmitter;
 				return this;
 			}
 		}
-	});
+	};
 
 	server.clean = function () {
 		server.Application.clean();
@@ -422,5 +439,4 @@ import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_O
 			});
 	}
 
-server.Application = Application;
 export default Application;

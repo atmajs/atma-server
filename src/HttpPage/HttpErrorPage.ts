@@ -1,4 +1,10 @@
-var HttpErrorPage = server.HttpErrorPage = Class({
+import { include, mask, logger, Class, obj_default } from '../dependency'
+import { HttpError } from '../HttpError/HttpError'
+import { LIB_DIR } from '../vars'
+import { fn_delegate, fn_proxy } from '../util/fn'
+
+
+const HttpErrorPage =  Class({
 		
 		Extends: [
 			Class.Deferred,
@@ -95,12 +101,12 @@ var HttpErrorPage = server.HttpErrorPage = Class({
 				nodes = this.nodes || template
 				;
 			if (master == null && this.masterPath !== '') {
-				this.reject(HttpError('Page: Masterpage not found'));
+				this.reject(new HttpError('Page: Masterpage not found'));
 				return;
 			}
 			
 			if (nodes == null) {
-				this.reject(HttpError('Page: Template not found'));
+				this.reject(new HttpError('Page: Template not found'));
 				return;
 			}
 			
@@ -115,3 +121,5 @@ var HttpErrorPage = server.HttpErrorPage = Class({
 		}
 	
 	});
+
+export default HttpErrorPage;

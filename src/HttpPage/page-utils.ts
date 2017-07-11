@@ -1,43 +1,34 @@
-var page_Create,
-	page_rewriteDelegate,
-	page_proccessRequest,
-	page_proccessRequestDelegate,
-	page_resolve,
-
-	page_pathAddAlias,
-
-	page_process,
-	page_processPartial,
-
-	pageError_sendDelegate,
-	pageError_failDelegate
-	;
-
-(function(){
-
-	page_Create = function(classProto) {
-
-		if (classProto.middleware) {
-			classProto.middleware = new MiddlewareRunner(
-				classProto.middleware
-			);
-		}
-
-		if (classProto.Base == null) {
-			classProto.Base = Page;
-		} else if (classProto.Extends == null) {
-			classProto.Extends = Page;
-		} else if (Array.isArray(classProto)) {
-			classProto.Extends.push(Page);
-		} else {
-			classProto.Extends = [Page, classProto.Extends];
-		}
-
-		return Class(classProto);
-	};
+import Application from '../HttpApplication/Application'
+import HttpPage from './HttpPage'
+import HttpContext from './HttpContext'
+import { Class, mask, ruta } from '../dependency'
+import MiddlewareRunner from '../Business/Middleware'
+import {send_Content, send_Error } from '../util/send'
 
 
-	page_rewriteDelegate = function(page) {
+export const page_Create = function(classProto) {
+
+	if (classProto.middleware) {
+		classProto.middleware = new MiddlewareRunner(
+			classProto.middleware
+		);
+	}
+
+	if (classProto.Base == null) {
+		classProto.Base = HttpPage;
+	} else if (classProto.Extends == null) {
+		classProto.Extends = HttpPage;
+	} else if (Array.isArray(classProto.Extends)) {
+		classProto.Extends.push(HttpPage);
+	} else {
+		classProto.Extends = [HttpPage, classProto.Extends];
+	}
+
+	return Class(classProto);
+};
+
+
+	export const page_rewriteDelegate = function(page) {
 		var ctx = page.ctx;
 
 		if (ctx.rewriteCount == null)
@@ -63,7 +54,7 @@ var page_Create,
 		}
 	};
 
-	page_proccessRequestDelegate = function(page, req, res, config){
+	export const page_proccessRequestDelegate = function(page, req, res, config){
 		return function(error){
 			if (error) {
 				page.reject(error);
@@ -73,7 +64,7 @@ var page_Create,
 		};
 	};
 
-	page_proccessRequest = function(page, req, res, config) {
+	export const page_proccessRequest = function(page, req, res, config) {
 		if (page.pattern) {
 			var query = ruta
 				.parse(page.pattern, req.url)
@@ -103,14 +94,14 @@ var page_Create,
 				;
 
 			if (user == null || (role && user.isInRole(role)) === false) {
-				page.ctx.redirect(__app.config.page.urls.login);
+				page.ctx.redirect(Application.current.config.page.urls.login);
 				return page;
 			}
 		}
 		return page._load();
 	};
 
-	page_resolve = function(page, data){
+	export const page_resolve = function(page, data){
 		if (page.ctx._redirect != null) {
 			// response was already flushed
 			return;
@@ -119,7 +110,7 @@ var page_Create,
 		page.resolve(data);
 	};
 
-	page_pathAddAlias = function(path, alias){
+	export const page_pathAddAlias = function(path, alias){
 		if (path == null || path === '')
 			return null;
 
@@ -130,7 +121,7 @@ var page_Create,
 		return path + '::' + alias;
 	};
 
-	page_process = function(page, nodes, onSuccess){
+	export const page_process = function(page, nodes, onSuccess){
 		mask
 			.renderAsync(
 				nodes,
@@ -217,14 +208,14 @@ var page_Create,
 	}());
 
 
-	pageError_sendDelegate = function(res, error){
+	export const pageError_sendDelegate = function(res, error){
 
 		return function(html) {
 			send_Content(res, html, error.statusCode || 500, mime_HTML);
 		};
 	};
 
-	pageError_failDelegate = function(res, error){
+	export const pageError_failDelegate = function(res, error){
 		return function(internalError){
 			var str = is_Object(internalError)
 				? JSON.stringify(internalError)
@@ -236,5 +227,3 @@ var page_Create,
 			send_Content(res, 'ErrorPage Failed: ' + str, 500, mime_PLAIN);
 		}
 	};
-
-}());
