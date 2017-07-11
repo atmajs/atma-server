@@ -1,5 +1,5 @@
 
-function cli_arguments(){
+export function cli_arguments () {
 	
 	var argv = process.argv,
 		imax = argv.length,
@@ -27,4 +27,4 @@ function cli_arguments(){
 	}
 	
 	return args;
-}
+};

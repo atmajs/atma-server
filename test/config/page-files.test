@@ -1,5 +1,5 @@
 UTest({
-    'should resolve imports from `both`'() {
+    '//should resolve pages and its rewrites from folder'() {
         var imports = {
             '/public': {
                 'foo/baz': [
@@ -11,6 +11,7 @@ UTest({
             base: './examples/',
             configs: null,
             config: {
+                debug: true,
                 env: {
                     both: {
                         imports: imports

@@ -1,34 +1,26 @@
-include
-	.inject('/lib/server.js')
-	.done(function(resp){
+UTest({
+	
+	'security ctor': function(){
+		function check(error){
+			eq_(error.toString(), 'SecurityError: Baz');
+		}
 		
-		var server = resp.server;
+		var Ctor = atma.server.SecurityError;
+		check(Ctor('Baz'));
+		check(new Ctor('Baz'));
+	},
+	'valid inheritance': function(){
+		var error = atma.server.RequestError('txt');
+		assert(error instanceof Error, 'instanceof Error');
+		assert(error instanceof atma.server.HttpError, 'instanceof HttpError');
+	},
+	'proper stacktrace': function(){
 		
-		UTest({
-			
-			'security ctor': function(){
-				function check(error){
-					eq_(error.toString(), 'SecurityError: Baz');
-				}
-				
-				var Ctor = server.SecurityError;
-				check(Ctor('Baz'));
-				check(new Ctor('Baz'));
-			},
-			'valid inheritance': function(){
-				var error = server.RequestError('txt');
-				assert(error instanceof Error, 'instanceof Error');
-				assert(error instanceof server.HttpError, 'instanceof HttpError');
-			},
-			'proper stacktrace': function(){
-				
-				var err = server.SecurityError('baz');
-				eq_(err.message, 'baz');
-				eq_(err.name, 'SecurityError');
-				eq_(String(err), 'SecurityError: baz');
-				has_(err.stack.split('\n')[1], 'proper stacktrace')
-			}
-			
-		})
-		
-	})
+		var err = atma.server.SecurityError('baz');
+		eq_(err.message, 'baz');
+		eq_(err.name, 'SecurityError');
+		eq_(String(err), 'SecurityError: baz');
+		has_(err.stack.split('\n')[1], 'proper stacktrace')
+	}
+	
+})

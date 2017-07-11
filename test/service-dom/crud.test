@@ -129,15 +129,15 @@ UTest({
 				has_(json, [
 					{
 						method: 'GET',
-						path: '$get /foo/:id'
+						path: '/foo/:id'
 					},
 					{
 						method: 'POST',
-						path: '$post /foo'
+						path: '/foo'
 					},
 					{
 						method: 'PUT',
-						path: '$put /foo/:id',
+						path: '/foo/:id',
 						arguments: {
 							'?_id': null,
 							'?name': 'string'
@@ -145,7 +145,7 @@ UTest({
 					},
 					{
 						method: 'PATCH',
-						path: '$patch /foo/:id'
+						path: '/foo/:id'
 					}
 				]);
 				

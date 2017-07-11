@@ -48,7 +48,9 @@ server.HttpService = (function(){
 					method: endpoint.method || '*',
 					path: endpoint.definition
 				};
-				logger.log('>>>>>', endpoint);
+				if (info.path[0] === '$') {
+					info.path = info.path.substring(info.path.indexOf(' ') + 1);
+				}
 
 				meta = endpoint.value.meta;
 				if (meta) {

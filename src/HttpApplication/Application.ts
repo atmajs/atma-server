@@ -1,45 +1,45 @@
-(function(){
+import { server } from '../export'
+import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_Object } from '../dependency'
+
 	var _emitter = new Class.EventEmitter;
 
 	// import ../Config/Config.js
 	// import SubApp.js
 	// import Message.js
 
-	server.Application = Class({
-		Extends: Class.Deferred,
-
+	class Application extends Class.Deferred {
+		
 		// <Boolean>, if instance is the root application, and not one of the subapps
-		isRoot: false,
+		isRoot = false
 
 		// <HandlerFactory>, stores all endpoints of this application
-		handlers: null,
+		handlers = null
 
 		// <http.Server> , in case `listen` was called.
-		_server: null,
+		_server = null
 
 		// run this middlewares when the endpoint is found. (Runs before the endpoint handler)
-		_innerPipe: null,
+		_innerPipe = null
 
 		// run this middlewares by all requests. Conains also endpoint resolver
-		_outerPipe: null,
+		_outerPipe = null
 
 		//@obsolete
-		_responder: null,
-		_responders: null,
-		middleware: null,
+		_responder = null
+		_responders = null
+		middleware = null
 
 		// Loaded server scripts from `config.env.scripts` and `config.env.both`
-		resources: null,
+		resources = null
 
 		// Stores all exports from `resources`
-		lib: null,
+		lib = null
 
 		// webSockets
-		webSockets: null,
+		webSockets = null
 
-		Construct: function(proto){
-			if (proto == null)
-				proto = {};
+		constructor (proto = {}){
+			super();
 
 			if (this instanceof server.Application === false)
 				return new server.Application(proto);
@@ -221,9 +221,19 @@
 			off: _emitter.off.bind(_emitter),
 			once: _emitter.once.bind(_emitter),
 			trigger: _emitter.trigger.bind(_emitter),
-			Config: Config
+			Config: Config,
+			clean () {
+				__app = null;
+				_emitter = new  Class.EventEmitter;
+				return this;
+			}
 		}
 	});
+
+	server.clean = function () {
+		server.Application.clean();
+		return this;
+	};
 
 
 	function responder(app) {
@@ -345,7 +355,7 @@
 	function cfg_doneDelegate(app) {
 		return function() {
 			_emitter.trigger('configurate', app);
-
+			
 			initilizeEmbeddedComponents(app);
 			var cfg = app.config;
 			app
@@ -360,7 +370,7 @@
 			if (app_isDebug())
 				include.cfg('autoreload', true);
 
-			resources_load(app, function(){
+			resources_load(app, function(){				
 				app.resolve(app);
 			});
 		}
@@ -394,7 +404,6 @@
 				return;
 			}
 		});
-
 		app
 			.resources
 			.done(function(resp){
@@ -413,4 +422,5 @@
 			});
 	}
 
-}());
+server.Application = Application;
+export default Application;

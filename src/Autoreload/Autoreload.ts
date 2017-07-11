@@ -1,6 +1,9 @@
-var Autoreload;
-(function(){
-    Autoreload = {
+import { io, Class, logger, include, mask, Uri } from '../dependency'
+
+import WatcherHandler from './WatcherHandler'
+import ConnectionSocket from './ConnectionSocket'
+
+export default {
 		enabled: false,
 		enable: function(app){
             this.enabled = true;
@@ -82,8 +85,6 @@ var Autoreload;
         }
     };
 
-    // import WatcherHandler.js
-    // import Connection.js
     
     var root = path_resolveSystemUrl('/');
         
@@ -100,6 +101,3 @@ var Autoreload;
                 ;
         };
     }
-    
-    
-}());

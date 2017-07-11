@@ -1,4 +1,10 @@
-var ConfigUtils = {
+import { io, Class, logger, include, mask, Uri, includeLib, is_Array, is_String } from '../dependency'
+import {path_hasProtocol} from '../util/path'
+import IncludeUtils from './IncludeUtils'
+import PathUtils from './PathUtils'
+
+
+export default {
 	$formatPath: PathUtils.format
 };
 
@@ -107,6 +113,9 @@ var cfg_prepair,
 		var folder = cfg.page.location.pageFiles;
 		var base = cfg.$get('base');
 		var pageFilesFolder = Uri.combine(base, folder);
+		if (io.Directory.exists(pageFilesFolder) === false) {
+			return;
+		}
 		return io
 			.Directory
 			.readFilesAsync(pageFilesFolder, '**.html.mask')
@@ -359,3 +368,15 @@ var cfg_prepair,
 	}());
 
 }());
+
+
+export {
+	cfg_prepair,
+	configurate_Include,
+	configurate_Mask,
+	configurate_Pages,
+	configurate_PageFiles,
+	configurate_Plugins,
+	configurate_Projects,
+	configurate_BowerAndCommonJS
+}

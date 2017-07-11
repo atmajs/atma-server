@@ -3,7 +3,7 @@ var PageController = atma.server.HttpPage({
 	template: ':document'
 });
 
-var app = atma.server.Application({
+var app = atma.server.clean().Application({
 	base: __dirname,
 	configs: null,
 	config: {

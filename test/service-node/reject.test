@@ -1,34 +1,33 @@
-var srv;
+var rejectService = atma.server.HttpService({
+	'/string': function(){
+		this.reject('String reject');
+	},
+	'/native': function(){
+		this.reject(new TypeError('Native reject'));
+	},
+	'/http': function(){
+		this.reject(atma.server.HttpError('Http reject', 503));
+	},
+	'/object': function(){
+		this.reject({ error: 'FooError', baz: 'Lorem' });
+	}
+});
+var app = atma.server.clean().Application({
+	configs: null,
+	config: {
+		debug: true,
+		services: {
+			'^/reject': rejectService
+		}
+	}
+});
+var srv = require('supertest')(
+	require('http').createServer(app.process)
+);
 
 UTest({
 	$before (done) {
-		server
-			.Application({
-				configs: null
-			})
-			.done(app => {
-				app
-					.handlers
-					.registerService('^/reject', atma.server.HttpService({
-						'/string': function(){
-							this.reject('String reject');
-						},
-						'/native': function(){
-							this.reject(new TypeError('Native reject'));
-						},
-						'/http': function(){
-							this.reject(atma.server.HttpError('Http reject', 503));
-						},
-						'/object': function(){
-							this.reject({ error: 'FooError', baz: 'Lorem' });
-						}
-					}));
-
-				srv = require('supertest')(
-					require('http').createServer(app.process)
-				);
-				done();
-			})
+		app.done(done);		
 	},
 
 	'string error': function(done){

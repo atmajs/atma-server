@@ -8,7 +8,7 @@ var TestController = atma.server.HttpPage({
 			this.model = ctx.req.body;
 		
 	}
-});
+}); 
 
 global.app = atma
 	.server
@@ -26,7 +26,11 @@ global.app = atma
 			}
 		}
 	})
+	.fail(function (error){		
+		console.error(error);
+	})
 	.done(function(app){
+		console.log('started');
 		app.processor({
 			before: [
 				function (req, res, next) {

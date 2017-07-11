@@ -16,7 +16,7 @@ var PageController = atma.server.HttpPage({
 		}
 	`
 });
-var app = atma.server.Application({
+var app = atma.server.clean().Application({
 	configs: null,
 	config: {
 		debug: true,
