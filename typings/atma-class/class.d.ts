@@ -21,7 +21,9 @@ declare namespace Class {
         done (done: (result: T) => void | Deferred<any>)
         fail (fail: (error: any | Error) => void)
         reject(error: any | Error) 
-        resolve(result: T): this
+        resolve(result?: T): this
+        always (always: Function): this
+        delegate(mix: string, x?)
     } 
 
     export class Await<T> extends Deferred<T> {
@@ -37,7 +39,5 @@ declare namespace Class {
 declare interface IClassDeclaration {
     [x: string]: any
 }
-
-
 
 declare function Class<T>(prototype: IClassDeclaration & T): new (...args: any[]) => IClassDeclaration & T;

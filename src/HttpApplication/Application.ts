@@ -125,7 +125,7 @@ class Application extends Class.Deferred<Application> {
 		this._outerPipe.add(after);
 		return this;
 	}
-	process(req, res, next){
+	process(req, res, next?){
 		if (this._outerPipe == null)
 			this.processor();
 
@@ -280,7 +280,7 @@ function responder(app) {
 		);
 	}
 }
-function respond_Raw(app, req, res) {
+export function respond_Raw(app, req, res) {
 	handler_resolve(
 		app
 		, req

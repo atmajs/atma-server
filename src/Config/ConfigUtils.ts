@@ -256,7 +256,7 @@ var cfg_prepair,
 			if (data == null)
 				throw Error('Support:' + Object.keys(_types) + ' Got:' + packageSystem);
 
-			var await = new Class.Await;
+			var awaiter = new Class.Await;
 			var dirName = data.dir,
 				packageName = data.package;
 			arr.forEach(function(name){
@@ -321,10 +321,10 @@ var cfg_prepair,
 						logger.error('Main is not defined', pckgPath);
 					})
 					.fail(logger.error)
-					.always(await.delegate(name, false))
+					.always(awaiter.delegate(name, false))
 					;
 			});
-			await.always(function(){
+			awaiter.always(function(){
 				cb(mappings);
 			});
 		}

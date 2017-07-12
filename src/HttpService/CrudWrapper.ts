@@ -27,7 +27,7 @@ export default {
 			},
 			process: function(req, res, params){
 			
-				await(
+				awaiter(
 					this,
 					Ctor.fetch({ _id: params.id })
 				);
@@ -46,7 +46,7 @@ export default {
 					var x = req[property];
 					x._id = params.id;
 					
-					await(this, x.save());
+					awaiter(this, x.save());
 				}
 			]
 		};
@@ -62,7 +62,7 @@ export default {
 				function(req){
 					var x = req[property];
 					delete x._id;
-					await(this, x.save());
+					awaiter(this, x.save());
 				}
 			]
 		};
@@ -73,7 +73,7 @@ export default {
 			},
 			process: function(req, res, params) {
 				var x = new Ctor({ _id: params.id });
-				await(this, x.del());
+				awaiter(this, x.del());
 			}
 		}
 		
@@ -89,7 +89,7 @@ export default {
 						instance = new Ctor({_id: params.id}).patch(json)
 						;
 					
-					await(this, instance);
+					awaiter(this, instance);
 				}
 			]
 		};
@@ -110,7 +110,7 @@ export default {
 				response: [ properties ]
 			},
 			process: function(){
-				await(this, Ctor.fetch({}));
+				awaiter(this, Ctor.fetch({}));
 			}
 		};
 		
@@ -122,7 +122,7 @@ export default {
 			process: [
 				bodyParser,
 				function(req) {
-					await(this, req[property].save());
+					awaiter(this, req[property].save());
 				}
 			]
 		};
@@ -153,7 +153,7 @@ export default {
 					req[property] = new Ctor(req.body);
 				},
 				function(req) {
-					await(this, req[property].del());
+					awaiter(this, req[property].del());
 				}
 			]
 		};
@@ -171,7 +171,7 @@ export default {
 	}
 };
 
-function await(service, instance){
+function awaiter(service, instance){
 	instance
 		.done(service.resolveDelegate())
 		.fail(service.rejectDelegate())
