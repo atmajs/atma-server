@@ -1,33 +1,26 @@
-import { include, mask, logger, Class, obj_default } from '../dependency'
+import { include, mask, logger, Class } from '../dependency'
 import { HttpError } from '../HttpError/HttpError'
 import { LIB_DIR } from '../vars'
 import { fn_delegate, fn_proxy } from '../util/fn'
+import HttpPageBase from './HttpPageBase'
+import { 
+	page_process, 
+	page_resolve, 
+	page_pathAddAlias, 
+	pageError_sendDelegate, 
+	pageError_failDelegate, 
+	page_proccessRequest } from './page-utils'
 
 
-const HttpErrorPage =  Class({
-		
-		Extends: [
-			Class.Deferred,
-			Resources
-		],
-		
-		template: null,
-		master: null,
-		
-		ctx: null,
-		
-		templatePath: null,
-		masterPath: null,
-		
-		route: null,
-		query: null,
-		model: null,
-		
-		Construct: function(error, pageData, config){
+class HttpErrorPage extends HttpPageBase {
+				
+		constructor (error, pageData, config){
+			super();
 			this._setPageData(pageData, config);
 			this.model = error;
-		},
-		_setPageData: function(data, cfg){
+		}
+		
+		private _setPageData (data, cfg){
 			this.data = data;
 			
 			if (data.masterPath != null) 
@@ -52,34 +45,33 @@ const HttpErrorPage =  Class({
 			if (this.master == null && this.masterPath == null)
 				this.masterPath = cfg.$getMaster(data);
 			
-		},
-		Static: {
-			send: function(error, req, res, config){
-				var pageCfg = config.page,
-					errorPages = pageCfg.errors,
-					genericPage = pageCfg.error
-					;
-					
-				var pageData = (errorPages && errorPages[error.statusCode]) || genericPage;
-				if (pageData == null) {
-					pageData = {
-						masterPath: '',
-						templatePath:  LIB_DIR.combine('../pages/error/error.mask').toString()
-					};
-				}
+		}
+		static send (error, req, res, config){
+			var pageCfg = config.page,
+				errorPages = pageCfg.errors,
+				genericPage = pageCfg.error
+				;
 				
-				return new HttpErrorPage(error, pageData, config).process(req, res, config);
+			var pageData = (errorPages && errorPages[error.statusCode]) || genericPage;
+			if (pageData == null) {
+				pageData = {
+					masterPath: '',
+					templatePath:  LIB_DIR.combine('../pages/error/error.mask').toString()
+				};
 			}
-		},
-		process: function(req, res, config){
+			
+			return new HttpErrorPage(error, pageData, config).process(req, res, config);
+		}
+	
+		process (req, res, config){
 			this
 				.done(pageError_sendDelegate(res, this.model))
 				.fail(pageError_failDelegate(res, this.model))
 				;
 			page_proccessRequest(this, req, res, config);
-		},
+		}
 		
-		_load: function(){
+		private _load (){
 			
 			this.resource = include
 				.instance()
@@ -91,10 +83,10 @@ const HttpErrorPage =  Class({
 				)
 				.done(fn_proxy(this._response, this));
 			return this;
-		},
+		}
 		
 		
-		_response: function(resp){
+		private _response (resp){
 			
 			var master = resp.load.Master || this.master,
 				template = resp.load.Template || this.template,
@@ -120,6 +112,6 @@ const HttpErrorPage =  Class({
 			);
 		}
 	
-	});
+	};
 
 export default HttpErrorPage;

@@ -3,6 +3,10 @@
     "typeRoots": [
       "./node_modules/@types",
       "./typings"
-    ]
-  }
+    ],
+    "target":"es5"    
+  },
+  "include": [
+      "src/**/*"
+  ]
 }

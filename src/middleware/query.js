@@ -1,16 +1,13 @@
-(function(){
-	
-	server.middleware['query'] = function(req, res, next){
-		
-		var url = req.url,
-			q = url.indexOf('?');
-		
-		req.query = q === -1
-			? {}
-			: deserialize(url.substring(q + 1));
-			
-		next();
-	};
-	
-	var deserialize = ruta.$utils.query.deserialize;
-}());
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+var dependency_1 = require("../dependency");
+function default_1(req, res, next) {
+    var url = req.url, q = url.indexOf('?');
+    req.query = q === -1
+        ? {}
+        : deserialize(url.substring(q + 1));
+    next();
+}
+exports.default = default_1;
+;
+var deserialize = dependency_1.ruta.$utils.query.deserialize;

@@ -8,7 +8,7 @@ export const send_JSON = function(res, json, statusCode, headers){
 	try {
 		text = JSON.stringify(json);
 	}catch(error){
-		return send_Error(res, RuntimeError('Json Serialization'));
+		return send_Error(res, new RuntimeError('Json Serialization'));
 	}
 	
 	send_Content(res, text, statusCode || 200, mime_JSON, headers);
@@ -27,9 +27,7 @@ export const send_Error = function(res, error, headers = null){
 	);
 };
 
-
-
-export const send_Content = function(res, content, statusCode, mimeType, headers) {
+export const send_Content = function(res, content, statusCode, mimeType, headers?) {
 	
 	if (typeof content !== 'string' && content instanceof Buffer === false) {
 		
@@ -43,10 +41,9 @@ export const send_Content = function(res, content, statusCode, mimeType, headers
 			return;
 		}
 		
-		send_Error(res, RuntimeError('Unexpected content response'));
+		send_Error(res, new RuntimeError('Unexpected content response'));
 		return;
-	}
-	
+	}	
 	
 	res.setHeader('Content-Type', mimeType || mime_HTML);
 	res.statusCode = statusCode || 200;

@@ -1,9 +1,10 @@
 import Application from '../HttpApplication/Application'
 import HttpPage from './HttpPage'
 import HttpContext from './HttpContext'
-import { Class, mask, ruta } from '../dependency'
+import { logger, Class, mask, ruta, is_Object } from '../dependency'
 import MiddlewareRunner from '../Business/Middleware'
 import {send_Content, send_Error } from '../util/send'
+import {mime_HTML, mime_PLAIN } from '../const/mime'
 
 
 export const page_Create = function(classProto) {
@@ -132,7 +133,8 @@ export const page_Create = function(classProto) {
 			)
 			.done(function(html){
 				if (page.ctx._rewrite != null) {
-					__app
+					Application
+						.current
 						.handlers
 						.get(page.ctx._rewrite, page_rewriteDelegate(page));
 					return;
@@ -141,6 +143,8 @@ export const page_Create = function(classProto) {
 			})
 			.fail(page.rejectDelegate());
 	};
+
+	let page_processPartial
 	(function(){
 		page_processPartial = function(page, nodes, selectors){
 			nodes = __getTemplate(page, nodes, selectors);
@@ -148,7 +152,7 @@ export const page_Create = function(classProto) {
 			__getResources(page, page.ctx.config, function(meta){
 
 				if (meta.templates) {
-					var node = jmask(':html').text(meta.templates);
+					var node = mask.jmask(':html').text(meta.templates);
 					nodes.push(node);
 				}
 
@@ -159,11 +163,7 @@ export const page_Create = function(classProto) {
 						scripts: meta.scripts,
 						styles: meta.styles
 					};
-					page_resolve(page
-						, json
-						, 'application/json'
-						, 200
-					);
+					page_resolve(page, json);
 				});
 			});
 		};
@@ -178,7 +178,7 @@ export const page_Create = function(classProto) {
 				if (selector === '')
 					continue;
 
-				x = jmask(nodes).find(selector);
+				x = mask.jmask(nodes).find(selector);
 				if (x == null) {
 					logger.warn('<HttpPage.partial> Not found `%s`', selectors[i]);
 					continue;
@@ -206,7 +206,7 @@ export const page_Create = function(classProto) {
 
 		var Scripts, Styles;
 	}());
-
+	export { page_processPartial }
 
 	export const pageError_sendDelegate = function(res, error){
 

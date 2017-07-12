@@ -1,26 +1,27 @@
 import Class from 'atma-class'
+import logger from 'atma-logger'
 
 const Utils = require('atma-utils');
+const root = <any> global;
 
-export const logger = require('atma-logger');
-export const io          = global.io && global.io.File ? global.io : require('atma-io');
+if (root.include == null) {
+    require('includejs');
+}
 
-export const ruta        = global.ruta  || require('ruta');
-export const mask        = global.mask  || require('maskjs');
+export const io = root.io && root.io.File ? root.io : require('atma-io');
+
+export const ruta        = root.ruta  || require('ruta');
+export const mask        = root.mask  || require('maskjs');
 export const jmask       = mask.jmask;
 export const Compo       = mask.Compo;
 export const Routes      = ruta.Collection;
 export const Log         = logger('atma-server');
 export const { class_Uri: Uri } = Utils;
 export const { is_String, is_Function, is_Array, is_Object } = Utils;
-export const { obj_extend, obj_default } = Utils; 
+export const { obj_extend, obj_extendDefaults } = Utils; 
 
-if (global.include == null) {
-    require('includejs');
-}
-export const include     = global.include;
-export const includeLib  = global.includeLib;
+export const include     = root.include;
+export const includeLib  = root.includeLib;
 
 
-
-export { Class }
+export { Class, Log as logger }

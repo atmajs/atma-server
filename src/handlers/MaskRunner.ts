@@ -1,34 +1,30 @@
-HandlerFactory.Handlers.MaskRunner = Class({
-	Extends: server.IHttpHandler,
+import HandlerFactory from '../HandlerFactory'
+import IHttpHandler from '../IHttpHandler'
+import HttpPage from '../HttpPage/HttpPage'
 
-	app: null,
+class MaskRunner extends IHttpHandler<any> {
+	
+	constructor (public route, public app) {
+		super();
 
-	Construct: function (route, app) {
 		this.app = app;
 		this.route = route;
-	},
+	}
 
-	process: function (req, res, config) {
+	process (req, res, config) {
 		var url = req.url.replace(/\.\w+$/, '');
-		//var path = server.StaticContent.utils.resolvePath(url, config);
-		//if (typeof path !== 'string') {
-		//	send_Error(res, HttpError('Endpoint not allowed: ' + req.url, 401))
-		//	return;
-		//}
-		//if (io.File.exists(path) === false) {
-		//	send_Error(res, HttpError('Endpoint not found: ' + req.url, 404))
-		//	return;
-		//}
-
 		var route = {
 			current: this.route.current,
 			value: { template: url, master: null }
 		};
-		var page = new server.HttpPage(route, this.app);
+		var page = new HttpPage(route, this.app);
 		page
 			.process(req, res, config)
 			.pipe(this);
 
 		return this;
 	}
-});
+};
+
+
+HandlerFactory.Handlers.MaskRunner = MaskRunner;
