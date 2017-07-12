@@ -81,7 +81,7 @@ export default class HttpSubApplication {
                 that.status = status_loaded;
                 that.dfr.resolve();
             });
-        },
+        }
         
         process: function(req, res){
             if (this.status === status_loading) {

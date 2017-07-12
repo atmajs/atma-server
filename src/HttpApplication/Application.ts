@@ -23,6 +23,8 @@ interface IApplicationConfig {
 	args?: {
 		[key: string]: string
 	}
+	config?: any
+	configs?: any
 }
 
 
