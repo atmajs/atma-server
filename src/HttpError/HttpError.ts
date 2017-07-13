@@ -1,13 +1,21 @@
-import {is_String, is_Object } from '../dependency'
-export class HttpError {
-	name = 'HttpError'
-	_error: Error = null
-	_json: any = null
-	constructor (public message, public statusCode = 500){
-		
-		this._error = Error(message);
+import { Class, is_String, is_Object } from '../dependency'
 
-	}
+export const HttpError = Class({
+	Base: Error,
+	_error: null,
+	_json: null,
+	Construct: function(message, statusCode){
+		if (this instanceof HttpError === false)
+			return new HttpError(message, statusCode);
+
+		this._error = Error(message);
+		this.message = String(message);
+
+		if (statusCode != null)
+			this.statusCode = statusCode;
+	},
+	name: 'HttpError',
+	statusCode: 500,
 	get stack() {
 		if (this._error == null)
 			return;
@@ -27,15 +35,16 @@ export class HttpError {
 		stack.splice(1, end - start + 1);
 
 		return stack.join('\n');
-	}
-	toString () {
+	},
+
+	toString: function(){
 
 		return this.message
 			? this.name + ': ' + this.message
 			: this.name
 			;
-	}
-	toJSON () {
+	},
+	toJSON: function(){
 		if (this._json != null)
 			return this._json;
 
@@ -44,55 +53,161 @@ export class HttpError {
 			error: this.message,
 			code: this.statusCode
 		};
-	}
-	static create (mix, statusCode?){
-		if (is_String(mix))
-			return new HttpError(mix, statusCode);
+	},
+	Static: {
+		create: function(mix, statusCode){
+			if (is_String(mix))
+				return HttpError(mix, statusCode);
 
-		if (mix._error != null) /* instanceof HttpError (weakness of instanceof)*/
-			return mix;
+			if (mix._error != null) /* instanceof HttpError (weakness of instanceof)*/
+				return mix;
 
-		if (mix instanceof Error) {
-			let error = new HttpError(mix.message, statusCode || 500);
-			error._error = mix;
-			return error;
-		}
-
-		if (is_Object(mix)) {
-			if (mix.toString !== _obj_toString) {
-				return new HttpError(
-					mix.toString() , statusCode || mix.statusCode || mix.status
-				);
+			if (mix instanceof Error) {
+				var error = HttpError(mix.message, statusCode || 500);
+				error._error = mix;
+				return error;
 			}
-			var msg = mix.message,
-				code = statusCode || mix.statusCode || mix.status;
 
-			let error = new HttpError(msg, code);
-			error._json = mix;
-			return error;
+			if (is_Object(mix)) {
+				if (mix.toString !== _obj_toString) {
+					return HttpError(
+						mix.toString() , statusCode || mix.statusCode || mix.status
+					);
+				}
+				var msg = mix.message,
+					code = statusCode || mix.statusCode || mix.status,
+					error;
+
+				error = HttpError(msg, code);
+				error._json = mix;
+				return error;
+			}
+			return RuntimeError('Invalid error object: ' + mix);
 		}
-		return new RuntimeError('Invalid error object: ' + mix);
-	}	
+	}
+});
+
+export const RequestError = createError('RequestError'	, 400);
+export const SecurityError = createError('SecurityError'	, 403);
+export const NotFoundError = createError('NotFoundError'	, 404);
+export const RuntimeError = createError('RuntimeError'	, 500);
+
+
+// PRIVATE
+
+var _obj_toString = Object.prototype.toString;
+
+function createError(id, code) {
+	const Ctor = Class({
+		Base: HttpError,
+		Construct: function(...args){
+
+			if (this instanceof Ctor === false) {
+				var arguments_ = [null].concat(...args);
+				return new (Ctor.bind.apply(Ctor, arguments_));
+			}
+
+		},
+		statusCode: code,
+		name: id
+	});
+	return Ctor;
 }
 
-export class RequestError extends HttpError {
-	name = 'RequestError'
-	statusCode = 400
-}
+// export class HttpError {
+// 	name = 'HttpError'
+// 	_error: Error = null
+// 	_json: any = null
+// 	constructor (public message, public statusCode = 500){
+		
+// 		this._error = Error(message);
 
-export class SecurityError extends HttpError {
-	name = 'SecurityError'
-	statusCode = 403
-}
+// 	}
+// 	get stack() {
+// 		if (this._error == null)
+// 			return;
 
-export class NotFoundError extends HttpError {
-	name = 'NotFoundError'
-	statusCode = 404
-}
+// 		var stack = this._error.stack.split('\n'),
+// 			imax = stack.length,
+// 			start = 1,
+// 			end = 1;
 
-export class RuntimeError extends HttpError {
-	name = 'RuntimeError'
-	statusCode = 500
-}
+// 		var rgx = /\[as \w+Error\]/;
 
-const _obj_toString = Object.prototype.toString;
+// 		while (++end < imax) {
+// 			if (rgx.test(stack[end]))
+// 				break;
+// 		}
+
+// 		stack.splice(1, end - start + 1);
+
+// 		return stack.join('\n');
+// 	}
+// 	toString () {
+
+// 		return this.message
+// 			? this.name + ': ' + this.message
+// 			: this.name
+// 			;
+// 	}
+// 	toJSON () {
+// 		if (this._json != null)
+// 			return this._json;
+
+// 		return {
+// 			name: this.name,
+// 			error: this.message,
+// 			code: this.statusCode
+// 		};
+// 	}
+// 	static create (mix, statusCode?){
+// 		if (is_String(mix))
+// 			return new HttpError(mix, statusCode);
+
+// 		if (mix._error != null) /* instanceof HttpError (weakness of instanceof)*/
+// 			return mix;
+
+// 		if (mix instanceof Error) {
+// 			let error = new HttpError(mix.message, statusCode || 500);
+// 			error._error = mix;
+// 			return error;
+// 		}
+
+// 		if (is_Object(mix)) {
+// 			if (mix.toString !== _obj_toString) {
+// 				return new HttpError(
+// 					mix.toString() , statusCode || mix.statusCode || mix.status
+// 				);
+// 			}
+// 			var msg = mix.message,
+// 				code = statusCode || mix.statusCode || mix.status;
+
+// 			let error = new HttpError(msg, code);
+// 			error._json = mix;
+// 			return error;
+// 		}
+// 		return new RuntimeError('Invalid error object: ' + mix);
+// 	}	
+// }
+
+// export class RequestError extends HttpError {
+// 	name = 'RequestError'
+// 	statusCode = 400
+// }
+
+// export class SecurityError extends HttpError {
+// 	name = 'SecurityError'
+// 	statusCode = 403
+// }
+
+// export class NotFoundError extends HttpError {
+// 	name = 'NotFoundError'
+// 	statusCode = 404
+// }
+
+// export class RuntimeError extends HttpError {
+// 	name = 'RuntimeError'
+// 	statusCode = 500
+// }
+
+// const _obj_toString = Object.prototype.toString;

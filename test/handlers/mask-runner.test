@@ -3,7 +3,7 @@ var srv;
 UTest({
 	$before (done) {
 		server
-			.Application({
+			.Application.create({
 				configs: null,
 				config: {
 					pages: {

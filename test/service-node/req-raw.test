@@ -22,7 +22,7 @@ UTest({
 	'$before': function(done){
 		atma
 			.server
-			.Application({
+			.Application.create({
 				configs: null,
 				config: { debug: true }
 			})

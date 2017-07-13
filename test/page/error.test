@@ -1,9 +1,9 @@
-var PageController = atma.server.HttpPage({
-	master: 'layout:master #stab;',
-	template: ':document'
-});
+class PageController extends atma.server.HttpPage {
+	master = 'layout:master #stab;'
+	template = ':document'
+};
 
-var app = atma.server.clean().Application({
+var app = atma.server.clean().Application.create({
 	base: __dirname,
 	configs: null,
 	config: {

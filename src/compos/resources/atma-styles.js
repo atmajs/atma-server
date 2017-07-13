@@ -1,4 +1,4 @@
-var Styles = Compo({
+var Styles = mask.Compo({
 	meta: {
 		mode: 'server:all',
 	},

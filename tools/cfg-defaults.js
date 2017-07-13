@@ -1,21 +1,19 @@
-include.exports = {
-	process: function(config, done){
+module.exports = {
+	process: function(){		
 		io
 			.File
 			.getFactory()
-			.registerHandler(/cfg-defaults\.json$/i, Class({
-				exists: function(){
+			.registerHandler(/cfg-defaults\.json$/i, class {
+				exists (){
 					return true;
-				},
-				read: function(){
+				}
+				read (){
 					
-					logger.log('read cfg defaults'.cyan.bold);
+					console.log('reading cfg defaults'.cyan.bold);
 					
 					return this.content = cfg_getDefaults();
 				}
-			}));
-		
-		done();
+			});
 	}
 };
 

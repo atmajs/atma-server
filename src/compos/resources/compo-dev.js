@@ -1,4 +1,4 @@
-var Dev_Scripts = Compo({
+var Dev_Scripts = mask.Compo({
 	template:[
 		// import:string tmpl-dev.mask
 	][0],

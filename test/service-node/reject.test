@@ -12,7 +12,7 @@ var rejectService = atma.server.HttpService({
 		this.reject({ error: 'FooError', baz: 'Lorem' });
 	}
 });
-var app = atma.server.clean().Application({
+var app = atma.server.clean().Application.create({
 	configs: null,
 	config: {
 		debug: true,

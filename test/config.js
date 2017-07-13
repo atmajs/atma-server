@@ -1,10 +1,16 @@
 module.exports = {
-
+	$config: {
+		$before () {
+			include
+				.cfg('extentionDefault', { js: 'ts' })
+				.cfg('amd', true);
+		}	
+	},
 	suites: {
 		'service-dom': {
 			exec: 'dom',
 			env: 'test/service-dom/before.js',
-			tests: 'test/service-dom/**.test'
+			tests: 'test/service-dom/**.test',			
 		},
 		'service-node': {
 			exec: 'node',

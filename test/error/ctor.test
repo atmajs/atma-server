@@ -6,6 +6,7 @@ UTest({
 		}
 		
 		var Ctor = atma.server.SecurityError;
+		
 		check(Ctor('Baz'));
 		check(new Ctor('Baz'));
 	},

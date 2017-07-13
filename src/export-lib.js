@@ -1,19 +1,15 @@
 require('tslib');
 
-const server = require('./export.ts');
+const server = require('./export.ts')['default'];
 
 (function () {
-	if (exports.atma != null && typeof exports.atma === 'object') {
-		if (exports.atma.server) {
-			obj_extend(exports.atma.server, server);
-			return;
-		}
-		exports.atma.server = server;
-		return;
+	if (global.atma != null && typeof global.atma === 'object') {
+		if (atma.server) {
+			Object.assign(atma.server, server);			
+		} else {
+			atma.server = server;
+		}		
 	}
 
-
-	exports.atma = {
-		server: server
-	};
+	Object.assign(exports, server);
 }());

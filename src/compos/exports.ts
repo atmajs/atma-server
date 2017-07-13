@@ -1,3 +1,5 @@
+import { Uri } from '../dependency'
+
 let initilizeEmbeddedComponents = function (app) {
 	initilizeEmbeddedComponents = function(){};
 	

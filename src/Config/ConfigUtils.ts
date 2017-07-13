@@ -88,15 +88,19 @@ var cfg_prepair,
 		for (key in pages) {
 			page = pages[key];
 
+			/* TODO should we store both versions in pages hash: by key and id? */
 			if (page.id == null) {
 				page.id = key
-					//.replace(/[^\w_-]/g, '_')
-					//.replace(/[_]{2,}/g, '_')
+					// .replace(/[^\w_-]/g, '_')
+					// .replace(/[_]{2,}/g, '_')
 					;
+			} else {
+				pages[page.id] = page;
 			}
 
-			if (page.route == null)
+			if (page.route == null) {
 				page.route = key;
+			}
 
 			//if (pages[page.id] && pages[page.id] !== page)
 			//	logger.error('<page:register> overwrite existed ID',

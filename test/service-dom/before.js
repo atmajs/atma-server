@@ -1,3 +1,7 @@
+include
+	.cfg('extentionDefault', { js: 'ts' })
+	.cfg('amd', true);
+	
 var resume = include.pause();
 UTest.configurate({
 	'http.eval': function(done){

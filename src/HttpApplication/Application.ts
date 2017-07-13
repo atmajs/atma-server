@@ -66,14 +66,20 @@ class Application extends Class.Deferred<Application> {
 	_baseConfig: IApplicationConfig
 
 	constructor (proto:IApplicationConfig = {}){
-		super();		
+		super();
+
+		if (this instanceof Application === false) {
+			throw Error('Application must be created with the `new` keywoard');
+		}
+
 		this._loadConfig = this._loadConfig.bind(this);
 		this._404 = this._404.bind(this);
 		this.process = this.process.bind(this);
 
 		// if a root application
-		if (Application.current == null)
+		if (Application.current == null) {
 			Application.current = this;
+		}
 
 		this.isRoot = this === Application.current;
 		this.handlers = new HandlerFactory(this);
@@ -253,6 +259,9 @@ class Application extends Class.Deferred<Application> {
 		Application.current = null;
 		_emitter = new  Class.EventEmitter;
 		return this;
+	}
+	static create(config: IApplicationConfig ):Application {
+		return new Application(config);
 	}
 };
 

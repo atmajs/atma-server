@@ -1,6 +1,6 @@
 UTest({
 	'should render dev include' (done) {
-		var app = atma.server.clean().Application({
+		var app = atma.server.clean().Application.create({
 			configs: null,
 			debug: true,
 			config: {

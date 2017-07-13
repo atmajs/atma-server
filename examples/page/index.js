@@ -1,18 +1,21 @@
-require('../../lib/server.js');
+let server = require('../../lib/server.js');
 
-var TestController = atma.server.HttpPage({
-	masterPath: '/master.mask',
-	templatePath: '/pages/hello.mask',
-	onRenderStart: function(model, ctx){
+class TestController extends server.HttpPage {
+	constructor () {
+		super();
+		this.masterPath = '/master.mask';
+		templatePath = '/pages/hello.mask';
+	}
+
+	onRenderStart (model, ctx) {
 		if (ctx.req.method === 'POST') 
 			this.model = ctx.req.body;
 		
 	}
-}); 
+}; 
 
-global.app = atma
-	.server
-	.Application({
+global.app = server
+	.Application.create({
 		configs: null,
 		
 		config: {

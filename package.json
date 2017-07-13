@@ -32,7 +32,7 @@
   },
   "devDependencies": {
     "@types/node": "^8.0.10",
-    "app-bundler": "0.0.26",
+    "app-bundler": "0.0.28",
     "atma": "latest",
     "atma-loader-babel": "^1.0.21",
     "body-parser": "latest",
@@ -42,7 +42,7 @@
   },
   "app-bundler": {
     "file": "src/export-lib.js",
-    "outputMain": "lib/index.js",
+    "outputMain": "lib/server.js",
     "package": {
       "module": "commonjs",
       "commonjs": {
@@ -50,7 +50,9 @@
       }
     },
     "extensions": {
-      "io": { "type" : "js" }
+      "io": {
+        "type": "js"
+      }
     },
     "defaultExtensions": {
       "js": "ts"
@@ -70,22 +72,33 @@
       "yamljs"
     ],
     "middlewares": {
-      "js": ["importer:read"],
-      "ts": ["atma-loader-ts:read"]
-    }
+      "js": [
+        "importer:read"
+      ],
+      "ts": [
+        "importer:read",
+        "atma-loader-ts:read"
+      ]
+    },
+    "prebuild": [
+      "tools/cfg-defaults.js"
+    ]
   },
   "atma": {
     "settings": {
-      "atma-loader-babel": {
-        "extensions": [
-          "es6",
-          "test"
-        ]
-      },
       "atma-loader-ts": {
+        "extensions": [
+          "ts",
+          "test"
+        ],
         "typescript": {
           "compilerOptions": {
-            "module": "CommonJS",
+            "#if (!TEST)": {
+              "module": "AMD"
+            },
+            "#if (TEST)": {
+              "module": "CommonJS"              
+            },
             "sourceMap": false
           }
         }

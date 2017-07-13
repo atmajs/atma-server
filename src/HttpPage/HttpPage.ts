@@ -2,12 +2,14 @@ import { include, mask, logger, Class, is_Function } from '../dependency'
 import { HttpError } from '../HttpError/HttpError'
 import { LIB_DIR } from '../vars'
 import { fn_delegate, fn_proxy } from '../util/fn'
+import Application from '../HttpApplication/Application'
 import HttpPageBase from './HttpPageBase'
 import HttpErrorPage from './HttpErrorPage'
 import { 
 	page_process, 
 	page_resolve, 
 	page_pathAddAlias, 
+	page_Create,
 	pageError_sendDelegate, 
 	pageError_failDelegate, 
 	page_proccessRequest,
@@ -17,14 +19,10 @@ import {
 
 export default class HttpPage extends HttpPageBase {
 
-	constructor(mix, app){
+	constructor(route, app: Application){
 		super();
 		
-		if (mix == null)
-			return this;
-
-		var route = mix;
-		if (route.value == null) {
+		if (route == null || route.value == null) {
 			logger.error(
 				'<HttpPage> Route value is undefined'
 			);
@@ -168,6 +166,11 @@ export default class HttpPage extends HttpPageBase {
 			, nodes
 			, fn_delegate(page_resolve, this)
 		);
+	}
+
+
+	static create (mix) {
+		return page_Create(mix);
 	}
 
 }

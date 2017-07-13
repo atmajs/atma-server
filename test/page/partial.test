@@ -1,6 +1,6 @@
-var PageController = atma.server.HttpPage({
-	master: 'layout:master #stab;',
-	template: `
+class PageController extends atma.server.HttpPage {
+	master = 'layout:master #stab;'
+	template = `
 		:document {
 			body {
 				header > 'Header'
@@ -8,8 +8,8 @@ var PageController = atma.server.HttpPage({
 			}
 		}
 	`
-});
-var app = atma.server.clean().Application({
+};
+var app = atma.server.clean().Application.create({
 	configs: null,
 	config: {
 		debug: true,

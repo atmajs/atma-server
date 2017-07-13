@@ -1,6 +1,6 @@
-var PageController = atma.server.HttpPage({
-	master: 'layout:master #stab;',
-	template: `
+class PageController extends atma.server.HttpPage {
+	master = 'layout:master #stab;'
+	template = `
 		:document {
 			atma:styles;
 			atma:scripts;
@@ -15,8 +15,8 @@ var PageController = atma.server.HttpPage({
 			Foo;
 		}
 	`
-});
-var app = atma.server.clean().Application({
+};
+var app = atma.server.clean().Application.create({
 	configs: null,
 	config: {
 		debug: true,

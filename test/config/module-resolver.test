@@ -2,7 +2,7 @@ UTest({
 	'should load commonjs module' (done) {
 		atma
 			.server
-			.Application({
+			.Application.create({
 				configs: null,
 				config: {
 					env: {
@@ -29,7 +29,7 @@ UTest({
 	'should load commonjs module with alias' (done) {
 		atma
 			.server
-			.Application({
+			.Application.create({
 				configs: null,
 				config: {
 					env: {
@@ -84,7 +84,7 @@ UTest({
 		'javascripts and styles' (done) {
 			atma
 				.server
-				.Application({
+				.Application.create({
 					configs: null,
 					config: {
 						env: {

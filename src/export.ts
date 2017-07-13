@@ -11,6 +11,7 @@ import HttpService from './HttpService/HttpService'
 import Middleware from './middleware/export'
 import { server } from './vars'
 import './loader/yml'
+import './handlers/export'
 
 export default {
     Application,
@@ -27,6 +28,7 @@ export default {
     HttpCrudEndpoints,
     HttpService,
     middleware: Middleware,
+    clean: Application.clean,
     ...server
 }; 
 
