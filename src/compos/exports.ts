@@ -1,4 +1,4 @@
-import { Uri } from '../dependency'
+import { mask, Uri } from '../dependency'
 
 let initilizeEmbeddedComponents = function (app) {
 	initilizeEmbeddedComponents = function(){};
