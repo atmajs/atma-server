@@ -12,8 +12,8 @@ import {
 	page_Create,
 	pageError_sendDelegate, 
 	pageError_failDelegate, 
-	page_proccessRequest,
-	page_proccessRequestDelegate,
+	page_processRequest,
+	page_processRequestDelegate,
 	page_processPartial } from './page-utils'
 
 
@@ -36,7 +36,7 @@ export default class HttpPage extends HttpPageBase {
 		this.route = cfg.page.route;
 		this.query = route.current && route.current.params;
 		this._setPageData(data, cfg);
-
+		debugger;
 		return this;
 	}
 	private _setPageData (data, cfg){
@@ -65,12 +65,12 @@ export default class HttpPage extends HttpPageBase {
 	process (req, res, config){
 
 		if (this.middleware == null)
-			return page_proccessRequest(this, req, res, config);
+			return page_processRequest(this, req, res, config);
 
 		this.middleware.process(
 			req,
 			res,
-			page_proccessRequestDelegate(this, req, res, config),
+			page_processRequestDelegate(this, req, res, config),
 			config
 		);
 		return this;

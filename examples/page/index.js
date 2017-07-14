@@ -1,10 +1,10 @@
 let server = require('../../lib/server.js');
 
 class TestController extends server.HttpPage {
-	constructor () {
-		super();
+	constructor (...args) {
+		super(...args);
 		this.masterPath = '/master.mask';
-		templatePath = '/pages/hello.mask';
+		this.templatePath = '/pages/hello.mask';
 	}
 
 	onRenderStart (model, ctx) {
@@ -14,7 +14,7 @@ class TestController extends server.HttpPage {
 	}
 }; 
 
-global.app = server
+server
 	.Application.create({
 		configs: null,
 		

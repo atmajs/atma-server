@@ -9,7 +9,7 @@ import {
 	page_pathAddAlias, 
 	pageError_sendDelegate, 
 	pageError_failDelegate, 
-	page_proccessRequest } from './page-utils'
+	page_processRequest } from './page-utils'
 
 
 class HttpErrorPage extends HttpPageBase {
@@ -68,7 +68,7 @@ class HttpErrorPage extends HttpPageBase {
 				.done(pageError_sendDelegate(res, this.model))
 				.fail(pageError_failDelegate(res, this.model))
 				;
-			page_proccessRequest(this, req, res, config);
+			page_processRequest(this, req, res, config);
 		}
 		
 		private _load (){

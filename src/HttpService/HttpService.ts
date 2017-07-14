@@ -1,4 +1,4 @@
-import { Class, ruta, obj_extend, is_Function, is_Array, is_Object } from '../dependency'
+import { Class, ruta, logger, obj_extend, is_Function, is_Array, is_Object } from '../dependency'
 import { HttpError, NotFoundError, RuntimeError, SecurityError, RequestError } from '../HttpError/HttpError'
 import { secure_canAccess, service_validateArgs } from './utils'
 import { Barricade } from './Barricade'
