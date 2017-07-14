@@ -35,8 +35,7 @@ export default class HttpPage extends HttpPageBase {
 		this.app = app;
 		this.route = cfg.page.route;
 		this.query = route.current && route.current.params;
-		this._setPageData(data, cfg);
-		debugger;
+		this._setPageData(data, cfg);		
 		return this;
 	}
 	private _setPageData (data, cfg){

@@ -1,8 +1,8 @@
 declare module "atma-class" {
-    export default Class;
+    export default ClassFactory;
 }
 
-declare namespace Class {
+declare namespace ClassSelf {
     
     export class EventEmitter {
         on (name: string, callback: Function)
@@ -41,3 +41,8 @@ declare interface IClassDeclaration {
 }
 
 declare function Class<T>(prototype: IClassDeclaration & T): new (...args: any[]) => IClassDeclaration & T;
+
+interface ClassFactory {
+    <T>(prototype: IClassDeclaration & T): new (...args: any[]) => IClassDeclaration & T
+    Deferred: new <T>() => ClassSelf.Deferred<T>
+}

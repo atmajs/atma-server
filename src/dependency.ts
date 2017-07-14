@@ -1,4 +1,4 @@
-const Class = require('atma-class');
+const Class: ClassFactory = <ClassFactory>require('atma-class');
 const logger = require('atma-logger');
 const Utils = require('atma-utils');
 const root = <any> global;

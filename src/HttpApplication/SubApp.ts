@@ -1,20 +1,24 @@
 import { include, Class, is_String } from '../dependency'	
 import Application, { respond_Raw } from './Application'	
+import { IApplicationDefinition, IApplicationConfig } from './IApplicationConfig'	
 
-    var status_initial = '',
-        status_loading = 'loading',
-        status_loaded = 'loaded',
-        status_errored = 'error'
-        ;
-    
-export default class HttpSubApplication {
+var status_initial = '',
+    status_loading = 'loading',
+    status_loaded = 'loaded',
+    status_errored = 'error'
+    ;
+
+
+
+export default class HttpSubApplication extends Class.Deferred<HttpSubApplication> {
     status = status_initial
     app_: Application = null
     path_: string
     dfr: any
 
-    constructor (path, data, parentApp) {
-        
+    constructor (path, mix: Application | string | (IApplicationDefinition & { controller: string}), parentApp) {
+        super();
+
         if (path[0] !== '/') 
             path = '/' + path;
         
@@ -24,14 +28,19 @@ export default class HttpSubApplication {
         this.path_ = path;
         this.dfr = new Class.Deferred;
         
-        if (data instanceof Application) {
-            this.app_ = data;
+        if (mix instanceof Application) {
+            this.app_ = mix;
             this.status = status_loaded;
             return;
         }
+        let controller;
+        if (typeof mix === 'string') {
+            controller = mix;
+        } else {
+            controller = mix.controller;
+        }
         
-        var controller = data.controller || data,
-            that = this;
+        var that = this;
             
         if (is_String(controller)) {
             this.status = status_loading;
@@ -62,8 +71,8 @@ export default class HttpSubApplication {
             return;
         }
         
-        var configs = data.configs,
-            config = data.config
+        var configs = mix.configs,
+            config = mix.config
             ;
         
         if (config == null && configs == null) 

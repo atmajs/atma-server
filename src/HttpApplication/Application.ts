@@ -13,19 +13,13 @@ import HttpErrorPage from '../HttpPage/HttpErrorPage'
 import { initilizeEmbeddedComponents } from '../compos/exports'
 import { send_Error, send_Content } from '../util/send'
 import HttpSubApplication from './SubApp'
-
+import { IApplicationDefinition, IApplicationConfig, IAppConfig } from './IApplicationConfig'
+import HttpRewriter from '../HttpRewrites/HttpRewriter'
 
 
 var _emitter = new Class.EventEmitter;
 
 
-interface IApplicationConfig {
-	args?: {
-		[key: string]: string
-	}
-	config?: any
-	configs?: any
-}
 
 
 class Application extends Class.Deferred<Application> {
@@ -59,13 +53,15 @@ class Application extends Class.Deferred<Application> {
 	// webSockets
 	webSockets = null
 
-	config: any
+	config: IAppConfig & IApplicationConfig
 	args: {
 		[key: string]: string
 	}
 	_baseConfig: IApplicationConfig
 
-	constructor (proto:IApplicationConfig = {}){
+	rewriter = new HttpRewriter
+
+	constructor (proto:IApplicationDefinition = {}){
 		super();
 
 		if (this instanceof Application === false) {
@@ -382,7 +378,7 @@ function handler_processRaw(app, handler, m_req, m_res) {
 		return;
 	handler.pipe(m_res);
 }
-function cfg_doneDelegate(app) {
+function cfg_doneDelegate(app: Application) {
 	return function() {
 		_emitter.trigger('configurate', app);
 		
@@ -396,10 +392,11 @@ function cfg_doneDelegate(app) {
 			.registerServices(cfg.services, cfg.service)
 			.registerWebsockets(cfg.websockets, cfg.websocket)
 			;
-
-		if (app_isDebug())
+		
+		app.rewriter.addRules(cfg.rewriteRules);
+		if (app_isDebug()) {
 			include.cfg('autoreload', true);
-
+		}
 		resources_load(app, function(){				
 			app.resolve(app);
 		});
