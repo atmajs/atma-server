@@ -1,4 +1,4 @@
-import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_Object, obj_extend, obj_extendDefaults } from '../dependency'
+import { mask, include, logger, Uri, Class, Routes, is_String, is_Function, is_Object, obj_extend, obj_extendDefaults } from '../dependency'
 import { Request, Response } from './Message'
 import { cli_arguments } from '../util/cli'
 import { app_isDebug } from '../util/app'
@@ -17,7 +17,7 @@ import { IApplicationDefinition, IApplicationConfig, IAppConfig } from './IAppli
 import HttpRewriter from '../HttpRewrites/HttpRewriter'
 
 
-var _emitter = new Class.EventEmitter;
+var _emitter = new Class.EventEmitter();
 
 
 
@@ -128,9 +128,12 @@ class Application extends Class.Deferred<Application> {
 		return this;
 	}
 	process(req, res, next?){
-		if (this._outerPipe == null)
+		if (this.rewriter) {
+			this.rewriter.rewrite(req);
+		}
+		if (this._outerPipe == null) {
 			this.processor();
-
+		}
 		this._outerPipe.process(
 			req
 			, res

@@ -1,4 +1,4 @@
-const Class: ClassFactory = <ClassFactory>require('atma-class');
+const ClassFactory = require('atma-class') as typeof Class;
 const logger = require('atma-logger');
 const Utils = require('atma-utils');
 const root = <any> global;
@@ -22,4 +22,4 @@ export const include     = root.include;
 export const includeLib  = root.includeLib;
 
 
-export { Class, logger }
+export { ClassFactory as Class, logger }

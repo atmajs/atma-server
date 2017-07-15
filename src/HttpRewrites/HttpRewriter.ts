@@ -3,7 +3,10 @@ import { IncomingMessage } from 'http';
 export default class Rewriter {
     rules: Rule[] = []
     
-    addRules (rules: IRuleDefinition[] = []) {
+    addRules (rules: IRuleDefinition[]) {
+        if (rules == null) {
+            return;
+        }
         this.rules.push( ... rules.map(x => new Rule(x)));
     }
     
