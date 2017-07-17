@@ -1,23 +1,23 @@
 import { include, mask, logger, Class } from '../dependency'
 import {mime_HTML} from '../const/mime'
+import Application from '../HttpApplication/Application'
 
 export default class HttpPageBase extends Class.Deferred<HttpPageBase> {
 	data = {
 		id: null,
 		env: null
 	}
+	isHtmlPage = false
+	template: string
+	master: string
 	
-	template
-	master
+	ctx: any
 	
-	ctx
+	templatePath: string
+	masterPath: string
 	
-	templatePath
-	masterPath
-	
-	route
-	query
-	model
+	query: any
+	model: any
 
 	compoPath: string
 
@@ -25,10 +25,13 @@ export default class HttpPageBase extends Class.Deferred<HttpPageBase> {
 
 	nodes
 
-	app
 	middleware
 
 	onRenderStart:Function
+
+	constructor(public route, public app: Application) {
+		super();
+	}
 
 	//mimeType = mime_HTML
 

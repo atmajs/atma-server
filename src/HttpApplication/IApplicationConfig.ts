@@ -68,7 +68,10 @@ export interface IApplicationConfig {
         index?: {
             template?: string
             master?: string
-        }, 
+        },
+        urls?: {
+            [key: string]: string
+        },
         pattern?: string
     },        
     pages?: {

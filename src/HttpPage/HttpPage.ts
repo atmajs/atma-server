@@ -19,8 +19,8 @@ import {
 
 export default class HttpPage extends HttpPageBase {
 
-	constructor(route, app: Application){
-		super();
+	constructor(route, app: Application) {
+		super(route, app);
 		
 		if (route == null || route.value == null) {
 			logger.error(
@@ -32,8 +32,6 @@ export default class HttpPage extends HttpPageBase {
 		var cfg = app.config,
 			data = route.value;
 
-		this.app = app;
-		this.route = cfg.page.route;
 		this.query = route.current && route.current.params;
 		this._setPageData(data, cfg);		
 		return this;
@@ -55,6 +53,10 @@ export default class HttpPage extends HttpPageBase {
 
 		if (data.compo)
 			this.compoPath = cfg.$getCompo(data);
+
+		if (data.isHtmlPage != null) {
+			this.isHtmlPage = data.isHtmlPage;
+		} 
 
 		// Generate default template path
 		if (this.template == null && this.compoPath == null && this.templatePath == null) {
@@ -157,6 +159,12 @@ export default class HttpPage extends HttpPageBase {
 		var nodes = this.nodes || template;
 		if (this.query.partial) {
 			page_processPartial(this, nodes, this.query.partial);
+			return;
+		}
+		if (this.isHtmlPage) {
+			mask
+				.renderPageAsync(nodes, this.model, this.ctx)
+				.then(html => this.resolve(html), error => this.reject(error));
 			return;
 		}
 

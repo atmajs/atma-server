@@ -1,0 +1,7 @@
+<!DOCTYPE html>
+
+
+<h1>Cars Page</h1>
+<script type='text/mask' data-run='auto'>
+h2 > i > 'Hello'
+</script>

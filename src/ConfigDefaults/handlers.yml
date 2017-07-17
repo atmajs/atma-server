@@ -4,3 +4,4 @@ handler:
 
 handlers:
 	(\.mr$|\.mr\?.+): '/{self}.MaskRunner'
+	(\.html\.mask$|\.html\.mask\?.+): '/{self}.MaskHtml'

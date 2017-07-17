@@ -1,15 +1,23 @@
 import HttpRewriter from '../../src/HttpRewrites/HttpRewriter'
 
 UTest({
-    'should rewrite path' () {
+    'should rewrite beginning of the path' () {
         testRewriter({
             rule: {
-                rule: `^/my-page/ /index/pages/my-page/`
+                rule: `^/my-page/(.*) /index/pages/my-page/$1`
             },
-            url: '/my-page/',
-            target: '/index/pages/my-page/'
+            urls: [
+                '/my-page/', 
+                '/my-page/foo', 
+                '/my-page/style.css?foo=bar'
+            ],
+            targets: [
+                '/index/pages/my-page/',
+                '/index/pages/my-page/foo',
+                '/index/pages/my-page/style.css?foo=bar'
+            ]
         });
-    },
+    },    
     'should rewrite with args' () {
         testRewriter({
             rule: {

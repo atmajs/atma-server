@@ -11,7 +11,7 @@ export default class Rewriter {
     }
     
     rewrite (req: IncomingMessage) {
-        this.rules.forEach(x => x.rewrite(req));
+        this.rules.forEach(x => x.rewrite(req));        
     }
 }
 

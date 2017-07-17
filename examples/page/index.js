@@ -33,7 +33,6 @@ server
 		console.error(error);
 	})
 	.done(function(app){
-		console.log('started');
 		app.processor({
 			before: [
 				function (req, res, next) {
