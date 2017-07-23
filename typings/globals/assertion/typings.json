@@ -1,0 +1,11 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "d:\\atma\\atma-server\\node_modules\\assertion\\typings.json",
+    "raw": "npm:assertion",
+    "main": "typings/assertion.d.ts",
+    "version": "1.3.33",
+    "global": true,
+    "name": "assertion"
+  }
+}

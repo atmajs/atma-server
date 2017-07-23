@@ -145,7 +145,9 @@ export const configurate_Plugins = function (cfg, app) {
 	var dfr = new Class.Await,
 		sources = cfg.plugins.map(function (name) {
 			var base = new Uri(cfg.base),
-				path = 'node_modules/' + name + '/index.js',
+				path = name[0] === '.' || name[0] === '/'
+					? name
+					: 'node_modules/' + name + '/index.js',
 				x;
 			while (true) {
 				x = base.combine(path);

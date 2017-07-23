@@ -1,2 +1,2 @@
-/// <reference path="atma-class/class.d.ts" />
-/// <reference path="string.d.ts" />
+/// <reference path="globals/assertion/index.d.ts" />
+/// <reference path="globals/node/index.d.ts" />

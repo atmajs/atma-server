@@ -1,9 +1,9 @@
 {
   "compilerOptions": {  
-    "baseUrl": "./src",
     "typeRoots": [
       "./node_modules/@types",
-      "./typings"
+      "./typings",
+      "./types"
     ],
     "target":"es5"    
   },
