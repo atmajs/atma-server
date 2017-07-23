@@ -19,7 +19,7 @@ export const Request = Class({
 });
 
 export const Response = Class({
-	Extends: [
+	Extends: <any> [
 		Class.EventEmitter,			
 		Class.Deferred
 	],

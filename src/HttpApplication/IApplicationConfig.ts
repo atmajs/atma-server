@@ -10,6 +10,7 @@ export interface IApplicationDefinition {
 
 export interface IApplicationConfig {
     base?: string
+    debug?: boolean
     env?: {
         both?: {
             include?: {
@@ -50,30 +51,7 @@ export interface IApplicationConfig {
         /** regex pattern : Path to the controllers script file */
         [urlPattern: string]: string
     },
-    page?: {
-        location?: {
-            controller?: string 
-            template?: string 
-            master?: string 
-            viewTemplate?: string 
-            viewController?: string 
-            viewStyle?: string 
-            pageFiles?: string 
-        }
-        extension?: {
-            javascript?: string
-            style?: string
-            template?: string
-        }
-        index?: {
-            template?: string
-            master?: string
-        },
-        urls?: {
-            [key: string]: string
-        },
-        pattern?: string
-    },        
+    page?: IPageConfiguration,        
     pages?: {
         [urlPattern: string]: {
             id?: string
@@ -87,8 +65,14 @@ export interface IApplicationConfig {
         /** regex pattern : Path to the controllers script file */
         [urlPattern: string]: string
     },
+    subapp?: {
+
+    },
     subapps?: {
         [urlPattern: string]: string | (IApplicationDefinition & { controller: string})
+    },
+    websocket?: {
+
     },
     websockets?: {
 
@@ -101,6 +85,32 @@ export interface IApplicationConfig {
 }
 
 
+export interface IPageConfiguration {
+    location?: {
+        controller?: string 
+        template?: string 
+        master?: string 
+        viewTemplate?: string 
+        viewController?: string 
+        viewStyle?: string 
+        pageFiles?: string 
+    }
+    extension?: {
+        javascript?: string
+        style?: string
+        template?: string
+    }
+    index?: {
+        template?: string
+        master?: string
+    },
+    urls?: {
+        [key: string]: string
+    },
+    pattern?: string
+}
+
 export interface IAppConfig {
-    $get(path: string): any    
+    $get(path: string): any 
+    $getController(data: IPageConfiguration): any
 }

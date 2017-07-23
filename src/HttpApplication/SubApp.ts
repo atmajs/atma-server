@@ -70,9 +70,11 @@ export default class HttpSubApplication extends Class.Deferred<HttpSubApplicatio
                 
             return;
         }
+
         
-        var configs = mix.configs,
-            config = mix.config
+        var definition = mix as IApplicationDefinition,
+            configs = definition.configs,
+            config = definition.config
             ;
         
         if (config == null && configs == null) 

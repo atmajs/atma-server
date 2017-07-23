@@ -1,4 +1,4 @@
-import { io, Class, logger, include, mask, Uri } from '../dependency'
+import { io, logger, include, mask, Uri } from '../dependency'
 import { path_resolveSystemUrl } from '../util/path'
 import WatcherHandler from './WatcherHandler'
 import ConnectionSocket from './ConnectionSocket'

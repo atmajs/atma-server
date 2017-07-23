@@ -1,14 +1,25 @@
 {
-  "compilerOptions": {  
+  "files": [
+    "src/export.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "outDir": "ts",
     "typeRoots": [
       "./node_modules/@types",
-      "./typings",
-      "./types"
+      "./typings/",
+      "./types/"
     ],
-    "target":"es5"    
-  },
-  "include": [
-    "./typings/*",
-    "src/**/*"
-  ]
+    "types": [
+      "atma-class",
+      "string",
+      "node"
+    ],
+    "declaration": true,
+    "target":"es5",
+    "module": "commonjs",
+    "sourceMap": false
+  }
 }

@@ -1,2 +1,2 @@
-/// <reference path="atma-class/class.d.ts" />
-/// <reference path="string.d.ts" />
+/// <reference path="atma-class/index.d.ts" />
+/// <reference path="string/index.d.ts" />

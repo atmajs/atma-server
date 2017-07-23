@@ -2,7 +2,7 @@ import { path_normalize } from '../util/path'
 import { io, Class, logger, mask, include, Uri } from '../dependency'
 
 const WatcherHandler = new (Class({
-    Base: Class.EventEmitter,
+    Base: <any> Class.EventEmitter,
 
     watch: function(file){
         var path = file.uri.toString();
@@ -16,7 +16,7 @@ const WatcherHandler = new (Class({
 
         _watchers[path] = watcher;
     },
-    unwatch: function(file, callback){
+    unwatch: function(file, callback?){
         var path = file.uri.toString();
 
         if (_watchers[path] == null) {

@@ -15,15 +15,15 @@ export default class Rewriter {
     }
 }
 
-interface IRuleDefinition {
+export interface IRuleDefinition {
     rule: string
     conditions?: IRuleConditionDefinition[]
 }
 
-interface IRuleConditionDefinition {
+export interface IRuleConditionDefinition {
     condition: string
 }
-class Rule {
+export class Rule {
     rewriter: string
     matcher: RegExp
     constructor (cond: IRuleDefinition) {
@@ -45,7 +45,7 @@ class Rule {
         return true;
     }
 }
-class RuleCondition {
+export class RuleCondition {
     textParts: string[]
     matcher: RegExp
     constructor (cond: IRuleConditionDefinition) {

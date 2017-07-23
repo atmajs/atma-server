@@ -15,7 +15,7 @@ import {
 class HttpErrorPage extends HttpPageBase {
 				
 		constructor (error, pageData, config){
-			super();
+			super(null, null);
 			this._setPageData(pageData, config);
 			this.model = error;
 		}

@@ -9,27 +9,25 @@ import HttpSubApplication from './HttpApplication/SubApp'
 import HttpCrudEndpoints from './HttpService/CrudWrapper'
 import HttpService from './HttpService/HttpService'
 import Middleware from './middleware/export'
-import { server } from './vars'
 import './loader/yml'
 import './handlers/export'
 
 
 export default {
-    Application,
-    HttpSubApplication,
-    HttpErrorPage,
-    HttpPage,
     HttpError, 
     NotFoundError, 
     RequestError, 
     RuntimeError, 
     SecurityError,
+    Application,
+    HttpSubApplication,
+    HttpErrorPage,
+    HttpPage,  
     IHttpHandler,
     HandlerFactory,
     HttpCrudEndpoints,
     HttpService,
     middleware: Middleware,
-    clean: Application.clean,
-    ...server
+    clean: Application.clean
 }; 
 

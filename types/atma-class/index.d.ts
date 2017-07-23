@@ -36,6 +36,11 @@ declare namespace Class {
 
     export function validate(instance: object, validationModel?: object, isStrict?: boolean): void | Error
     export function properties(Ctor: Function): string[]
+
+
+    export namespace Fn {
+        export function memoize <T> (fn: T): T
+    }
 }
 
 declare interface IClassDeclaration {

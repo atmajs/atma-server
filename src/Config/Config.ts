@@ -8,7 +8,7 @@ import ConfigUtils, {
 	configurate_Pages,
 	configurate_PageFiles,
 	configurate_Plugins,
-	configurate_Projects,
+	//configurate_Projects,
 	configurate_BowerAndCommonJS  
 } from './ConfigUtils'
 

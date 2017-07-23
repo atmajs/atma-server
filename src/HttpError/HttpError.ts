@@ -57,32 +57,32 @@ export const HttpError = Class({
 	Static: {
 		create: function(mix, statusCode){
 			if (is_String(mix))
-				return HttpError(mix, statusCode);
+				return new HttpError(mix, statusCode);
 
 			if (mix._error != null) /* instanceof HttpError (weakness of instanceof)*/
 				return mix;
 
 			if (mix instanceof Error) {
-				var error = HttpError(mix.message, statusCode || 500);
+				let error = new HttpError(mix.message, statusCode || 500);
 				error._error = mix;
 				return error;
 			}
 
 			if (is_Object(mix)) {
 				if (mix.toString !== _obj_toString) {
-					return HttpError(
+					return new HttpError(
 						mix.toString() , statusCode || mix.statusCode || mix.status
 					);
 				}
-				var msg = mix.message,
+				let msg = mix.message,
 					code = statusCode || mix.statusCode || mix.status,
 					error;
 
-				error = HttpError(msg, code);
+				error = new HttpError(msg, code);
 				error._json = mix;
 				return error;
 			}
-			return RuntimeError('Invalid error object: ' + mix);
+			return new RuntimeError('Invalid error object: ' + mix);
 		}
 	}
 });

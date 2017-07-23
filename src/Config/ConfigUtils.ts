@@ -66,7 +66,7 @@ export const configurate_Mask = function (cfg) {
 	);
 };
 
-export const configurate_Pages = function (cfg) {
+export const configurate_Pages = function (cfg, app?) {
 	var pages = cfg.pages;
 	if (pages == null)
 		return;

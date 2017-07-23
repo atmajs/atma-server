@@ -218,7 +218,7 @@ export default {
 };
 
 
-var getResources = Class.Fn.memoize(function(type, env, pckg, routes) {
+var getResources = Class.Fn.memoize(function(type, env, pckg?, routes?) {
 
 	var Routes = new includeLib.Routes(),
 		array = [];

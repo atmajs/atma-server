@@ -16,7 +16,7 @@ export const send_JSON = function(res, json, statusCode, headers){
 
 export const send_Error = function(res, error, headers = null){
 	if (error instanceof HttpError === false) {
-		error = HttpError.create(error);
+		error = (<any>HttpError).create(error);
 	}
 	send_Content(
 		res

@@ -235,7 +235,7 @@ class Application extends Class.Deferred<Application> {
 		
 		error = error == null
 			? new HttpError('Endpoint not found: ' + req.url, 404)
-			: HttpError.create(error)
+			: (<any> HttpError).create(error)
 			;
 
 		var accept = req.headers['accept'];
@@ -350,7 +350,7 @@ function handler_process(app, handler, req, res) {
 			send(res, content, statusCode, mimeType, headers);
 		})
 		.fail(function(error, statusCode){
-			error = HttpError.create(error, statusCode);
+			error = (<any> HttpError).create(error, statusCode);
 			if (handler.sendError) {
 				handler.sendError(error, req, res, app.config);
 				return;
