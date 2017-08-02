@@ -1,14 +1,13 @@
-import * as Class from 'atma-class'
-import * as io from 'atma-io'
 
-const logger = require('atma-logger');
-const Utils = require('atma-utils');
-const root = <any> global;
+import Class = require('atma-class');
+import io = require('atma-io');
+import logger = require('atma-logger');
+import Utils = require('atma-utils');
 
+let root = <any> global;
 if (root.include == null) {
     require('includejs');
 }
-
 
 export { io }
 

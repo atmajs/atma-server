@@ -8,7 +8,7 @@ export const HttpError = Class({
 		if (this instanceof HttpError === false)
 			return new HttpError(message, statusCode);
 
-		this._error = Error(message);
+		this._error = new Error(message);
 		this.message = String(message);
 
 		if (statusCode != null)
@@ -22,19 +22,22 @@ export const HttpError = Class({
 
 		var stack = this._error.stack.split('\n'),
 			imax = stack.length,
-			start = 1,
-			end = 1;
+			start = 8,
+			startRgx = /(atma\-server)|(atma\-class)/i;
+		
+		// while (++start < imax) {
+		// 	if (startRgx.test(stack[start]) === false)
+		// 		break;
+		// }
 
+		var end = start + 1;
 		var rgx = /\[as \w+Error\]/;
-
 		while (++end < imax) {
 			if (rgx.test(stack[end]))
 				break;
 		}
 
-		stack.splice(1, end - start + 1);
-
-		return stack.join('\n');
+		return stack[0] + '\n' + stack.slice(start, end).join('\n');
 	},
 
 	toString: function(){

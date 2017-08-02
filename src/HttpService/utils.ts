@@ -14,7 +14,7 @@ export const secure_canAccess = function(req, secureObj){
 	return user != null && (role == null || user.isInRole(role));
 };
 
-export const service_validateArgs = function(body, args, isStrict) {
+export const service_validateArgs = function(body, args, isStrict?) {
 	if (body == null) 
 		return 'Message Body is not defined';
 	

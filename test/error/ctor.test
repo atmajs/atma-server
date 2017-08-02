@@ -17,7 +17,7 @@ UTest({
 	},
 	'proper stacktrace': function(){
 		
-		var err = atma.server.SecurityError('baz');
+		var err = new atma.server.SecurityError('baz');
 		eq_(err.message, 'baz');
 		eq_(err.name, 'SecurityError');
 		eq_(String(err), 'SecurityError: baz');
