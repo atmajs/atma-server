@@ -2,7 +2,7 @@ import { include, mask, logger, Class } from '../dependency'
 import {mime_HTML} from '../const/mime'
 import Application from '../HttpApplication/Application'
 
-export default class HttpPageBase extends Class.Deferred<HttpPageBase> {
+export default class HttpPageBase extends Class.Deferred {
 	data = {
 		id: null,
 		env: null

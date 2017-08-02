@@ -1,12 +1,11 @@
 import HandlerFactory from '../HandlerFactory'
-import IHttpHandler from '../IHttpHandler'
+import { IHttpHandler } from '../IHttpHandler'
 import HttpPage from '../HttpPage/HttpPage'
 
-class MaskRunner extends IHttpHandler<any> {
+class MaskRunner implements IHttpHandler {
 	
 	constructor (public route, public app) {
-		super();
-
+		
 		this.app = app;
 		this.route = route;
 	}

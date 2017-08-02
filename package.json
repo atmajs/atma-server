@@ -7,6 +7,7 @@
   },
   "version": "0.2.38",
   "main": "./lib/server.js",
+  "types": "./types/index.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/atmajs/atma-server.git"
@@ -14,8 +15,8 @@
   "license": "MIT",
   "dependencies": {
     "appcfg": "^0.2.42",
-    "atma-class": "^1.1.69",
-    "atma-io": "^0.2.23",
+    "atma-class": "^1.1.79",
+    "atma-io": "^0.2.33",
     "atma-loader-ts": "^1.0.0",
     "atma-logger": ">0.0.81",
     "atma-utils": "^0.1.8",
@@ -27,6 +28,7 @@
   },
   "scripts": {
     "build": "app-bundler",
+    "build-dts": "tsc -p . & atma custom tools/build-dts",
     "watch": "app-bundler -watch",
     "test": "atma test",
     "server": "atma server"
@@ -37,6 +39,7 @@
     "atma": "latest",
     "atma-loader-babel": "^1.0.21",
     "body-parser": "latest",
+    "dts-bundle": "^0.7.3",
     "mongodb": "latest",
     "supertest": "~0.13.0",
     "tslib": "^1.7.1"
@@ -97,7 +100,7 @@
             "typeRoots": [
               "./node_modules/@types",
               "./typings",
-              "./types"
+              "./typings-other"
             ],
             "target": "es5",
             "#if (!TEST)": {

@@ -6,11 +6,11 @@
     "node_modules"
   ],
   "compilerOptions": {
-    "outDir": "ts",
+    "outDir": "ts-temp",
     "typeRoots": [
       "./node_modules/@types",
       "./typings/",
-      "./types/"
+      "./typings-other/"
     ],
     "types": [
       "atma-class",
@@ -20,6 +20,7 @@
     "declaration": true,
     "target":"es5",
     "module": "commonjs",
-    "sourceMap": false
+    "sourceMap": false,
+    "experimentalDecorators": true
   }
 }

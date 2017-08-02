@@ -13,7 +13,7 @@ import HttpErrorPage from '../HttpPage/HttpErrorPage'
 import { initilizeEmbeddedComponents } from '../compos/exports'
 import { send_Error, send_Content } from '../util/send'
 import HttpSubApplication from './SubApp'
-import { IApplicationDefinition, IApplicationConfig, IAppConfig } from './IApplicationConfig'
+import { IApplicationDefinition, IApplicationConfig, IAppConfigExtended } from './IApplicationConfig'
 import HttpRewriter from '../HttpRewrites/HttpRewriter'
 
 
@@ -22,7 +22,7 @@ var _emitter = new Class.EventEmitter();
 
 
 
-class Application extends Class.Deferred<Application> {
+class Application extends Class.Deferred {
 	
 	// <Boolean>, if instance is the root application, and not one of the subapps
 	isRoot = false
@@ -53,7 +53,7 @@ class Application extends Class.Deferred<Application> {
 	// webSockets
 	webSockets = null
 
-	config: IAppConfig & IApplicationConfig
+	config: IAppConfigExtended & IApplicationConfig
 	args: {
 		[key: string]: string
 	}

@@ -1,10 +1,14 @@
 import { path_normalize } from '../util/path'
 import { io, Class, logger, mask, include, Uri } from '../dependency'
 
-const WatcherHandler = new (Class({
-    Base: <any> Class.EventEmitter,
 
-    watch: function(file){
+
+
+export class WatcherHandler extends Class.EventEmitter {
+    static get Instance (): WatcherHandler {
+        return _instance || (_instance = new WatcherHandler);
+    }
+    watch (file: io.File){
         var path = file.uri.toString();
 
         if (_watchers[path] != null)
@@ -15,8 +19,8 @@ const WatcherHandler = new (Class({
         watcher.bind(this.fileChanged);
 
         _watchers[path] = watcher;
-    },
-    unwatch: function(file, callback?){
+    }
+    unwatch (file: io.File, callback?){
         var path = file.uri.toString();
 
         if (_watchers[path] == null) {
@@ -27,83 +31,80 @@ const WatcherHandler = new (Class({
         _watchers[path].unbind(callback);
 
         delete _watchers[path];
-    },
+    }
 
-    isWatching: function(file){
+    isWatching (file: io.File){
         var path = file.uri.toString();
 
         return _watchers[path] != null;
-    },
-    Self: {
-        fileChanged: function(path, sender, requestedUrl, base){
-            if (mask.Module.clearCache) {
-                mask.Module.clearCache();
-            }
-            if (sender === 'filewatcher') {
-                var rel = requestedUrl || ('/' + path.replace(rootFolder, ''));
-
-                if (include.getResource(rel) == null)
-                    this.trigger('fileChange', rel, path);
-
-                return;
-            }
-            if (this.isWatching(new io.File(path))) {
-                return;
-            }
-            if (base) {
-                base = new Uri(base).toLocalFile();
-                path = path.replace(base, '');
-            }
-
-            this.trigger('fileChange', path);
-
-            /**
-            *  include.autoreload feature also listens for file changes
-            *  and if the file is in includejs cache, then this function
-            *  will be called by includejs immediately. This happens
-            *  while Application enables autoreload via
-            *   include.cfg('autoreload', {
-            *      fileChanged: function(path) {
-            *          Autoreload.fileChanged(path)
-            *      }
-            *   });
-            */
+    }
+    @Class.deco.self
+    fileChanged (path, sender, requestedUrl, base){
+        if (mask.Module.clearCache) {
+            mask.Module.clearCache();
         }
-    },
+        if (sender === 'filewatcher') {
+            var rel = requestedUrl || ('/' + path.replace(rootFolder, ''));
 
+            if (include.getResource(rel) == null)
+                this.trigger('fileChange', rel, path);
 
-    bind: function(callback){
+            return;
+        }
+        if (this.isWatching(new io.File(path))) {
+            return;
+        }
+        if (base) {
+            base = new Uri(base).toLocalFile();
+            path = path.replace(base, '');
+        }
+
+        this.trigger('fileChange', path);
+
+        /**
+        *  include.autoreload feature also listens for file changes
+        *  and if the file is in includejs cache, then this function
+        *  will be called by includejs immediately. This happens
+        *  while Application enables autoreload via
+        *   include.cfg('autoreload', {
+        *      fileChanged: function(path) {
+        *          Autoreload.fileChanged(path)
+        *      }
+        *   });
+        */
+    }
+    
+    bind (callback){
 
         return this
             .on('fileChange', callback);
-    },
-    unbind: function(callback){
+    }
+    unbind (callback){
 
         return this
             .off('fileChange', callback);
     }
-}));
+}
+
+
 
 var rootFolder = path_normalize(process.cwd() + '/');
 
-var FileWatcher = Class({
-    Base: Class.EventEmitter,
-    Construct: function(file){
+class FileWatcher extends Class.EventEmitter {
+    active = false
+    constructor (public file: io.File){
+        super();
+    }
+    
+    @Class.deco.self
+    fileChanged (path){
+        logger.log('<watcher:changed>', path);
 
-        this.active = false;
-        this.file = file;
-    },
-    Self: {
-        fileChanged: function(path){
-            logger.log('<watcher:changed>', path);
+        this.trigger('fileChange', path, 'filewatcher', (<any> this.file).requestedUrl);
+    }
 
-            this.trigger('fileChange', path, 'filewatcher', this.file.requestedUrl)
-        }
-    },
-
-    bind: function(callback){
+    bind (callback){
         this.on('fileChange', callback);
-
         if (this.active)
             return;
 
@@ -112,20 +113,20 @@ var FileWatcher = Class({
             .watch(this.file.uri.toLocalFile(), this.fileChanged);
 
         this.active = true;
-    },
-    unbind: function(callback) {
+    }
+    unbind (callback) {
         this.off('fileChange', callback);
 
-        if (this._listeners.length === 0) {
+        if ((<any>this)._listeners.length === 0) {
             io
                 .watcher
                 .unwatch(this.file.uri.toLocalFile());
         }
     }
-});
+}
 
 
 
 var _watchers = {};
-
-export default WatcherHandler;
+var _instance = null;
+export default new WatcherHandler;

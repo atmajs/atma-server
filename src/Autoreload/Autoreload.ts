@@ -1,7 +1,8 @@
 import { io, logger, include, mask, Uri } from '../dependency'
 import { path_resolveSystemUrl } from '../util/path'
-import WatcherHandler from './WatcherHandler'
+import Watcher, { WatcherHandler }  from './WatcherHandler'
 import ConnectionSocket from './ConnectionSocket'
+
 
 const Autoreload = {
     enabled: false,
@@ -37,7 +38,7 @@ const Autoreload = {
             path = Uri.combine(root, requestedUrl),
             file = new io.File(path)
             ;
-        file.requestedUrl = requestedUrl;
+        (<any>file).requestedUrl = requestedUrl;
         
         this.watchFile(file);
     },
@@ -48,29 +49,29 @@ const Autoreload = {
         if (/\.map$/.test(file.uri.file))
             return;
         
-        if (WatcherHandler.isWatching(file)) 
+        if (Watcher.isWatching(file)) 
             return;
         
         if (io.File.prototype.exists.call(file) === false)
             return;
         
-        WatcherHandler.watch(file);
+        Watcher.watch(file);
     },
     unwatch: function(path){
         
-        WatcherHandler.unwatch(new io.File(path));
+        Watcher.unwatch(new io.File(path));
     },
     
     fileChanged: function(path, sender?){
         
-        WatcherHandler.fileChanged(path, sender, null, this.base);
+        Watcher.fileChanged(path, sender, null, this.base);
     },
     
     isWatching: function(file){
         if (typeof file === 'string') 
             file = new io.File(file);
         
-        return WatcherHandler.isWatching(file);
+        return Watcher.isWatching(file);
     },
     
     listenDirectory: function(dir, callback){
@@ -80,8 +81,8 @@ const Autoreload = {
             ;
     },
     
-    getWatcher: function(){
-        return WatcherHandler;
+    getWatcher () {
+        return Watcher;
     }
 };
 

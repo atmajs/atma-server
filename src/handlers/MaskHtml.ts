@@ -1,11 +1,11 @@
 import HandlerFactory from '../HandlerFactory'
-import IHttpHandler from '../IHttpHandler'
+import {IHttpHandler} from '../IHttpHandler'
 import HttpPage from '../HttpPage/HttpPage'
 
-class MaskHtml extends IHttpHandler<any> {
+class MaskHtml implements IHttpHandler {
 	
 	constructor (public route, public app) {
-		super();		
+		
 	}
 
 	process (req, res, config) {        

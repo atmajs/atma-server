@@ -1,5 +1,5 @@
 import { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError } from './HttpError/HttpError'
-import IHttpHandler from './IHttpHandler'
+import { IHttpHandler } from './IHttpHandler'
 import HandlerFactory from './HandlerFactory'
 
 import HttpErrorPage from './HttpPage/HttpErrorPage'
@@ -9,8 +9,8 @@ import HttpSubApplication from './HttpApplication/SubApp'
 import HttpCrudEndpoints from './HttpService/CrudWrapper'
 import HttpService from './HttpService/HttpService'
 import Middleware from './middleware/export'
-import './loader/yml'
-import './handlers/export'
+
+require('./handlers/export');
 
 
 export default {
@@ -23,7 +23,6 @@ export default {
     HttpSubApplication,
     HttpErrorPage,
     HttpPage,  
-    IHttpHandler,
     HandlerFactory,
     HttpCrudEndpoints,
     HttpService,
@@ -31,3 +30,4 @@ export default {
     clean: Application.clean
 }; 
 
+export { IHttpHandler }

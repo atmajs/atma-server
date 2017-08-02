@@ -1,4 +1,5 @@
 import HttpServiceStatics from './static'
+import { Class } from '../dependency'
 import { HttpError } from '../HttpError/HttpError'
 
 export default {

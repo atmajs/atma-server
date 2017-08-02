@@ -110,7 +110,7 @@ export interface IPageConfiguration {
     pattern?: string
 }
 
-export interface IAppConfig {
+export interface IAppConfigExtended {
     $get(path: string): any 
     $getController(data: IPageConfiguration): any
 }

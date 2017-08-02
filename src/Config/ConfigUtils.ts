@@ -108,10 +108,12 @@ export const configurate_PageFiles = function (cfg, app) {
 	if (io.Directory.exists(pageFilesFolder) === false) {
 		return;
 	}
+	
 	return io
 		.Directory
 		.readFilesAsync(pageFilesFolder, '**.html.mask')
-		.then(function (files) {
+		.then(function (files: io.File[]) {
+
 			files.forEach(file => {
 				var rel = file.uri.toRelativeString(pageFilesFolder);
 				
@@ -196,7 +198,8 @@ let configurate_BowerAndCommonJS;
 		},
 		'npm': {
 			'dir': 'node_modules',
-			'package': 'package.json'
+			'package': 'package.json',
+			'alternate': null
 		}
 	};
 	var _resourceTypeExtensions = {
@@ -251,7 +254,7 @@ let configurate_BowerAndCommonJS;
 		});
 		return dfr;
 	}
-	function resolvePaths(config, resourceType, packageSystem, arr, cb) {
+	function resolvePaths(config, resourceType, packageSystem: 'bower' | 'npm', arr, cb) {
 		var base = new Uri(config.base),
 			paths = [],
 			mappings = {};

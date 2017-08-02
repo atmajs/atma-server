@@ -1,7 +1,7 @@
 import Application from './HttpApplication/Application'
 import HttpSubApplication from './HttpApplication/SubApp'
 import HttpPage from './HttpPage/HttpPage'
-import IHttpHandler from './IHttpHandler'
+import { IHttpHandler } from './IHttpHandler'
 import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_Object } from './dependency'
 import { page_flatternPageViewRoutes } from './util/page'
 import { path_hasProtocol } from './util/path'
@@ -207,7 +207,7 @@ export default class HandlerFactory {
 	}
 
 	static Handlers: { 
-		[name: string]: new (...args) => IHttpHandler<any>
+		[name: string]: new (...args) => IHttpHandler
 	} = {}
 };
 

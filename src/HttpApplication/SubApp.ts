@@ -10,7 +10,7 @@ var status_initial = '',
 
 
 
-export default class HttpSubApplication extends Class.Deferred<HttpSubApplication> {
+export default class HttpSubApplication extends Class.Deferred {
     status = status_initial
     app_: Application = null
     path_: string

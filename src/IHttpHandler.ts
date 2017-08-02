@@ -1,8 +1,9 @@
 import { Class } from './dependency'
 import { HttpError } from './HttpError/HttpError' 
+import { IncomingMessage, ServerResponse } from 'http'
+import { IApplicationConfig } from './HttpApplication/IApplicationConfig'
 
-export default abstract class IHttpHandler<T> extends Class.Deferred<T> {
-	process (req, res, config?) {
-		this.reject(new HttpError('Not Implemented', 500));
-	}
+
+export interface IHttpHandler {
+	process (req: IncomingMessage, res: ServerResponse, config?: IApplicationConfig): void | Class.DeferredLike | any
 };
