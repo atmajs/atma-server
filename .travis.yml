@@ -8,7 +8,7 @@ before_script:
   - sh -e /etc/init.d/xvfb start
   - sleep 5
   - npm run build &
-  - npm server &
+  - npm run server &
   - sleep 5
   - firefox http://localhost:5777/utest/ &
   - sleep 8
