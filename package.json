@@ -22,7 +22,7 @@
     "atma-utils": "^0.1.8",
     "includejs": "^0.12.53",
     "maskjs": ">=0.54.23",
-    "ruta": "^0.2.19",
+    "ruta": "^0.2.32",
     "socket.io": "^1.3.5",
     "static-content": "^1.1.25"
   },

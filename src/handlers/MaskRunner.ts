@@ -1,11 +1,12 @@
 import HandlerFactory from '../HandlerFactory'
 import { IHttpHandler } from '../IHttpHandler'
 import HttpPage from '../HttpPage/HttpPage'
+import { Class } from '../dependency'
 
-class MaskRunner implements IHttpHandler {
+class MaskRunner extends Class.Deferred implements IHttpHandler {
 	
 	constructor (public route, public app) {
-		
+		super();
 		this.app = app;
 		this.route = route;
 	}

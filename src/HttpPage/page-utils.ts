@@ -49,9 +49,10 @@ export const page_rewriteDelegate = function(page) {
 
 		rewrittenHandler
 			.process(ctx.req, ctx.res, ctx.config)
-			.done(page.resolveDelegate())
-			.fail(page.rejectDelegate())
-			;
+			.then(
+				(...args) => page.resolve(...args),
+				(...args) => page.reject(...args)
+			);
 	}
 };
 
