@@ -11,7 +11,7 @@ if (root.include == null) {
 
 export { io }
 
-export const ruta        = root.ruta  || require('ruta');
+export const ruta        = require('ruta');
 export const mask        = root.mask  || require('maskjs');
 export const jmask       = mask.jmask;
 export const Compo       = mask.Compo;
