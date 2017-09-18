@@ -16,7 +16,7 @@
   "dependencies": {
     "appcfg": "^0.2.42",
     "atma-class": "^1.1.79",
-    "atma-io": "^0.2.33",
+    "atma-io": "^0.2.35",
     "atma-loader-ts": "^1.0.0",
     "atma-logger": ">0.0.81",
     "atma-utils": "^0.1.8",

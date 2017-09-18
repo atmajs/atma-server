@@ -27,7 +27,8 @@ export default {
     HttpCrudEndpoints,
     HttpService,
     middleware: Middleware,
-    clean: Application.clean
+    clean: Application.clean,
+    StaticContent: require('static-content')
 }; 
 
 export { IHttpHandler }
