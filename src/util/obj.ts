@@ -1,3 +1,5 @@
+import { obj_extend } from '../dependency'
+
 export const obj_lazyProperty = function(obj, xpath, init){
     var arr = xpath.split('.'),
         imax = arr.length - 1,
@@ -31,4 +33,15 @@ export const obj_lazyProperty = function(obj, xpath, init){
             });
         }
     })
+};
+
+/**
+ * Max 4 args
+ */
+export const obj_assign = (<any>Object).assign || function (target, a, b, c, d) {
+    if (a != null) target = obj_extend(target, a);
+    if (b != null) target = obj_extend(target, b);
+    if (c != null) target = obj_extend(target, c);
+    if (d != null) target = obj_extend(target, d);
+    return target;
 };

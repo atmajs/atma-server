@@ -15,9 +15,10 @@ import { send_Error, send_Content } from '../util/send'
 import HttpSubApplication from './SubApp'
 import { IApplicationDefinition, IApplicationConfig, IAppConfigExtended } from './IApplicationConfig'
 import HttpRewriter from '../HttpRewrites/HttpRewriter'
+import { obj_assign } from '../util/obj'
 
 
-var _emitter = new Class.EventEmitter();
+let _emitter = new Class.EventEmitter();
 
 
 
@@ -116,7 +117,7 @@ class Application extends Class.Deferred {
 	 */
 	processor(data: {before?: Function[], after?: Function[], middleware?: Function[]} = {}){
 		
-		var before = data.before,
+		let before = data.before,
 			after = data.after,
 			middleware = data.middleware;
 
@@ -142,7 +143,7 @@ class Application extends Class.Deferred {
 		);
 	}
 	execute(url, method, body, headers){
-		var req = new Request(url, method, body, headers),
+		let req = new Request(url, method, body, headers),
 			res = new Response;
 
 		// @TODO ? middleware pipeline in RAW requests
@@ -166,8 +167,8 @@ class Application extends Class.Deferred {
 		Autoreload.enable(this);
 	}
 	listen(){
-		var port, server;
-		var i = arguments.length,
+		let port, server;
+		let i = arguments.length,
 			mix;
 		while (--i > -1){
 			mix = arguments[i];
@@ -209,14 +210,14 @@ class Application extends Class.Deferred {
 		return this._server;
 	}
 	getSubApp(path){
-		var route = this.handlers.subapps.get(path);
+		let route = this.handlers.subapps.get(path);
 		return route && route.value && route.value.app_;
 	}
 
 	//Self: {
 	_loadConfig(){
 
-		var definition = this._baseConfig;
+		let definition = this._baseConfig;
 
 		this.config = Config(
 			definition
@@ -238,7 +239,7 @@ class Application extends Class.Deferred {
 			: (<any> HttpError).create(error)
 			;
 
-		var accept = req.headers['accept'];
+		let accept = req.headers['accept'];
 		if (accept == null || accept.indexOf('text/html') !== -1) {
 			(<any> HttpErrorPage).send(error, req, res, this.config);
 			return;
@@ -271,7 +272,7 @@ function responder(app) {
 		if (Autoreload.enabled)
 			Autoreload.watch(req.url, app.config);
 
-		var callback = app._innerPipe != null
+		let callback = app._innerPipe != null
 			? middleware_processDelegate(app._innerPipe)
 			: handler_process
 			;
@@ -333,45 +334,53 @@ function handler_process(app, handler, req, res) {
 	logger(95)
 		.log('<request>', req.url);
 
-	handler.process(req, res, app.config);
+	let result = handler.process(req, res, app.config);
+	if (result != null) {
+		if (typeof result.then === 'function') {
+			handler_await(app, handler, req, res, result);
+			return;
+		}
+		handler_complete(app, handler, req, res, result);
+		return;
+	}
 
-	if (handler.done == null)
+	if (handler.done == null) {
 		// Handler responds to the request itself
 		return;
-
-	var headers__ = handler_resolveDefaultHeaders(app, handler);
-
-	handler
-		.done(function(content, statusCode, mimeType, headers){
-			var send = handler.send || send_Content;
-			if (headers__ != null) {
-				headers = obj_extendDefaults(headers, headers__);
-			}
-			send(res, content, statusCode, mimeType, headers);
-		})
-		.fail(function(error, statusCode){
+	}
+	handler_await(app, handler, req, res, handler);
+}
+function handler_await(app, handler, req, res, dfr) {
+	dfr.then(
+		function onSuccess(content, statusCode, mimeType, headers){
+			handler_complete(app, handler, req, res, content, statusCode, mimeType, headers);
+		},
+		function onError(error, statusCode){
 			error = (<any> HttpError).create(error, statusCode);
 			if (handler.sendError) {
 				handler.sendError(error, req, res, app.config);
 				return;
 			}
-			send_Error(res, error, headers__);
-		});
+			let allHeaders = handler_resolveHeaders(app, handler);
+			send_Error(res, error, allHeaders);
+		}
+	);
 }
-function handler_resolveDefaultHeaders (app, handler) {
-	var headers_Handler = handler.meta && handler.meta.headers,
+function handler_complete(app, handler, req, res, content, statusCode = null, mimeType = null, headers = null) {
+	let send = handler.send || send_Content;
+	let allHeaders = handler_resolveHeaders(app, handler, headers);
+	send(res, content, statusCode, mimeType, allHeaders);
+}
+function handler_resolveHeaders (app, handler, overrides = null) {
+	let headers_Handler = handler.meta && handler.meta.headers,
 		headers_App = app.config.headers;
 
 	if (headers_Handler == null && headers_App == null) {
-		return null;
+		return overrides;
 	}
-
-	var headers;
-	headers = headers_Handler ? Object.create(headers_Handler) : null;
-	headers = obj_extendDefaults(headers, headers_App);
-	return headers;
+	return obj_assign({}, headers_App, headers_Handler, overrides);	
 }
-function handler_processRaw(app, handler, m_req, m_res) {
+function handler_processRaw(app: Application, handler, m_req, m_res) {
 	if (handler instanceof HttpSubApplication) {
 		handler.execute(m_req, m_res);
 		return;
@@ -386,7 +395,7 @@ function cfg_doneDelegate(app: Application) {
 		_emitter.trigger('configurate', app);
 		
 		initilizeEmbeddedComponents(app);
-		var cfg = app.config;
+		let cfg = app.config;
 		app
 			.handlers
 			.registerPages(cfg.pages, cfg.page)
@@ -406,13 +415,13 @@ function cfg_doneDelegate(app: Application) {
 	}
 }
 
-function resources_load(app, callback) {
+function resources_load(app: Application, callback) {
 	if (app_isDebug() !== true && app.resources != null) {
 		callback();
 		return;
 	}
 
-	var config = app.config,
+	let config = app.config,
 		base = config.base,
 		env = config.env
 		;
@@ -439,10 +448,10 @@ function resources_load(app, callback) {
 		.done(function(resp){
 			app.lib = resp;
 
-			var projects = config.projects;
+			let projects = config.projects;
 			if (projects) {
-				for(var name in projects){
-					var res = resp[name];
+				for(let name in projects){
+					let res = resp[name];
 					if (res != null && typeof res.attach === 'function')
 						res.attach(app);
 				}
