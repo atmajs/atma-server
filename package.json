@@ -5,7 +5,7 @@
     "name": "Alexander Kit",
     "email": "alex.kit@atmajs.com"
   },
-  "version": "0.2.39",
+  "version": "0.2.40",
   "main": "./lib/server.js",
   "types": "./types/index.d.ts",
   "repository": {
@@ -16,7 +16,7 @@
   "dependencies": {
     "appcfg": "^0.2.42",
     "atma-class": "^1.1.79",
-    "atma-io": "^0.2.35",
+    "atma-io": "^1.0.1",
     "atma-loader-ts": "^1.0.0",
     "atma-logger": ">0.0.81",
     "atma-utils": "^0.1.8",
