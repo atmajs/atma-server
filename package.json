@@ -5,7 +5,7 @@
     "name": "Alexander Kit",
     "email": "alex.kit@atmajs.com"
   },
-  "version": "0.2.41",
+  "version": "0.2.42",
   "main": "./lib/server.js",
   "types": "./types/index.d.ts",
   "repository": {
@@ -37,6 +37,8 @@
     "@types/node": "^8.0.15",
     "app-bundler": "0.0.33",
     "atma": "^0.10.79",
+    "atma-io-middleware-importer": "^1.1.30",
+    "atma-io-middleware-yml": "^1.1.25",
     "atma-loader-babel": "^1.0.21",
     "body-parser": "latest",
     "dts-bundle": "^0.7.3",
@@ -76,11 +78,14 @@
       "yamljs"
     ],
     "middlewares": {
+      "yml": [
+        "atma-io-middleware-yml:read"
+      ],
       "js": [
-        "importer:read"
+        "atma-io-middleware-importer:read"
       ],
       "ts": [
-        "importer:read",
+        "atma-io-middleware-importer:read",
         "atma-loader-ts:read"
       ]
     },
@@ -116,7 +121,8 @@
     },
     "plugins": [
       "atma-loader-babel",
-      "atma-loader-ts"
+      "atma-loader-ts",
+      "atma-io-middleware-yml"
     ]
   }
 }

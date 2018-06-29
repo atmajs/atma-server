@@ -1,6 +1,7 @@
 import { include, Class, is_String } from '../dependency'	
 import Application, { respond_Raw } from './Application'	
 import { IApplicationDefinition, IApplicationConfig } from './IApplicationConfig'	
+import { IncomingMessage, ServerResponse } from 'http';
 
 var status_initial = '',
     status_loading = 'loading',
@@ -50,17 +51,17 @@ export default class HttpSubApplication extends Class.Deferred {
                 .instance(base)
                 .setBase(base)
                 .js(controller + '::App')
-                .done(function(resp){
+                .done((resp) => {
                     
                     if (resp.App instanceof Application) {
                         
                         resp
                             .App
-                            .done(function(app){
-                                that.app_ = app;
-                                that.process = that.pipe;
-                                that.status = status_loaded;
-                                that.dfr.resolve();
+                            .done(app => {
+                                this.app_ = app;
+                                this.process = this.handle;
+                                this.status = status_loaded;
+                                this.dfr.resolve();
                             });
                         
                         return;
@@ -88,22 +89,22 @@ export default class HttpSubApplication extends Class.Deferred {
         })
         .done(function(app){
             that.app_ = app;
-            that.process = that.pipe
+            that.process = that.handle
             that.status = status_loaded;
             that.dfr.resolve();
         });
     }
     
-    process (req, res){
+    process (req: IncomingMessage, res: ServerResponse){
         if (this.status === status_loading) {
             this
                 .dfr
-                .done(this.pipe.bind(this, req, res));
+                .done(this.handle.bind(this, req, res));
             return;
         }
         
         if (this.status === status_loaded) {
-            this.pipe(req, res);
+            this.handle(req, res);
             return;
         }
         
@@ -113,7 +114,7 @@ export default class HttpSubApplication extends Class.Deferred {
         res.end('<Sub Application Errored> ' + this.path_);
     }
     
-    pipe (req, res){
+    handle (req: IncomingMessage, res: ServerResponse){
         
         if (req.url.length < this.path_.length) {
             

@@ -16,6 +16,7 @@ import HttpSubApplication from './SubApp'
 import { IApplicationDefinition, IApplicationConfig, IAppConfigExtended } from './IApplicationConfig'
 import HttpRewriter from '../HttpRewrites/HttpRewriter'
 import { obj_assign } from '../util/obj'
+import { ServerResponse, IncomingMessage } from 'http';
 
 
 let _emitter = new Class.EventEmitter();
@@ -128,7 +129,7 @@ class Application extends Class.Deferred {
 		this._outerPipe.add(after);
 		return this;
 	}
-	process(req, res, next?){
+	process(req: IncomingMessage, res: ServerResponse, next?){
 		if (this.rewriter) {
 			this.rewriter.rewrite(req);
 		}
@@ -232,7 +233,7 @@ class Application extends Class.Deferred {
 		return this;
 	}
 
-	_404(error, req, res){
+	_404(error: Error | any, req: IncomingMessage, res: ServerResponse){
 		
 		error = error == null
 			? new HttpError('Endpoint not found: ' + req.url, 404)
