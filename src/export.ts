@@ -13,7 +13,7 @@ import Middleware from './middleware/export'
 require('./handlers/export');
 
 
-export default {
+export {
     HttpError, 
     NotFoundError, 
     RequestError, 
@@ -26,9 +26,9 @@ export default {
     HandlerFactory,
     HttpCrudEndpoints,
     HttpService,
-    middleware: Middleware,
-    clean: Application.clean,
-    StaticContent: require('static-content')
+    IHttpHandler
 }; 
 
-export { IHttpHandler }
+export const middleware = Middleware;
+export const clean = Application.clean;
+export const StaticContent = require('static-content');

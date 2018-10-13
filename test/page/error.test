@@ -1,9 +1,10 @@
-class PageController extends atma.server.HttpPage {
-	master = 'layout:master #stab;'
+const server = require('../../lib/server');
+class PageController extends server.HttpPage {
+	master: string = 'layout:master #stab;'
 	template = ':document'
 };
 
-var app = atma.server.clean().Application.create({
+var app = server.clean().Application.create({
 	base: __dirname,
 	configs: null,
 	config: {
@@ -34,7 +35,7 @@ var app = atma.server.clean().Application.create({
 var srv = require('supertest')(
 	require('http').createServer(app.processor({
 		after: [
-			atma.server.middleware.static
+			server.middleware.static
 		]
 	}).process)
 );

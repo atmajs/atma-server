@@ -113,4 +113,9 @@ export interface IPageConfiguration {
 export interface IAppConfigExtended {
     $get(path: string): any 
     $getController(data: IPageConfiguration): any
+    $getImports(type: 'server' | 'client' | 'both'): { path: string, type: 'mask' | 'script' | 'css' | 'html' }[]
+    projects: {
+        [name: string] : { attach (Application) }
+    }
+
 }
