@@ -1,5 +1,0 @@
-
-service:
-	location: /server/http/service/{0}.js
-
-services:
