@@ -1,14 +1,11 @@
 import { path_normalize } from '../util/path'
 import { io, Class, logger, mask, include, Uri } from '../dependency'
 
-
-
-
 export class WatcherHandler extends Class.EventEmitter {
     static get Instance (): WatcherHandler {
         return _instance || (_instance = new WatcherHandler);
     }
-    watch (file: io.File){
+    watch (file){
         var path = file.uri.toString();
 
         if (_watchers[path] != null)
@@ -20,7 +17,7 @@ export class WatcherHandler extends Class.EventEmitter {
 
         _watchers[path] = watcher;
     }
-    unwatch (file: io.File, callback?){
+    unwatch (file, callback?){
         var path = file.uri.toString();
 
         if (_watchers[path] == null) {
@@ -33,7 +30,7 @@ export class WatcherHandler extends Class.EventEmitter {
         delete _watchers[path];
     }
 
-    isWatching (file: io.File){
+    isWatching (file){
         var path = file.uri.toString();
 
         return _watchers[path] != null;
@@ -92,7 +89,7 @@ var rootFolder = path_normalize(process.cwd() + '/');
 
 class FileWatcher extends Class.EventEmitter {
     active = false
-    constructor (public file: io.File){
+    constructor (public file){
         super();
     }
     

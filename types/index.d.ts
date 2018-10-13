@@ -2,39 +2,34 @@
 // Dependencies for this module:
 //   ../http
 //   ../atma-class
-//   ../atma-io
+//   ../atma-logger
+//   ../atma-utils
 
 declare module 'atma-server' {
+    import { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError } from 'atma-server/HttpError/HttpError';
     import { IHttpHandler } from 'atma-server/IHttpHandler';
     import HandlerFactory from 'atma-server/HandlerFactory';
     import HttpErrorPage from 'atma-server/HttpPage/HttpErrorPage';
     import HttpPage from 'atma-server/HttpPage/HttpPage';
     import Application from 'atma-server/HttpApplication/Application';
     import HttpSubApplication from 'atma-server/HttpApplication/SubApp';
-    const _default: {
-        HttpError: any;
-        NotFoundError: any;
-        RequestError: any;
-        RuntimeError: any;
-        SecurityError: any;
-        Application: typeof Application;
-        HttpSubApplication: typeof HttpSubApplication;
-        HttpErrorPage: typeof HttpErrorPage;
-        HttpPage: typeof HttpPage;
-        HandlerFactory: typeof HandlerFactory;
-        HttpCrudEndpoints: {
-            Single: (name: any, Ctor: any) => {};
-            Collection: (name: any, Ctor: any) => {};
-        };
-        HttpService: (mix: any, ...params: any[]) => new (...args: any[]) => any;
-        middleware: {
-            query: (req: any, res: any, next: any) => void;
-            static: (req: any, res: any, next: any, config: any) => void;
-        };
-        clean: () => typeof Application;
+    import HttpCrudEndpoints from 'atma-server/HttpService/CrudWrapper';
+    import HttpService from 'atma-server/HttpService/HttpService';
+    export { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError, Application, HttpSubApplication, HttpErrorPage, HttpPage, HandlerFactory, HttpCrudEndpoints, HttpService, IHttpHandler };
+    export const middleware: {
+        query: (req: any, res: any, next: any) => void;
+        static: (req: any, res: any, next: any, config: any) => void;
     };
-    export default _default;
-    export { IHttpHandler };
+    export const clean: typeof Application.clean;
+    export const StaticContent: any;
+}
+
+declare module 'atma-server/HttpError/HttpError' {
+    export const HttpError: any;
+    export const RequestError: any;
+    export const SecurityError: any;
+    export const NotFoundError: any;
+    export const RuntimeError: any;
 }
 
 declare module 'atma-server/IHttpHandler' {
@@ -42,7 +37,7 @@ declare module 'atma-server/IHttpHandler' {
     import { IncomingMessage, ServerResponse } from 'http';
     import { IApplicationConfig } from 'atma-server/HttpApplication/IApplicationConfig';
     export interface IHttpHandler {
-        process(req: IncomingMessage, res: ServerResponse, config?: IApplicationConfig): void | Class.DeferredLike | any;
+        process(req: IncomingMessage, res: ServerResponse, config?: IApplicationConfig): Class.DeferredLike;
     }
 }
 
@@ -101,6 +96,7 @@ declare module 'atma-server/HttpApplication/Application' {
     import Config from 'atma-server/Config/Config';
     import { IApplicationDefinition, IApplicationConfig, IAppConfigExtended } from 'atma-server/HttpApplication/IApplicationConfig';
     import HttpRewriter from 'atma-server/HttpRewrites/HttpRewriter';
+    import { ServerResponse, IncomingMessage } from 'http';
     class Application extends Class.Deferred {
         isRoot: boolean;
         handlers: any;
@@ -133,7 +129,7 @@ declare module 'atma-server/HttpApplication/Application' {
             after?: Function[];
             middleware?: Function[];
         }): this;
-        process(req: any, res: any, next?: any): void;
+        process(req: IncomingMessage, res: ServerResponse, next?: any): void;
         execute(url: any, method: any, body: any, headers: any): {
             Extends: any;
             writable: boolean;
@@ -153,7 +149,7 @@ declare module 'atma-server/HttpApplication/Application' {
         listen(): any;
         getSubApp(path: any): any;
         _loadConfig(): this;
-        _404(error: any, req: any, res: any): void;
+        _404(error: Error | any, req: IncomingMessage, res: ServerResponse): void;
         static current: Application;
         static on: any;
         static off: any;
@@ -171,6 +167,7 @@ declare module 'atma-server/HttpApplication/SubApp' {
     import { Class } from 'atma-server/dependency';
     import Application from 'atma-server/HttpApplication/Application';
     import { IApplicationDefinition } from 'atma-server/HttpApplication/IApplicationConfig';
+    import { IncomingMessage, ServerResponse } from 'http';
     export default class HttpSubApplication extends Class.Deferred {
         status: string;
         app_: Application;
@@ -179,25 +176,37 @@ declare module 'atma-server/HttpApplication/SubApp' {
         constructor(path: any, mix: Application | string | (IApplicationDefinition & {
             controller: string;
         }), parentApp: any);
-        process(req: any, res: any): void;
-        pipe(req: any, res: any): void;
+        process(req: IncomingMessage, res: ServerResponse): void;
+        handle(req: IncomingMessage, res: ServerResponse): void;
         execute(req: any, res: any): void;
     }
 }
 
+declare module 'atma-server/HttpService/CrudWrapper' {
+    const _default: {
+        Single: (name: any, Ctor: any) => {};
+        Collection: (name: any, Ctor: any) => {};
+    };
+    export default _default;
+}
+
+declare module 'atma-server/HttpService/HttpService' {
+    export default function HttpService(mix: any, ...params: any[]): new (...args: any[]) => any;
+}
+
 declare module 'atma-server/dependency' {
-    import * as Class from 'atma-class';
-    import * as io from 'atma-io';
-    const logger: any;
-    export { io };
+    import Class = require('atma-class');
+    import logger = require('atma-logger');
+    import Utils = require('atma-utils');
     export const ruta: any;
     export const mask: any;
     export const jmask: any;
     export const Compo: any;
     export const Routes: any;
-    export const Uri: any;
-    export const is_String: any, is_Function: any, is_Array: any, is_Object: any;
-    export const obj_extend: any, obj_extendDefaults: any;
+    export const io: any;
+    export const Uri: typeof Utils.class_Uri;
+    export const is_String: typeof Utils.is_String, is_Function: typeof Utils.is_Function, is_Array: typeof Utils.is_Array, is_Object: typeof Utils.is_Object;
+    export const obj_extend: typeof Utils.obj_extend, obj_extendDefaults: typeof Utils.obj_extendDefaults;
     export const include: any;
     export const includeLib: any;
     export { Class, logger };
@@ -312,6 +321,15 @@ declare module 'atma-server/HttpApplication/IApplicationConfig' {
     export interface IAppConfigExtended {
         $get(path: string): any;
         $getController(data: IPageConfiguration): any;
+        $getImports(type: 'server' | 'client' | 'both'): {
+            path: string;
+            type: 'mask' | 'script' | 'css' | 'html';
+        }[];
+        projects: {
+            [name: string]: {
+                attach(Application);
+            };
+        };
     }
 }
 

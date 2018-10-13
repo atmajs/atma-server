@@ -112,7 +112,7 @@ export const configurate_PageFiles = function (cfg, app) {
 	return io
 		.Directory
 		.readFilesAsync(pageFilesFolder, '**.html.mask')
-		.then(function (files: io.File[]) {
+		.then(function (files) {
 
 			files.forEach(file => {
 				var rel = file.uri.toRelativeString(pageFilesFolder);

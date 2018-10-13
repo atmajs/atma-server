@@ -6,4 +6,4 @@ dts.bundle({
 	out: './typings/index.d.ts'
 });
 
-io.File.copyTo('./ts-temp/typings/index.d.ts', './types/index.d.ts');
+io.File.copyTo('./ts-temp/typings/index.d.ts', './lib/server.d.ts');
