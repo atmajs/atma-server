@@ -2,6 +2,7 @@ src/
 test/
 builds/
 examples/
+ts-temp/
 
 .komodotools
 .npmignore

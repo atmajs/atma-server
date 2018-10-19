@@ -125,11 +125,11 @@ var HttpServiceProto = Class({
 
 		}
 
-		endpoint
+		let result = endpoint
 			.process
 			.call(this, req, res, entry.current.params);
 
-		return this;
+		return result || this;
 	},
 
 	getOptions: (function(){
