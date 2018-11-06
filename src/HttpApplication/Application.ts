@@ -1,4 +1,4 @@
-import { mask, include, logger, Uri, Class, Routes, is_String, is_Function, is_Object, obj_extend, obj_extendDefaults } from '../dependency'
+import { include, logger, Class, obj_extend } from '../dependency'
 import { Request, Response } from './Message'
 import { cli_arguments } from '../util/cli'
 import { app_isDebug } from '../util/app'
@@ -6,7 +6,6 @@ import { HttpError } from '../HttpError/HttpError'
 import HandlerFactory from '../HandlerFactory'
 import WebSocket from '../WebSocket'
 import Config from '../Config/Config'
-import SubApp from './SubApp'
 import MiddlewareRunner from '../Business/Middleware'
 import Autoreload from '../Autoreload/Autoreload'
 import HttpErrorPage from '../HttpPage/HttpErrorPage'
@@ -20,9 +19,6 @@ import { ServerResponse, IncomingMessage } from 'http';
 
 
 let _emitter = new Class.EventEmitter();
-
-
-
 
 class Application extends Class.Deferred {
 	
@@ -337,11 +333,11 @@ function handler_process(app, handler, req, res) {
 
 	let result = handler.process(req, res, app.config);
 	if (result != null) {
-		if (typeof result.then === 'function') {
-			handler_await(app, handler, req, res, result);
+        if (typeof result.then === 'function') {
+            handler_await(app, handler, req, res, result);
 			return;
 		}
-		handler_complete(app, handler, req, res, result);
+		handler_complete(app, handler, res, result);
 		return;
 	}
 
@@ -354,7 +350,7 @@ function handler_process(app, handler, req, res) {
 function handler_await(app, handler, req, res, dfr) {
 	dfr.then(
 		function onSuccess(content, statusCode, mimeType, headers){
-			handler_complete(app, handler, req, res, content, statusCode, mimeType, headers);
+			handler_complete(app, handler, res, content, statusCode, mimeType, headers);
 		},
 		function onError(error, statusCode){
 			error = (<any> HttpError).create(error, statusCode);
@@ -367,7 +363,7 @@ function handler_await(app, handler, req, res, dfr) {
 		}
 	);
 }
-function handler_complete(app, handler, req, res, content, statusCode = null, mimeType = null, headers = null) {
+function handler_complete(app, handler, res, content, statusCode = null, mimeType = null, headers = null) {
 	let send = handler.send || send_Content;
 	let allHeaders = handler_resolveHeaders(app, handler, headers);
 	send(res, content, statusCode, mimeType, allHeaders);
