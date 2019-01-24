@@ -180,7 +180,7 @@ let HttpServiceProto = Class({
                 'Allow': methods,
                 'Access-Control-Allow-Methods': methods,
                 'Access-Control-Allow-Credentials': 'true',
-                'Access-Control-Allow-Headers': 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+                'Access-Control-Allow-Headers': req.headers['Access-Control-Request-Headers'] || 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
                 'Access-Control-Allow-Origin': allowedOrigins
             };
 			
