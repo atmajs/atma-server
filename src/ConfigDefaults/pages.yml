@@ -27,7 +27,7 @@ page:
 	
 pages:
 	
-	/:
-		id: 'index'
-		title: 'Default Title'
+	# /:
+	# 	id: 'index'
+	# 	title: 'Default Title'
 	

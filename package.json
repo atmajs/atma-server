@@ -5,7 +5,7 @@
     "name": "Alexander Kit",
     "email": "alex.kit@atmajs.com"
   },
-  "version": "0.4.9",
+  "version": "0.4.12",
   "main": "./lib/server.js",
   "types": "./lib/server.d.ts",
   "repository": {
@@ -30,6 +30,7 @@
     "build": "app-bundler && npm run build-dts",
     "build-dts": "tsc -p . & atma custom tools/build-dts",
     "watch": "app-bundler -watch",
+    "release": "atma bump && git add -A && git commit -am \"bump\" && npm publish && git push",
     "test": "atma test",
     "server": "atma server"
   },

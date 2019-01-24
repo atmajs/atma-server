@@ -1,9 +1,9 @@
-import { Class, ruta, logger, obj_extend, is_Function, is_Array, is_Object } from '../dependency'
-import { HttpError, NotFoundError, RuntimeError, SecurityError, RequestError } from '../HttpError/HttpError'
+import { Class, ruta, logger, obj_extend, is_Function, is_Array, is_Object, obj_extendDefaults } from '../dependency'
+import { NotFoundError, SecurityError, RequestError } from '../HttpError/HttpError'
 import { secure_canAccess, service_validateArgs } from './utils'
 import { Barricade } from './Barricade'
 
-var HttpServiceProto = Class({
+let HttpServiceProto = Class({
 	Extends: Class.Deferred,
 	secure: null,
 
@@ -133,36 +133,83 @@ var HttpServiceProto = Class({
 	},
 
 	getOptions: (function(){
-		var METHODS = ['GET','POST', 'PUT', 'PATCH', 'HEAD', 'DELETE'];
-		return function(path, req, res){
+        const METHODS = ['GET','POST', 'PUT', 'PATCH', 'HEAD', 'DELETE'];
+        const HEADER_ALLOW_ORIGIN = 'Access-Control-Allow-Origin';
+		return function(path, req){
 
-			var headers = null,
-				allowedMethods = [];
-			var i = METHODS.length;
+			let headers = {},
+                allowedMethods = [],
+                allowedOrigins = '',
+                i = METHODS.length;
+            
+            if (this.meta) {
+                if  (this.meta.headers != null) {
+                    headers = obj_extend(headers, this.meta.headers);
+                }
+                if (this.meta.origins != null) {
+                    allowedOrigins = this.meta.origins;
+                }
+            }
 			while(--i > -1) {
-				var method = METHODS[i];
-				var endpoint = this.routes.get(path, method);
-				if (endpoint != null) {
+				let method = METHODS[i];
+				let route = this.routes.get(path, method);
+				if (route != null) {
 					allowedMethods.push(method)
-					if (endpoint.meta && endpoint.meta.headers) {
-						headers = obj_extend(headers, endpoint.meta.headers);
-					}
+                    var endpoint = route.value;
+					if (endpoint.meta) {
+                        if (endpoint.meta.headers != null) {
+						    headers = obj_extend(headers, endpoint.meta.headers);
+                        }
+                        if (endpoint.meta.origins != null) {
+                            allowedOrigins = endpoint.meta.origins;
+                        }
+                    }
 				}
 			}
 			if (allowedMethods.length === 0) {
 				return null;
 			}
-			if (this.meta && this.meta.headers) {
-				headers = obj_extend(headers, this.meta.headers);
-			}
-			var methods = allowedMethods.join(',');
-			headers['Allow'] = methods;
-			headers['Access-Control-Allow-Methods'] = methods;
-			if (headers['Content-Type'] === void 0) {
-				headers['Content-Type'] = 'application/json;charset=utf-8'
-			}
-			return headers;
-		}
+			
+            let methods = allowedMethods.join(',');
+            
+            let cors = {
+                'Content-Type': 'application/json;charset=utf-8',
+                'Allow': methods,
+                'Access-Control-Allow-Methods': methods,
+                'Access-Control-Allow-Credentials': 'true',
+                'Access-Control-Allow-Headers': 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+                'Access-Control-Allow-Origin': allowedOrigins
+            };
+			
+            obj_extendDefaults(headers, cors);
+            rewriteAllowedOrigins(req, headers);
+            return headers;
+        };
+
+        function rewriteAllowedOrigins(req, headers) {
+            let current: string = req.headers['HOST'];
+            if (!current) {
+                return;
+            }
+            let origin = headers[HEADER_ALLOW_ORIGIN];
+            if (!origin || origin === '*') {
+                return;
+            }
+            let hosts = origin.split(' ');
+            for (let i = 0; i < hosts.length; i++) {
+                let host = hosts[i];
+                let globIndex = host.indexOf('*');
+                if (globIndex > -1) {
+                    host = host.substring(globIndex + 2);
+                }
+                let index = current.toLowerCase().indexOf(host.toLowerCase());
+                if (index + host.length === current.length) {
+                    headers[HEADER_ALLOW_ORIGIN] = host;
+                    return;
+                }
+            }
+        }
+        
 	}())
 });
 
@@ -180,7 +227,7 @@ export default function HttpService(mix, ...params){
 	var proto = endpoints_merge(args);
 
 	var routes = new ruta.Collection,
-		defs = proto.ruta || proto,
+		defs = proto.ruta || proto.routes || proto,
 		path, responder, x
 		;
 	for (path in defs) {
@@ -239,7 +286,7 @@ function endpoints_merge(array) {
 		return array[0];
 
 	var proto = array[0],
-		ruta = proto.ruta || proto;
+		ruta = proto.ruta || proto.routes || proto;
 
 	var imax = array.length,
 		i = 0,
@@ -247,22 +294,25 @@ function endpoints_merge(array) {
 		xruta;
 	while ( ++i < imax ){
 		x = array[i];
-		xruta = x.ruta || x;
+		xruta = x.ruta || x.routes || x;
 
 		for(var key in xruta){
-			if (xruta[key] != null)
-				ruta[key] = xruta[key];
+			if (xruta[key] != null) {
+                ruta[key] = xruta[key];
+            }
 		}
 
-		if (x.ruta == null)
+		if (x.ruta == null || x.routes) {
 			continue;
-
+        }
 		for(var key in x){
-			if (key === 'ruta')
-				continue;
+			if (key === 'ruta' || key === 'routes') {
+                continue;
+            }
 
-			if (x[key] != null)
-				proto[key] = x[key];
+			if (x[key] != null) {
+                proto[key] = x[key];
+            }
 		}
 	}
 
