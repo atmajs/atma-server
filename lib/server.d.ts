@@ -7,7 +7,7 @@
 
 declare module 'atma-server' {
     import { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError } from 'atma-server/HttpError/HttpError';
-    import { IHttpHandler } from 'atma-server/IHttpHandler';
+    import { IHttpHandler, HttpResponse } from 'atma-server/IHttpHandler';
     import HandlerFactory from 'atma-server/HandlerFactory';
     import HttpErrorPage from 'atma-server/HttpPage/HttpErrorPage';
     import HttpPage from 'atma-server/HttpPage/HttpPage';
@@ -15,7 +15,7 @@ declare module 'atma-server' {
     import HttpSubApplication from 'atma-server/HttpApplication/SubApp';
     import HttpCrudEndpoints from 'atma-server/HttpService/CrudWrapper';
     import HttpService from 'atma-server/HttpService/HttpService';
-    export { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError, Application, HttpSubApplication, HttpErrorPage, HttpPage, HandlerFactory, HttpCrudEndpoints, HttpService, IHttpHandler };
+    export { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError, Application, HttpSubApplication, HttpErrorPage, HttpPage, HandlerFactory, HttpCrudEndpoints, HttpService, IHttpHandler, HttpResponse };
     export const middleware: {
         query: (req: any, res: any, next: any) => void;
         static: (req: any, res: any, next: any, config: any) => void;
@@ -37,7 +37,22 @@ declare module 'atma-server/IHttpHandler' {
     import { IncomingMessage, ServerResponse } from 'http';
     import { IApplicationConfig } from 'atma-server/HttpApplication/IApplicationConfig';
     export interface IHttpHandler {
+        meta?: {
+            headers?: {
+                [key: string]: string;
+            };
+        };
         process(req: IncomingMessage, res: ServerResponse, config?: IApplicationConfig): Class.DeferredLike;
+        send?(req: any, res: any, content: any, statusCode: any, mimeType: any, allHeaders: any): any;
+    }
+    export class HttpResponse {
+        content: string | Buffer | any;
+        statucCode: number;
+        mimeType: string;
+        headers: {
+            [key: string]: string;
+        };
+        constructor(json?: Partial<HttpResponse>);
     }
 }
 

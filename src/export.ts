@@ -1,5 +1,5 @@
 import { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError } from './HttpError/HttpError'
-import { IHttpHandler } from './IHttpHandler'
+import { IHttpHandler, HttpResponse } from './IHttpHandler'
 import HandlerFactory from './HandlerFactory'
 
 import HttpErrorPage from './HttpPage/HttpErrorPage'
@@ -26,7 +26,8 @@ export {
     HandlerFactory,
     HttpCrudEndpoints,
     HttpService,
-    IHttpHandler
+    IHttpHandler,
+    HttpResponse
 }; 
 
 export const middleware = Middleware;

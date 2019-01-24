@@ -16,6 +16,8 @@ import { IApplicationDefinition, IApplicationConfig, IAppConfigExtended } from '
 import HttpRewriter from '../HttpRewrites/HttpRewriter'
 import { obj_assign } from '../util/obj'
 import { ServerResponse, IncomingMessage } from 'http';
+import { IHttpHandler } from '../export';
+import { HttpResponse } from '../IHttpHandler';
 
 
 let _emitter = new Class.EventEmitter();
@@ -243,7 +245,7 @@ class Application extends Class.Deferred {
 		}
 
 		// send json
-		send_Error(res, error);
+		send_Error(req, res, error);
 	}
 	
 	static current: Application = null
@@ -299,12 +301,13 @@ export function respond_Raw(app, req, res) {
 	);
 }
 function middleware_processDelegate(middlewareRunner){
-	return function(app, handler, req, res){
+	return function(app, handler: IHttpHandler, req, res){
 
 		middlewareRunner.process(req, res, done, app.config);
 		function done(error){
 			if (error) {
-				send_Error(res, error);
+                let headers = handler.meta && handler.meta.headers;
+				send_Error(req, res,error, headers);
 				return;
 			}
 			handler_process(app, handler, req, res);
@@ -337,7 +340,7 @@ function handler_process(app, handler, req, res) {
             handler_await(app, handler, req, res, result);
 			return;
 		}
-		handler_complete(app, handler, res, result);
+		handler_complete(app, handler, req, res, result);
 		return;
 	}
 
@@ -349,8 +352,17 @@ function handler_process(app, handler, req, res) {
 }
 function handler_await(app, handler, req, res, dfr) {
 	dfr.then(
-		function onSuccess(content, statusCode, mimeType, headers){
-			handler_complete(app, handler, res, content, statusCode, mimeType, headers);
+		function onSuccess(mix: string | Buffer | HttpResponse | any, statusCode, mimeType, headers){
+            let content = null;
+            if (mix instanceof HttpResponse) {
+                content = mix.content;
+                statusCode = mix.statucCode;
+                mimeType = mix.mimeType;
+                headers = mix.headers;
+            } else {
+                content = mix;
+            }
+			handler_complete(app, handler, req, res, content, statusCode, mimeType, headers);
 		},
 		function onError(error, statusCode){
 			error = (<any> HttpError).create(error, statusCode);
@@ -359,16 +371,25 @@ function handler_await(app, handler, req, res, dfr) {
 				return;
 			}
 			let allHeaders = handler_resolveHeaders(app, handler);
-			send_Error(res, error, allHeaders);
+			send_Error(req, res,error, allHeaders);
 		}
 	);
 }
-function handler_complete(app, handler, res, content, statusCode = null, mimeType = null, headers = null) {
+function handler_complete(
+    app, 
+    handler: IHttpHandler, 
+    req: IncomingMessage, 
+    res: ServerResponse, 
+    content: string | Buffer | any, 
+    statusCode = null, 
+    mimeType = null, 
+    headers = null) 
+{
 	let send = handler.send || send_Content;
 	let allHeaders = handler_resolveHeaders(app, handler, headers);
-	send(res, content, statusCode, mimeType, allHeaders);
+	send(req, res, content, statusCode, mimeType, allHeaders);
 }
-function handler_resolveHeaders (app, handler, overrides = null) {
+function handler_resolveHeaders (app, handler: IHttpHandler, overrides = null) {
 	let headers_Handler = handler.meta && handler.meta.headers,
 		headers_App = app.config.headers;
 

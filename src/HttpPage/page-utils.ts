@@ -209,14 +209,14 @@ let page_processPartial
 }());
 export { page_processPartial }
 
-export const pageError_sendDelegate = function(res, error){
+export const pageError_sendDelegate = function(req, res, error){
 
 	return function(html) {
-		send_Content(res, html, error.statusCode || 500, mime_HTML);
+		send_Content(req, res, html, error.statusCode || 500, mime_HTML);
 	};
 };
 
-export const pageError_failDelegate = function(res, error){
+export const pageError_failDelegate = function(req, res, error){
 	return function(internalError){
 		var str = is_Object(internalError)
 			? JSON.stringify(internalError)
@@ -225,6 +225,6 @@ export const pageError_failDelegate = function(res, error){
 
 		str += '\nError: ' + error.message
 
-		send_Content(res, 'ErrorPage Failed: ' + str, 500, mime_PLAIN);
+		send_Content(req, res, 'ErrorPage Failed: ' + str, 500, mime_PLAIN);
 	}
 };
