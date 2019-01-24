@@ -171,6 +171,9 @@ let HttpServiceProto = Class({
 			}
 			
             let methods = allowedMethods.join(',');
+            if (methods.indexOf('OPTIONS') === -1) {
+                methods += ',OPTIONS';
+            }
             
             let cors = {
                 'Content-Type': 'application/json;charset=utf-8',
