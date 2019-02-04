@@ -88,8 +88,8 @@ class HttpErrorPage extends HttpPageBase {
 		
 		private _response (resp){
 			
-			var master = resp.load.Master || this.master,
-				template = resp.load.Template || this.template,
+			var master = resp.load && resp.load.Master || this.master,
+				template = resp.load && resp.load.Template || this.template,
 				nodes = this.nodes || template
 				;
 			if (master == null && this.masterPath !== '') {

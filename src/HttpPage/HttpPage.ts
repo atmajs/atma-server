@@ -109,8 +109,8 @@ export default class HttpPage extends HttpPageBase {
 
 
 	_response (resp){
-		var master = resp.load.Master || this.master,
-			template = resp.load.Template || this.template,
+		var master = resp.load && resp.load.Master || this.master,
+			template = resp.load && resp.load.Template || this.template,
 			Component = resp.Compo;
 
 		if (master == null && this.masterPath) {
