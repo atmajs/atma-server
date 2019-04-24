@@ -5,7 +5,7 @@
     "name": "Alexander Kit",
     "email": "alex.kit@atmajs.com"
   },
-  "version": "0.4.19",
+  "version": "0.4.20",
   "main": "./lib/server.js",
   "types": "./lib/server.d.ts",
   "repository": {
@@ -75,7 +75,9 @@
       "maskjs",
       "socket.io",
       "static-content",
-      "http",
+      "^http$",
+      "^https$",
+      "^net$",
       "yamljs"
     ],
     "middlewares": {

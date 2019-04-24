@@ -18,20 +18,27 @@ import { obj_assign } from '../util/obj'
 import { ServerResponse, IncomingMessage } from 'http';
 import { IHttpHandler } from '../export';
 import { HttpResponse } from '../IHttpHandler';
+import { io } from '../dependency'
 
+import * as http from 'http'
+import * as https from 'https'
+import * as net from 'net'
 
 let _emitter = new Class.EventEmitter();
 
 class Application extends Class.Deferred {
 	
 	// <Boolean>, if instance is the root application, and not one of the subapps
-	isRoot = false
+    isRoot = false
+    
+    isHttpsForced = false
 
 	// <HandlerFactory>, stores all endpoints of this application
 	handlers = null
 
 	// <http.Server> , in case `listen` was called.
-	_server = null
+	_server: net.Server = null
+    _sslServer: net.Server = null;
 
 	// run this middlewares when the endpoint is found. (Runs before the endpoint handler)
 	_innerPipe = null
@@ -192,18 +199,60 @@ class Application extends Class.Deferred {
 			throw Error('Port number is not defined');
 
 		if (server == null)
-			server = require('http').createServer();
+			server = http.createServer();
 
-		this._server = server
-			.on('request', this.process)
+		if (this.webSockets.hasHandlers()) {
+			this.webSockets.listen(this._server);
+        }
+
+		if (app_isDebug()) {
+            this.autoreload();
+        }
+
+        let processFn = this.process;
+
+        let ssl = this.config.$get('server.ssl');
+        if (ssl && ssl.enabled === true) {
+            let { forced, port, certFile, keyFile, caFile } = ssl;
+            this.isHttpsForced = forced == null ? false : forced;
+
+            let readFile = path => {
+                return path && io.File.exists(path) && io.File.read(path, { encoding: 'buffer' }) || void 0;
+            };
+            let options = {
+                key: readFile(keyFile),
+                cert: readFile(certFile),
+                ca: readFile(caFile),
+            };
+            
+            this._sslServer = https
+                .createServer(options, this.process)
+                .listen(port);
+
+            if (forced === true) {
+                processFn = (req, res, next?) => {
+                    let proto = req.headers['x-forwarded-proto'];
+                    if (proto !== 'https') {
+                        let host = req.headers['host'] as string;
+                        if (host) {
+                            // clear original port
+                            host = host.replace(/:.+$/, '');
+                        }
+                        let portStr = port === 443 ? '' : `:${port}`;
+                        let path = `https://${host}${portStr}${req.url}`;
+                        res.writeHead(301, { 'Location': path });
+                        res.end();
+                        return;
+                    }
+                    this.process(req, res, next);
+                };
+            }
+        }
+
+        this._server = server
+			.on('request', processFn)
 			.listen(port)
 			;
-
-		if (this.webSockets.hasHandlers())
-			this.webSockets.listen(this._server);
-
-		if (app_isDebug())
-			this.autoreload();
 
 		_emitter.trigger('listen', this);
 		return this._server;
@@ -213,8 +262,8 @@ class Application extends Class.Deferred {
 		return route && route.value && route.value.app_;
 	}
 
-	//Self: {
-	_loadConfig(){
+	
+	private _loadConfig(){
 
 		let definition = this._baseConfig;
 
@@ -231,7 +280,7 @@ class Application extends Class.Deferred {
 		return this;
 	}
 
-	_404(error: Error | any, req: IncomingMessage, res: ServerResponse){
+	private _404(error: Error | any, req: IncomingMessage, res: ServerResponse){
 		
 		error = error == null
 			? new HttpError('Endpoint not found: ' + req.url, 404)
