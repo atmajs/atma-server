@@ -52,13 +52,17 @@ function next(runner, req, res, callback, config, index){
 
 function nextDelegate(runner, req, res, callback, config, index){
 	
-	return function(error){
+	return function(error, result: { done?: boolean }){
 		if (error) {
 			logger
 				.debug('<app:middleware:nextDelegate>'.red, error);
 			callback(error, req, res);
 			return;
-		}
+        }
+        if (result && result.done) {
+            callback(null, req, res);
+            return;
+        }
 		
 		next(runner, req, res, callback, config, ++index);
 	};

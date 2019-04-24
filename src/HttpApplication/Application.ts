@@ -36,7 +36,7 @@ class Application extends Class.Deferred {
 	// run this middlewares when the endpoint is found. (Runs before the endpoint handler)
 	_innerPipe = null
 
-	// run this middlewares by all requests. Conains also endpoint resolver
+	// run this middlewares by all requests. Contains also endpoint resolver
 	_outerPipe = null
 
 	//@obsolete
