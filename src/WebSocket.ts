@@ -4,16 +4,22 @@ import Application from './HttpApplication/Application'
 
 export default class  WebSocket {
 	SocketListeners = {}
-	io: any = null;
+    io: any = null;
+    ioSsl: any = null;
+
 	constructor (public app: Application) {
 		
-	}
-
+    }
+    
 	listen (httpServer){
 		this.listen = doNothing;
-		logger.log('Web socket opened'.green.bold);
-		
+		logger.log('Web socket opened'.green.bold);		
 		this.io = io_create(httpServer, this.SocketListeners);
+    }
+    listenSsl (httpsServer){
+		this.listenSsl = doNothing;
+		logger.log('Wsl socket opened'.green.bold);		
+		this.ioSsl = io_create(httpsServer, this.SocketListeners);
 	}
 	hasHandlers (){
 		return Object.keys(this.SocketListeners).length !== 0
@@ -24,34 +30,48 @@ export default class  WebSocket {
 	registerHandler (namespace, Handler){
 		this.SocketListeners[namespace] = Handler;
 		
-		if (this.io == null) {
-			if (this.app != null && this.app._server) 
-				this.listen(this.app._server);
-			
+		if (this.io == null && this.ioSsl == null) {
+			if (this.app != null) {
+                if (this.app._server) {
+                    this.listen(this.app._server);
+                }
+                if (this.app._sslServer) {
+                    this.listenSsl(this.app._sslServer);
+                }
+            }			
 			return;
-		}
-		io_listen(this.io, namespace, Handler);
+        }
+        if (this.io) {
+            io_listen(this.io, namespace, Handler);
+        }
+        if (this.ioSsl) {
+            io_listen(this.ioSsl, namespace, Handler);
+        }
 	}
-	clients (namespace){
-		if (this.io == null) 
-			return [];
-		
-		var nsp = this.io.of(namespace),
-			clients = []
-			;
-		for(var id in nsp.connected){
-			clients.push(nsp.connected[id]);
-		}
+	clients (namespace) {
+        let clients = [];
+		if (this.io) {
+            let nsp = this.io.of(namespace);
+            for(let id in nsp.connected){
+                clients.push(nsp.connected[id]);
+            }
+        }
+        if (this.ioSsl) {
+            let nsp = this.ioSsl.of(namespace);
+            for(let id in nsp.connected){
+                clients.push(nsp.connected[id]);
+            }
+        }
 		return clients;
 	}
-	of (namespace){
-		return this.io == null
-			? null
-			: this.io.of(namespace);
-	}
+	// of (namespace){
+	// 	return this.io == null
+	// 		? null
+	// 		: this.io.of(namespace);
+	// }
 	emit (namespace, ...args){
 		var cb = args[args.length - 1];
-		if (this.io == null) {
+		if (this.io == null && this.ioSsl === null) {
 			console.error(
 				'Emitting to the websockets (%s), but server is not started'
 				, namespace
@@ -70,9 +90,15 @@ export default class  WebSocket {
 			args.pop();
 			io_emitMany(this.clients(namespace), args, cb);
 			return;
-		}
-		var nsp = this.io.of(namespace);
-		nsp.emit.apply(nsp, args);
+        }
+        if (this.io != null) {
+            let nsp = this.io.of(namespace);
+            nsp.emit.apply(nsp, args);
+        }
+        if (this.ioSsl != null) {
+            let nsp = this.ioSsl.of(namespace);
+            nsp.emit.apply(nsp, args);
+        }
 	}
 
 };
