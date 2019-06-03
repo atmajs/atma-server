@@ -310,6 +310,11 @@ declare module 'atma-server/HttpApplication/IApplicationConfig' {
                 condition: string;
             }>;
         }>;
+        disablePackageJson?: boolean;
+        buildDirectory?: string;
+        configs?: string | string[];
+        config?: object;
+        sources?: object[];
     }
     export interface IPageConfiguration {
         location?: {
@@ -380,7 +385,8 @@ declare module 'atma-server/HttpPage/HttpPageBase' {
 }
 
 declare module 'atma-server/Config/Config' {
-    export default function Config(params: any, app: any, done: any, fail: any): any;
+    import { IApplicationConfig } from 'atma-server/HttpApplication/IApplicationConfig';
+    export default function Config(params: IApplicationConfig, app: any, done: any, fail: any): any;
 }
 
 declare module 'atma-server/HttpRewrites/HttpRewriter' {

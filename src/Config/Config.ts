@@ -11,6 +11,7 @@ import ConfigUtils, {
 	//configurate_Projects,
 	configurate_BowerAndCommonJS  
 } from './ConfigUtils'
+import { IApplicationConfig } from '../HttpApplication/IApplicationConfig';
 
 const DEFAULTS = [
 	// import cfg-defaults.json
@@ -20,11 +21,11 @@ const PATH = 'server/config/**.yml';
 const BUILD_PATH = 'public/build/stats.json';
 
 
-export default function Config (params, app, done, fail) {
+export default function Config (params: IApplicationConfig, app, done, fail) {
 	params = params || {};
 
 	var path_base = params.base,
-		configs = params.configs,
+		configPaths = params.configs,
 		disablePackageJson = params.disablePackageJson === true,
 		path_Build,
 		appConfig;
@@ -34,14 +35,14 @@ export default function Config (params, app, done, fail) {
 		: path_resolveSystemUrl(path_base + '/')
 		;
 
-	configs = cfg_prepair(path_base, configs, PATH);
-
-	if (configs)
+	let configs = cfg_prepair(path_base, configPaths, PATH);
+	if (configs) {
 		// if `configs` null, do not load also build values
-		path_Build = path_base + (params.buildDirectory || BUILD_PATH);
-
-	if (params.config)
-		appConfig = { config: params.config };
+        path_Build = path_base + (params.buildDirectory || BUILD_PATH);
+    }
+	if (params.config) {
+        appConfig = { config: params.config };
+    }
 
 	var $sources = [
 		{

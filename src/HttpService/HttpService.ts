@@ -2,6 +2,8 @@ import { Class, ruta, logger, obj_extend, is_Function, is_Array, is_Object, obj_
 import { NotFoundError, SecurityError, RequestError } from '../HttpError/HttpError'
 import { secure_canAccess, service_validateArgs } from './utils'
 import { Barricade } from './Barricade'
+import { class_Dfr } from 'atma-utils';
+import { HttpResponse } from '../IHttpHandler';
 
 let HttpServiceProto = Class({
 	Extends: Class.Deferred,
@@ -129,7 +131,29 @@ let HttpServiceProto = Class({
 			.process
 			.call(this, req, res, entry.current.params);
 
-		return result || this;
+        let dfr = result || this;
+        let promise = new class_Dfr();
+
+        dfr.then((mix, statusCode, mimeType, headers) => {
+            var content = null;
+            if (mix instanceof HttpResponse) {
+                content = mix.content;
+                statusCode = mix.statucCode;
+                mimeType = mix.mimeType;
+                headers = mix.headers;
+            }
+            else {
+                content = mix;
+            }
+            if (meta != null && meta.origins) {
+                let corsHeaders = this.getOptions(path, req, res);
+                headers = headers == null ? corsHeaders : obj_extend(headers, corsHeaders);
+            }
+
+            promise.resolve(content, statusCode, mimeType, headers);
+        }, error => promise.reject(error))
+        
+        return promise;
 	},
 
 	getOptions: (function(){

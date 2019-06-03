@@ -266,7 +266,6 @@ class Application extends Class.Deferred {
 	private _loadConfig(){
 
 		let definition = this._baseConfig;
-
 		this.config = Config(
 			definition
 			, this

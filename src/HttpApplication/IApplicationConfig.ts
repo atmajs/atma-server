@@ -81,7 +81,17 @@ export interface IApplicationConfig {
         rule: string
         conditions: Array<{ condition: string }>
     }>
+    disablePackageJson?: boolean
 
+    buildDirectory?: string
+
+    // appcfg directories/files configs
+    configs?: string | string[]
+    // additional appcfg configs    
+    config?: object
+
+    // appcfg raw sources
+    sources?: object[]
 }
 
 

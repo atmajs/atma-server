@@ -8,7 +8,7 @@ export default {
 	$formatPath: PathUtils.format
 };
 
-export const cfg_prepair = function (base, configs: string | string[], defaults) {
+export function cfg_prepair (base, configs: string | string[], defaults) {
 	if (configs == null && configs !== void 0)
 		return null;
 	if (configs === void 0)
