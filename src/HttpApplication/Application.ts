@@ -231,8 +231,10 @@ class Application extends Class.Deferred {
 
             if (forced === true) {
                 processFn = (req, res, next?) => {
+                    let allow = req.url.indexOf('/.well-known/') !== -1;
+
                     let proto = req.headers['x-forwarded-proto'];
-                    if (proto !== 'https') {
+                    if (proto !== 'https' && allow !== true ) {
                         let host = req.headers['host'] as string;
                         if (host) {
                             // clear original port
