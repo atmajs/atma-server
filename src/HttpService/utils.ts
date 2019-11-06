@@ -17,6 +17,9 @@ export const secure_canAccess = function(req, secure: ISecureObj){
     }
 	
     let user = req.user;
+    if (user == null) {
+        return false;
+    }
     if (secure.role != null && isInRole(user, secure.role) === false) {
         return false;
     }
@@ -29,7 +32,6 @@ export const secure_canAccess = function(req, secure: ISecureObj){
     if (secure.claims != null && hasClaimAny(user, secure.claims) === false) {
         return false;
     }
-
     return true;
 };
 
