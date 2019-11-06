@@ -11,6 +11,7 @@ Atma Node.js Server Module
 - [Endpoints](#endpoints)
 	- [Sub-Application](#subapplication)
 	- [Handler](#handler)
+    - [Endpoint](#httpendpoint)
 	- [Service](#httpservice)
 		- [Routes](#service-routes)
 		- [Endpoints](#service-endpoints)
@@ -182,7 +183,7 @@ _scripts / styles_ for the NodeJS application itself and for the web pages. They
 There are 4 types of endpoints _in route lookup order_
 - [Sub Application](#sub-application)
 - [Handler (generic handler)](#handler)
-- [HttpService (RESTful service)](#httpservice)
+- [HttpService/Endpoint (RESTful service)](#httpservice)
 - [HttpPage](#httppage)
 
 ### Sub Application
@@ -224,6 +225,38 @@ handlers:
 Usually, this are the low level handlers, like 'less' preprocessor. 
 But the interface ``` (Deferred + process(req, res)) ``` is same also for HttpService and HttpPage
 
+### HttpEndpoint
+
+Class and decorators oriented [HttpService](#httpservice)
+
+```typescript
+import { HttpEndpoint } from 'atma-server'
+
+@HttpEndpoint.isAuthorized()
+export default class MyEndpoint extends HttpEndpoint {
+
+    @HttpEndpoint.isInRole('admin')
+    async '$get /' () {
+        return Promise.resolve({ foo: 1})
+    }
+}
+```
+
+**Decorators** can be applied to the class or methods
+
+* `HttpEndpoint.isAuthorized()`
+* `HttpEndpoint.isInRole(...roles: string[])`
+* `HttpEndpoint.hasClaim(...roles: string[])`
+* `HttpEndpoint.origin(origin: string = "*")`
+* `HttpEndpoint.middleware(fn: (req, res?, params?) => Promise<any> | any | void)`
+* `HttpEndpoint.createDecorator(methods: ICreateDecorator)`
+
+```typescript
+interface ICreateDecorator {
+    forCtor (Ctor: Function, meta: IHttpEndpointMeta): Function | void;
+    forMethod (Proto: any, method: IHttpEndpointMethod): IHttpEndpointMethod | void
+}
+```
 
 ### HttpService
 

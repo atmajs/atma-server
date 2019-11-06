@@ -8,6 +8,7 @@ import Application from './HttpApplication/Application'
 import HttpSubApplication from './HttpApplication/SubApp'
 import HttpCrudEndpoints from './HttpService/CrudWrapper'
 import HttpService from './HttpService/HttpService'
+import { HttpEndpoint } from './HttpService/HttpEndpoint'
 import Middleware from './middleware/export'
 
 require('./handlers/export');
@@ -27,7 +28,8 @@ export {
     HttpCrudEndpoints,
     HttpService,
     IHttpHandler,
-    HttpResponse
+    HttpResponse,
+    HttpEndpoint
 }; 
 
 export const middleware = Middleware;

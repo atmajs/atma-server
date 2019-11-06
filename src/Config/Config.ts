@@ -16,6 +16,41 @@ import { IApplicationConfig } from '../HttpApplication/IApplicationConfig';
 const DEFAULTS = [
 	// import cfg-defaults.json
 ][0];
+const DEFAULTS_JSON = {
+    env: {
+        both: {
+            include: {
+                cfg: null
+            },
+            routes: null,
+            scripts: null
+        },
+        client: {
+            include: {
+                cfg: null
+            },
+            mask: {
+                cfg: null,
+                src: null
+            },
+            scripts: null,
+            styles: null,
+            routes: null,
+        },
+        server: {
+            routes: null,
+            scripts: null
+        }
+    },
+    handler: {},
+    handlers: {},
+    service: {},
+    services: {},
+    page: {
+        location: {}
+    },
+    pages: {}
+}
 
 const PATH = 'server/config/**.yml';
 const BUILD_PATH = 'public/build/stats.json';
@@ -46,7 +81,7 @@ export default function Config (params: IApplicationConfig, app, done, fail) {
 
 	var $sources = [
 		{
-			config: JSON.parse(DEFAULTS)
+			config: DEFAULTS ? JSON.parse(DEFAULTS) : DEFAULTS_JSON
 		},
 		path_Build
 			? {
