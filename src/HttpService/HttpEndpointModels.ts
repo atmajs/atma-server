@@ -1,7 +1,7 @@
-import { ServerRequest, ServerResponse } from 'http'
+import { IncomingMessage, ServerResponse } from 'http'
 
 export interface IHttpEndpointMiddleware {
-    (req: ServerRequest, res: ServerResponse, params: any): void | any | Promise<any>
+    (req: IncomingMessage, res: ServerResponse, params: any): void | any | Promise<any>
 }
 
 export interface IHttpEndpointMeta {

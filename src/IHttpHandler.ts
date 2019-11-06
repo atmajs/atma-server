@@ -1,6 +1,5 @@
-import { Class } from './dependency'
-import { HttpError } from './HttpError/HttpError' 
 import { IncomingMessage, ServerResponse } from 'http'
+import { Class } from './dependency'
 import { IApplicationConfig } from './HttpApplication/IApplicationConfig'
 
 

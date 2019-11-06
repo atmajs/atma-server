@@ -1,4 +1,4 @@
-import { ServerRequest, ServerResponse } from 'http'
+import { IncomingMessage, ServerResponse } from 'http'
 import { NotFoundError, SecurityError, RequestError } from '../HttpError/HttpError'
 import { ruta, logger, obj_extend, obj_extendDefaults, is_Function, is_Array, is_Object } from '../dependency'
 import { secure_canAccess, service_validateArgs } from './utils'
@@ -48,7 +48,7 @@ export abstract class HttpEndpoint {
         this.rootCharCount = count;
     }
 
-    process(req: ServerRequest & { body?: any }, res: ServerResponse): Promise<any> | void {
+    process(req: IncomingMessage & { body?: any }, res: ServerResponse): Promise<any> | void {
 
         let iQuery = req.url.indexOf('?');
         if (iQuery !== -1 && /\bhelp\b/.test(req.url.substring(iQuery))) {
@@ -102,7 +102,7 @@ export abstract class HttpEndpoint {
 
                 var error = service_validateArgs(body, args, isStrict);
                 if (error) {
-                    return Promise.reject(new RequestError(error));
+                    return Promise.reject(new RequestError(error.message));
                 }
             }
         }
@@ -161,7 +161,7 @@ namespace HttpEndpointUtils {
 
     export function onComplete(
         path: string,
-        req: ServerRequest,
+        req: IncomingMessage,
         res: ServerResponse,
         endpoint: HttpEndpoint,
         endpointMethod: IHttpEndpointMethod,
@@ -224,7 +224,7 @@ namespace HttpEndpointUtils {
 
         return endpoints;
     };
-    export function getOptionsHeaders(endpoint: HttpEndpoint, path: string, req: ServerRequest) {
+    export function getOptionsHeaders(endpoint: HttpEndpoint, path: string, req: IncomingMessage) {
 
         let headers = {},
             allowedMethods = [],

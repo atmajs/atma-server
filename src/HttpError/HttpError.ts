@@ -1,6 +1,6 @@
 import { Class, is_String, is_Object } from '../dependency'
 
-export const HttpError = Class({
+export const HttpError: IHttpErrorConstructor = <any> Class({
 	Base: Error,
 	_error: null,
 	_json: null,
@@ -95,6 +95,19 @@ export const SecurityError = createError('SecurityError'	, 403);
 export const NotFoundError = createError('NotFoundError'	, 404);
 export const RuntimeError = createError('RuntimeError'	, 500);
 
+export interface IHttpError {
+    name: string
+    statusCode: number
+    message: string
+    status: string
+    toString: Function
+    toJSON: Function
+
+    _error?: Error
+}
+export interface IHttpErrorConstructor {
+    new (message: string, statusCode?: number): IHttpError
+}
 
 // PRIVATE
 
@@ -114,7 +127,7 @@ function createError(id, code) {
 		statusCode: code,
 		name: id
 	});
-	return Ctor;
+	return Ctor as IHttpErrorConstructor;
 }
 
 // export class HttpError {

@@ -31,7 +31,6 @@ export const secure_canAccess = function(req, secure: ISecureObj){
     }
 
     return true;
-	return user != null && (role == null || user.isInRole(role));
 };
 
 function isInRole (user, role: string) {
@@ -99,7 +98,7 @@ function hasClaimAny (user, claims: string[]) {
 
 export const service_validateArgs = function(body, args, isStrict?) {
 	if (body == null) 
-		return 'Message Body is not defined';
+		return new Error('Message Body is not defined');
 	
 	return Class.validate(body, args, isStrict);
 };

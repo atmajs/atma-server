@@ -122,8 +122,9 @@ let HttpServiceProto = Class({
 					;
 
 			var error = service_validateArgs(body, args, isStrict);
-			if (error)
-				return this.reject(new RequestError(error));
+			if (error) {
+                return this.reject(new RequestError(error.message));
+            }
 
 		}
 

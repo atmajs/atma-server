@@ -7,18 +7,15 @@
   ],
   "compilerOptions": {
     "outDir": "ts-temp",
+    "lib": ["es2015", "es2015.promise", "es2016", "dom"],
     "typeRoots": [
-      "./node_modules/@types",
-      "./typings/",
-      "./typings-other/"
+        "node_modules/@types",
+        "typings/globals",
+        "typings-other"
     ],
-    "types": [
-      "atma-class",
-      "string",
-      "node"
-    ],
+    "types": ["node", "assertion", "atma-utest", "string", "jquery"],
     "declaration": true,
-    "target":"es6",
+    "target": "es5",
     "module": "commonjs",
     "sourceMap": false,
     "experimentalDecorators": true
