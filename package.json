@@ -132,7 +132,7 @@
                             "./typings",
                             "./typings-other"
                         ],
-                        "target": "es6",
+                        "target": "es5",
                         "#if (TEST)": {
                             "module": "AMD"
                         },
