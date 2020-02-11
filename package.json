@@ -5,7 +5,7 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.4.30",
+    "version": "0.4.31",
     "main": "./lib/server.js",
     "types": "./lib/server.d.ts",
     "repository": {
@@ -80,7 +80,8 @@
             "^http$",
             "^https$",
             "^net$",
-            "yamljs"
+            "yamljs",
+            "class-json"
         ],
         "middlewares": {
             "yml": [
