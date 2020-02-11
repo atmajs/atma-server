@@ -7,15 +7,13 @@ type ISecureObj = boolean | {
     claims?: string[]
 };
 
-export const secure_canAccess = function(req, secure: ISecureObj){
-
+export function secure_canAccess (req, secure: ISecureObj){
     if (secure == null) {
         return true;
     }
     if (typeof secure === 'boolean') {
         return secure === false ? true : (req.session != null || req.user != null);
     }
-	
     let user = req.user;
     if (user == null) {
         return false;

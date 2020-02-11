@@ -11,6 +11,21 @@ export interface IHttpEndpointMeta {
         roles?: string[]
         claims?: string[]
     }
+    endpointsParams?: { [method: string]: IHttpEndpointMethodArgMeta[] }
+}
+
+export interface IHttpEndpointMethodArgOptions {
+    Type: Function
+    name?: string
+    optional?: string
+    validate?: (val: any) => string
+}
+export interface IHttpEndpointMethodArgMeta {
+    Type?: any,
+    from: 'uri' | 'body',
+    name?: string
+    optional?: boolean
+    validate?: (val: any) => string
 }
 export interface IHttpEndpointMethodMeta {
     headers?: any
@@ -23,8 +38,10 @@ export interface IHttpEndpointMethodMeta {
         roles?: string[]
         claims?: string[]
     }
+    params?: IHttpEndpointMethodArgMeta[]
 }
 export interface IHttpEndpointMethod {
+    key?: string
     meta?: IHttpEndpointMethodMeta
     process: IHttpEndpointMiddleware
 }

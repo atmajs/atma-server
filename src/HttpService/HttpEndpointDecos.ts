@@ -1,4 +1,5 @@
-import { IHttpEndpointMeta, IHttpEndpointMethod } from './HttpEndpointModels';
+import { IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgMeta, IHttpEndpointMethodArgOptions } from './HttpEndpointModels';
+import { Types } from './HttpEndpointParamUtils';
 
 export namespace HttpEndpointDecos {
 
@@ -55,7 +56,85 @@ export namespace HttpEndpointDecos {
             }
         });
     }
+    export function fromUri ()
+    export function fromUri (name: string, Type: Function)
+    export function fromUri (opts: IHttpEndpointMethodArgOptions)
+    export function fromUri (mix?: any, Type?: Function) {
+        let opts: IHttpEndpointMethodArgOptions;
+        if (mix == null) {
+            opts = {
+                Type: Types.Json
+            };
+        } else if (typeof mix === 'string') {
+            opts = {
+                name: mix,
+                Type: Type ?? String
+            }
+        } else if (typeof mix === 'object') {
+            opts = mix;
+        }
+        return function (target, propertyKey, index) {
+            ensureEndpointArgsMeta(
+                target,
+                propertyKey,
+                'uri',
+                index,
+                opts
+            );
+        };
+    }
+    export function fromBody ()
+    export function fromBody (Type: Function)
+    export function fromBody (opts: IHttpEndpointMethodArgOptions)
+    export function fromBody (mix?: any) {
+        let opts: IHttpEndpointMethodArgOptions;
+        if (mix == null) {
+            opts = {
+                Type: Types.Json
+            };
+        } else if (typeof mix === 'function') {
+            opts = {
+                Type: mix
+            }
+        } else if (typeof mix === 'object') {
+            opts = mix;
+        }
+        return function (target, propertyKey, index) {
+            ensureEndpointArgsMeta(
+                target,
+                propertyKey,
+                'body',
+                index,
+                opts
+            );
+        };
+    }
 
+    function ensureEndpointArgsMeta (
+        proto: any, 
+        methodName: string, 
+        paramFrom: 'uri' | 'body', 
+        paramIndex: number,
+        opts: IHttpEndpointMethodArgOptions,
+    ): IHttpEndpointMethodArgMeta[] {
+
+        let meta = proto.meta ?? (proto.meta = {});
+        if (meta.endpointsParams == null) meta.endpointsParams = {};
+        
+        let params = meta.endpointsParams[methodName];
+        if (params == null) {
+            params = meta.endpointsParams[methodName] = [];
+        }
+        
+        let paramMeta = <IHttpEndpointMethodArgMeta> {
+            from: paramFrom,
+            Type: opts.Type,
+            name: opts.name,
+            validate: opts.validate
+        };
+        params[paramIndex] = paramMeta;
+        return params;
+    }
 
     function ensureEndpointMeta (mix: any): IHttpEndpointMeta {
         let proto = typeof mix === 'function' 

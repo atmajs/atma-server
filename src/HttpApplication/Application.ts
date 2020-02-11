@@ -384,7 +384,13 @@ function handler_process(app, handler, req, res) {
 	logger(95)
 		.log('<request>', req.url);
 
-	let result = handler.process(req, res, app.config);
+    let result = null;
+    try {
+        result = handler.process(req, res, app.config);
+    } catch (error) {
+        handler_await(app, handler, req, res, Promise.reject(error));
+		return;
+    }
 	if (result != null) {
         if (typeof result.then === 'function') {
             handler_await(app, handler, req, res, result);

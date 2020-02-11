@@ -5,8 +5,9 @@ import { secure_canAccess, service_validateArgs } from './utils'
 import { class_Dfr } from 'atma-utils';
 import { HttpResponse } from '../IHttpHandler';
 import { BarricadeExt } from './BarricadeExt'
-import { IHttpEndpointMethodMeta, IHttpEndpointRutaCollection, IHttpEndpointMeta, IHttpEndpointMethod } from './HttpEndpointModels'
+import { IHttpEndpointMethodMeta, IHttpEndpointRutaCollection, IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgMeta } from './HttpEndpointModels'
 import { HttpEndpointDecos } from './HttpEndpointDecos'
+import { HttpEndpointParamUtils } from './HttpEndpointParamUtils'
 
 const METHOD_META_DEFAULT = <IHttpEndpointMethodMeta>{
     secure: null,
@@ -20,6 +21,10 @@ export abstract class HttpEndpoint {
     static isAuthorized = HttpEndpointDecos.isAuthorized
     static isInRole = HttpEndpointDecos.isInRole
     static hasClaim = HttpEndpointDecos.hasClaim
+
+    static fromUri = HttpEndpointDecos.fromUri
+    static fromBody = HttpEndpointDecos.fromBody
+
     static createDecorator = HttpEndpointDecos.createDecorator
 
     protected rootCharCount: number
@@ -58,6 +63,7 @@ export abstract class HttpEndpoint {
 
         if (this.meta != null){ 
             if (secure_canAccess(req, this.meta.secure) === false) {
+                console.log('SECURE'.red, this.meta, 'META IN PROTO', HttpEndpoint.prototype.meta);
                 return Promise.reject(new SecurityError('Access Denied'));
             }
         }
@@ -87,6 +93,7 @@ export abstract class HttpEndpoint {
 
         if (meta != null) {
             if (meta.secure != null && secure_canAccess(req, meta.secure) === false) {
+                console.log('SECURE'.green, meta);
                 let error = new SecurityError('Access Denied');
                 return Promise.reject(error);
             }
@@ -107,9 +114,18 @@ export abstract class HttpEndpoint {
             }
         }
 
-        let result = endpoint
-            .process
-            .call(this, req, res, entry.current.params);
+        let params = null;
+        let paramsMeta = this.meta.endpointsParams?.[endpoint.key];
+        if (paramsMeta != null) {
+            params = [];
+            for (let i = 0; i < paramsMeta.length; i++) {
+                params[i] = HttpEndpointParamUtils.resolveParam(req, entry.current.params, paramsMeta[i]);
+            }
+        }
+
+        let result = params == null 
+            ? endpoint.process.call(this, req, res, entry.current.params)
+            : endpoint.process.apply(this, params);
 
         if (result == null) {
             return void 0;
@@ -345,6 +361,7 @@ namespace RouteUtils {
                 continue;
             }
 
+            responder.key = path;
             routes.add(path, responder);
         }
     }
