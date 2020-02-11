@@ -235,6 +235,8 @@ declare module 'atma-server/HttpService/HttpEndpoint' {
         static isAuthorized: typeof HttpEndpointDecos.isAuthorized;
         static isInRole: typeof HttpEndpointDecos.isInRole;
         static hasClaim: typeof HttpEndpointDecos.hasClaim;
+        static fromUri: typeof HttpEndpointDecos.fromUri;
+        static fromBody: typeof HttpEndpointDecos.fromBody;
         static createDecorator: typeof HttpEndpointDecos.createDecorator;
         protected rootCharCount: number;
         protected dfr: class_Dfr;
@@ -477,6 +479,22 @@ declare module 'atma-server/HttpService/HttpEndpointModels' {
             roles?: string[];
             claims?: string[];
         };
+        endpointsParams?: {
+            [method: string]: IHttpEndpointMethodArgMeta[];
+        };
+    }
+    export interface IHttpEndpointMethodArgOptions {
+        Type: Function;
+        name?: string;
+        optional?: string;
+        validate?: (val: any) => string;
+    }
+    export interface IHttpEndpointMethodArgMeta {
+        Type?: any;
+        from: 'uri' | 'body';
+        name?: string;
+        optional?: boolean;
+        validate?: (val: any) => string;
     }
     export interface IHttpEndpointMethodMeta {
         headers?: any;
@@ -489,8 +507,10 @@ declare module 'atma-server/HttpService/HttpEndpointModels' {
             roles?: string[];
             claims?: string[];
         };
+        params?: IHttpEndpointMethodArgMeta[];
     }
     export interface IHttpEndpointMethod {
+        key?: string;
         meta?: IHttpEndpointMethodMeta;
         process: IHttpEndpointMiddleware;
     }
@@ -511,13 +531,19 @@ declare module 'atma-server/HttpService/HttpEndpointModels' {
 }
 
 declare module 'atma-server/HttpService/HttpEndpointDecos' {
-    import { IHttpEndpointMeta, IHttpEndpointMethod } from 'atma-server/HttpService/HttpEndpointModels';
+    import { IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgOptions } from 'atma-server/HttpService/HttpEndpointModels';
     export namespace HttpEndpointDecos {
         export function middleware(fn: (req: any, res?: any, params?: any) => Promise<any> | any | void): (target: any, propertyKey: any, descriptor: any) => any;
         export function isAuthorized(): (target: any, propertyKey?: any, descriptor?: any) => any;
         export function isInRole(...roles: string[]): (target: any, propertyKey?: any, descriptor?: any) => any;
         export function hasClaim(...claims: string[]): (target: any, propertyKey?: any, descriptor?: any) => any;
         export function origin(origin: string): (target: any, propertyKey?: any, descriptor?: any) => any;
+        export function fromUri(): any;
+        export function fromUri(name: string, Type: Function): any;
+        export function fromUri(opts: IHttpEndpointMethodArgOptions): any;
+        export function fromBody(): any;
+        export function fromBody(Type: Function): any;
+        export function fromBody(opts: IHttpEndpointMethodArgOptions): any;
         interface ICreateDecorator {
             forCtor(Ctor: Function, meta: IHttpEndpointMeta): Function | void;
             forMethod(Proto: any, method: IHttpEndpointMethod): IHttpEndpointMethod | void;
