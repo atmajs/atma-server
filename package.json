@@ -5,7 +5,7 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.4.32",
+    "version": "0.4.33",
     "main": "./lib/server.js",
     "types": "./lib/server.d.ts",
     "repository": {

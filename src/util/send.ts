@@ -9,8 +9,8 @@ export const send_JSON = function(req: IncomingMessage, res: ServerResponse, jso
 	var text;
 	try {
 		text = JSON.stringify(json);
-	}catch(error){
-		return send_Error(req, res,new RuntimeError('Json Serialization'));
+	} catch(error){
+		return send_Error(req, res,new RuntimeError(`Json Serialization: ${error.message}`));
 	}
 	
 	send_Content(req, res, text, statusCode || 200, mime_JSON, headers);
