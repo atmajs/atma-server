@@ -115,7 +115,7 @@ export abstract class HttpEndpoint {
         }
 
         let params = null;
-        let paramsMeta = this.meta.endpointsParams?.[endpoint.key];
+        let paramsMeta = this.meta?.endpointsParams?.[endpoint.key];
         if (paramsMeta != null) {
             params = [];
             for (let i = 0; i < paramsMeta.length; i++) {
