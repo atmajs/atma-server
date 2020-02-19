@@ -4,6 +4,7 @@
 //   ../net
 //   ../atma-utils
 //   ../atma-logger
+//   ../appcfg
 
 declare module 'atma-server' {
     import { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError } from 'atma-server/HttpError/HttpError';
@@ -431,6 +432,7 @@ declare module 'atma-server/HttpApplication/IApplicationConfig' {
 declare module 'atma-server/dependency' {
     import logger = require('atma-logger');
     import Utils = require('atma-utils');
+    import AppConfig = require('appcfg');
     let $Class: any;
     export const ruta: any;
     export const mask: any;
@@ -443,7 +445,7 @@ declare module 'atma-server/dependency' {
     export const obj_extend: typeof Utils.obj_extend, obj_extendDefaults: typeof Utils.obj_extendDefaults;
     export const include: any;
     export const includeLib: any;
-    export { $Class as Class, logger };
+    export { $Class as Class, AppConfig, logger };
 }
 
 declare module 'atma-server/HttpPage/HttpPageBase' {
@@ -462,6 +464,7 @@ declare module 'atma-server/HttpPage/HttpPageBase' {
         ctx: any;
         templatePath: string;
         masterPath: string;
+        location: string;
         query: any;
         model: any;
         compoPath: string;

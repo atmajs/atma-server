@@ -61,7 +61,10 @@ export default class HttpPage extends HttpPageBase {
 		// Generate default template path
 		if (this.template == null && this.compoPath == null && this.templatePath == null) {
 			this.templatePath = cfg.$getTemplate(data);
-		}
+        }
+        if (this.templatePath) {
+            this.location = this.templatePath.replace(/\.\w+$/, '');
+        }
 	}
 	process (req, res, config){
 

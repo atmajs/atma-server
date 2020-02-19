@@ -1,4 +1,4 @@
-import { Class } from '../dependency'
+import { AppConfig } from '../dependency'
 import { path_normalize, path_resolveSystemUrl } from '../util/path'
 import EnvUtils from './EnvUtils'
 import ConfigUtils, {
@@ -81,7 +81,7 @@ export default function Config(params: IApplicationConfig, app?, done?, fail?) {
         }
     });
 
-    return require('appcfg')
+    return AppConfig
         .fetch($sources)
         .fail(function (error) {
             if (fail != null) {

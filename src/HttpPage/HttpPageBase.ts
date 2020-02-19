@@ -15,7 +15,7 @@ export default class HttpPageBase extends class_Dfr {
 	
 	templatePath: string
 	masterPath: string
-	
+	location: string
 	query: any
 	model: any
 

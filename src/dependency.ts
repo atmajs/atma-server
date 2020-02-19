@@ -2,6 +2,7 @@
 import Class = require('atma-class');
 import logger = require('atma-logger');
 import Utils = require('atma-utils');
+import AppConfig = require('appcfg');
 
 let root = <any> global;
 if (root.include == null) {
@@ -26,4 +27,4 @@ export const include     = root.include;
 export const includeLib  = root.includeLib;
 
 
-export { $Class as Class, logger }
+export { $Class as Class, AppConfig, logger }
