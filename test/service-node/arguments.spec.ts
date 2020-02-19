@@ -109,7 +109,7 @@ UTest({
 		eq_(error, null);
 		
 		'> array property: valid'
-		expect = {
+		expect = <any> {
 			collection: [ {_id: 'string'}]
 		}
 		error = checkObject({
@@ -136,7 +136,7 @@ UTest({
 		});
 		
 		'> array'
-		expect = [ {_id: 'string' }]
+		expect = <any> [ {_id: 'string' }]
 		error = checkObject([
 			{ _id: '4343' },
 			{ _id: '4343' },
@@ -145,14 +145,14 @@ UTest({
 		
 		
 		'> regexp - valid'
-		expect = { rgx: /^\w+$/ }
+		expect = <any> { rgx: /^\w+$/ }
 		error = checkObject({
 			rgx: 'asd92'
 		}, expect);
 		eq_(error, null);
 		
 		'> regexp - invalid'
-		expect = { rgx: /^\w+$/ }
+		expect = <any> { rgx: /^\w+$/ }
 		error = checkObject({
 			rgx: 'as-d92'
 		}, expect);

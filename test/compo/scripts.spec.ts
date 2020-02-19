@@ -1,6 +1,10 @@
+import Application from '../../src/HttpApplication/Application';
+
+declare var mask;
+
 UTest({
 	'should render dev include' (done) {
-		var app = atma.server.clean().Application.create({
+		var app = Application.clean().create({
 			configs: null,
 			debug: true,
 			config: {

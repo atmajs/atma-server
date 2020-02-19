@@ -1,4 +1,7 @@
-class PageController extends atma.server.HttpPage {
+import Application from '../../src/HttpApplication/Application';
+import HttpPage from '../../src/HttpPage/HttpPage';
+
+class PageController extends HttpPage {
 	master = 'layout:master #stab;'
 	template = `
 		:document {
@@ -9,7 +12,7 @@ class PageController extends atma.server.HttpPage {
 		}
 	`
 };
-var app = atma.server.clean().Application.create({
+var app = Application.clean().create({
 	configs: null,
 	config: {
 		debug: true,
@@ -34,7 +37,7 @@ var srv = require('supertest')(
 
 UTest({
 	$before: function(done){
-		app.done(done);
+		app.done(() => done());
 	},
 	'render full': function(done){
 		srv

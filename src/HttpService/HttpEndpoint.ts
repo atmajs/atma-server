@@ -16,6 +16,7 @@ const METHOD_META_DEFAULT = <IHttpEndpointMethodMeta>{
 
 export abstract class HttpEndpoint {
 
+    static route = HttpEndpointDecos.route
     static origin = HttpEndpointDecos.origin
     static middleware = HttpEndpointDecos.middleware
     static isAuthorized = HttpEndpointDecos.isAuthorized
@@ -63,14 +64,12 @@ export abstract class HttpEndpoint {
 
         if (this.meta != null){ 
             if (secure_canAccess(req, this.meta.secure) === false) {
-                console.log('SECURE'.red, this.meta, 'META IN PROTO', HttpEndpoint.prototype.meta);
                 return Promise.reject(new SecurityError('Access Denied'));
             }
         }
 
-        let path = req.url.substring(this.rootCharCount),
-            entry = this.routes.get(path, req.method);
-
+        let path = req.url.substring(this.rootCharCount);
+        let entry = this.routes.get(path, req.method);
         if (entry == null) {
             if (req.method === 'OPTIONS') {
                 var headers = HttpEndpointUtils.getOptionsHeaders(this, path, req);
@@ -93,7 +92,6 @@ export abstract class HttpEndpoint {
 
         if (meta != null) {
             if (meta.secure != null && secure_canAccess(req, meta.secure) === false) {
-                console.log('SECURE'.green, meta);
                 let error = new SecurityError('Access Denied');
                 return Promise.reject(error);
             }

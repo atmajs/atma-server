@@ -1,17 +1,15 @@
-import { include, Class, is_String } from '../dependency'	
+import { include, is_String } from '../dependency'	
 import Application, { respond_Raw } from './Application'	
 import { IApplicationDefinition, IApplicationConfig } from './IApplicationConfig'	
 import { IncomingMessage, ServerResponse } from 'http';
+import { class_Dfr } from 'atma-utils';
 
-var status_initial = '',
-    status_loading = 'loading',
-    status_loaded = 'loaded',
-    status_errored = 'error'
-    ;
+const status_initial = '';
+const status_loading = 'loading';
+const status_loaded = 'loaded';
+const status_errored = 'error';
 
-
-
-export default class HttpSubApplication extends Class.Deferred {
+export default class HttpSubApplication extends class_Dfr {
     status = status_initial
     app_: Application = null
     path_: string
@@ -27,7 +25,7 @@ export default class HttpSubApplication extends Class.Deferred {
             path += '/';
         
         this.path_ = path;
-        this.dfr = new Class.Deferred;
+        this.dfr = new class_Dfr;
         
         if (mix instanceof Application) {
             this.app_ = mix;

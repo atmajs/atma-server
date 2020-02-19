@@ -1,5 +1,7 @@
+declare var atma;
+
 UTest({
-	$config: {
+	$config: <any> {
 		'http.eval': function(){
 			
 			var FooService = atma

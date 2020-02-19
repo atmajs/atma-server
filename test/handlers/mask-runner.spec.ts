@@ -1,9 +1,10 @@
+import { Application } from '../../src/export';
+
 var srv;
 
 UTest({
 	$before (done) {
-		server
-			.Application.create({
+		Application.create({
 				configs: null,
 				config: {
 					pages: {

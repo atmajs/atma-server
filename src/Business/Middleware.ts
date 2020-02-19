@@ -3,25 +3,25 @@ import { logger } from '../dependency'
 export default class MiddlewareRunner {
 	
 	constructor (public arr){
-		this.arr = arr;
+        this.arr = arr;
 	}
 	process (req, res, callback, config){
 		
 		next(this, req, res, callback, config, 0);
 	}
 	add (mix) {
-		if (mix == null) 
-			return this;
-		
+		if (mix == null)  {
+            return this;
+        }
 		if (typeof mix === 'function') {
 			this.arr.push(mix);
 			return this;
 		}
 		if (Array.isArray(mix)) {
-			this.arr = this.arr.concat(mix);
+            mix.forEach(midd => this.add(midd));
 			return this;
-		}
-		return this;
+        }
+        throw new Error(`Middleware must be a function function.`);
 	}
 	static create (arr){
 		if (arr == null) 
@@ -33,14 +33,14 @@ export default class MiddlewareRunner {
 
 // private
 
-function next(runner, req, res, callback, config, index){
+function next(runner: MiddlewareRunner, req, res, callback, config, index){
 	if (index >= runner.arr.length) 
 		return callback(null, req, res);
 
 	var middleware = runner.arr[index];
-	if (middleware == null) 
-		return next(runner, req, res, callback, config, ++index);
-
+	if (middleware == null) {
+        return next(runner, req, res, callback, config, ++index);
+    }
 	middleware(
 		req,
 		res,

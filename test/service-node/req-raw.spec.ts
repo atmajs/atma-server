@@ -1,8 +1,12 @@
-var FooService = atma.server.HttpService({
-	'$get /': function(){
+import HttpService from '../../src/HttpService/HttpService';
+import Application from '../../src/HttpApplication/Application';
+
+var FooService = HttpService({
+	'$get /' (){
 		this.resolve('I GET Service', 304)
 	},
 	'$post /baz': {
+        f: class Foo { },
 		meta: {
 			description: 'Baz Helper',
 			arguments: {
@@ -19,10 +23,8 @@ var FooService = atma.server.HttpService({
 
 var app;
 UTest({
-	'$before': function(done){
-		atma
-			.server
-			.Application.create({
+	'$before' (done){
+		Application.create({
 				configs: null,
 				config: { debug: true }
 			})
@@ -35,7 +37,7 @@ UTest({
 				done();
 			})
 	},
-	'get': function(done){
+	'get' (done){
 		app
 			.execute('/foo', 'get')
 			.fail(assert.avoid())
@@ -45,7 +47,7 @@ UTest({
 			})
 			.always(done);
 	},
-	'post': function(done){
+	'post' (done){
 		app
 			.execute('/foo/baz', 'post', { bazValue: 'bazzy' })
 			.fail(assert.avoid())
@@ -55,7 +57,7 @@ UTest({
 			})
 			.always(done);
 	},
-	'post - invalid': function(done){
+	'post - invalid' (done){
 		app
 			.execute('/foo/baz', 'post', { bazValue: 10 })
 			.done(assert.avoid())

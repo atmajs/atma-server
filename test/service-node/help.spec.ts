@@ -1,4 +1,6 @@
-var FooService = atma.server.HttpService({
+import HttpService from '../../src/HttpService/HttpService';
+
+var FooService = HttpService({
 	'$get /': function(){},
 	'$post /baz': {
 		meta: {

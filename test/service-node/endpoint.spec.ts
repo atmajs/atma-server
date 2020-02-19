@@ -1,6 +1,7 @@
-import Application from '../../src/HttpApplication/Application'
+
 import { HttpEndpoint } from '../../src/HttpService/HttpEndpoint'
 import { Serializable, Json } from 'class-json';
+import { Application } from '../../src/export';
 
 
 function testMiddleware(req) {
@@ -37,7 +38,7 @@ class UriParserEndpoint extends HttpEndpoint {
     }
 }
 
-const app = Application.create({
+const app = Application.clean().create({
     configs: null,
     config: {
         debug: true,
@@ -81,9 +82,6 @@ UTest({
             .end(function (err, res) {
                 eq_(err, null);
 
-
-                console.log('TEXT', res.text);
-
                 var json = JSON.parse(res.text);
                 has_(json, {
                     code: 403,
@@ -92,7 +90,7 @@ UTest({
                 done();
             });
     },
-    '!uri params': {
+    'uri params': {
         'should parse numbers' (done) {
             srv
                 .get('/params/uri/number/5?age=7')
@@ -133,7 +131,7 @@ UTest({
             });
             eq_(HttpEndpoint.prototype.meta, null, 'meta of the base class must be always null');
         },
-        async '!should parse body' () {
+        async 'should parse body' () {
 
             class User extends Serializable<User> {
                 @Json.type(Date)

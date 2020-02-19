@@ -5,7 +5,7 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.4.36",
+    "version": "0.4.37",
     "main": "./lib/server.js",
     "types": "./lib/server.d.ts",
     "repository": {
@@ -14,13 +14,14 @@
     },
     "license": "MIT",
     "dependencies": {
+        "alot": "^0.2.80",
         "appcfg": "^0.2.56",
-        "atma-class": "^1.1.79",
-        "atma-io": "^1.2.28",
+        "atma-class": ">=1.1.79",
+        "atma-io": "^1.2.29",
         "atma-logger": ">0.0.81",
         "atma-utils": "^0.1.30",
-        "class-json": "^0.2.81",
-        "includejs": "^0.15.37",
+        "class-json": "^0.2.82",
+        "includejs": "^0.15.38",
         "maskjs": ">=0.54.23",
         "ruta": "^0.2.32",
         "socket.io": "^2.3.0",
@@ -32,12 +33,13 @@
         "watch": "app-bundler -watch",
         "release": "echo \"Run atma pub -m \"message\"\"",
         "test": "atma test",
-        "server": "atma server"
+        "server": "atma server",
+        "test-server": "atma server --TEST"
     },
     "devDependencies": {
         "@types/node": "^12.12.6",
         "app-bundler": "0.0.82",
-        "atma": "^0.12.15",
+        "atma": "^0.12.17",
         "atma-io-middleware-importer": "^1.1.30",
         "atma-io-middleware-yml": "^1.1.25",
         "atma-loader-babel": "^1.0.21",
@@ -50,13 +52,15 @@
         "tslib": "^1.7.1"
     },
     "app-bundler": {
-        "file": "src/export-lib.js",
+        "file": "src/export.ts",
         "outputMain": "lib/server.js",
         "package": {
             "module": "commonjs",
             "commonjs": {
                 "output": "simplified"
-            }
+            },
+            "moduleWrapper": "custom",
+            "moduleWrapperCustomPath": "./src/umd.js"
         },
         "extensions": {
             "io": {
@@ -68,6 +72,7 @@
         },
         "dynamicDependencies": [
             "appcfg",
+            "alot",
             "atma-utils",
             "atma-io",
             "atma-class",

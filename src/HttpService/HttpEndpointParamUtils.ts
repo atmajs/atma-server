@@ -29,10 +29,10 @@ export namespace HttpEndpointParamUtils {
 namespace BodyExtractor {
     export function get (body, meta: IHttpEndpointMethodArgMeta) {
         let obj = body;
-        if (typeof meta.Type.fromJson !== 'function') {
-            throw new Error(`${meta.Type.name} must implement static fromJson method to deserialize params`);
+        if (typeof meta.Type.fromJSON !== 'function') {
+            throw new Error(`${meta.Type.name} must implement static fromJSON method to deserialize params`);
         }
-        let instance = meta.Type.fromJson(obj);
+        let instance = meta.Type.fromJSON(obj);
         let error = meta.Type.validate?.(instance);
         if (error && error.length > 0) {
             let message = error;
@@ -77,10 +77,10 @@ namespace UriExtractor {
             return val;
         }
         let obj = toTree(params);
-        if (typeof meta.Type.fromJson !== 'function') {
-            throw new Error(`${meta.Type.name} must implement static fromJson method to deserialize params`);
+        if (typeof meta.Type.fromJSON !== 'function') {
+            throw new Error(`${meta.Type.name} must implement static fromJSON method to deserialize params`);
         }
-        let instance = meta.Type.fromJson(obj);
+        let instance = meta.Type.fromJSON(obj);
         if (meta.Type.validate) {
             let error = meta.Type.validate(instance);
             if (error && error.length > 0) {

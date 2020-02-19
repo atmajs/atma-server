@@ -11,7 +11,7 @@ import HttpService from './HttpService/HttpService'
 import { HttpEndpoint } from './HttpService/HttpEndpoint'
 import Middleware from './middleware/export'
 
-require('./handlers/export');
+import './handlers/export';
 
 
 export {
@@ -29,7 +29,8 @@ export {
     HttpService,
     IHttpHandler,
     HttpResponse,
-    HttpEndpoint
+    HttpEndpoint,
+    Middleware
 }; 
 
 export const middleware = Middleware;

@@ -1,9 +1,9 @@
 import HandlerFactory from '../HandlerFactory'
 import { IHttpHandler } from '../IHttpHandler'
 import HttpPage from '../HttpPage/HttpPage'
-import { Class } from '../dependency'
+import { class_Dfr } from 'atma-utils';
 
-class MaskRunner extends Class.Deferred implements IHttpHandler {
+class MaskRunner extends class_Dfr implements IHttpHandler {
 	
 	constructor (public route, public app) {
 		super();

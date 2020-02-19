@@ -15,7 +15,8 @@ function addPage(out, key, page, pages, pageCfg) {
 	if (page.id == null) {
 		page.id = key;
 	}
-	var pattern = page.pattern || pageCfg.pattern;
+    var pattern = page.pattern || pageCfg.pattern || page.route;
+    
 	var segments = getSegments(pattern);
 	var arr = split(page, segments);
 	arr.forEach(function(x){

@@ -1,23 +1,20 @@
 {
-  "files": [
-    "src/export.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ],
-  "compilerOptions": {
-    "outDir": "ts-temp",
-    "lib": ["es2015", "es2015.promise", "dom"],
-    "typeRoots": [
-        "node_modules/@types",
-        "typings/globals",
-        "typings-other"
-    ],
-    "types": ["node", "assertion", "atma-utest", "string", "jquery"],
-    "declaration": true,
-    "target": "es5",
-    "module": "commonjs",
-    "sourceMap": false,
-    "experimentalDecorators": true
-  }
+    "files": ["src/export.ts"],
+    "exclude": ["node_modules"],
+    "compilerOptions": {
+        "outDir": "ts-temp",
+        "lib": ["es2015", "es2015.promise", "dom"],
+        "typeRoots": [
+            "node_modules/@types",
+            "typings/globals",
+            "typings-other"
+        ],
+        "types": ["node", "assertion", "atma-utest", "string", "jquery"],
+        "declaration": true,
+        "target": "es5",
+        "module": "commonjs",
+        "sourceMap": false,
+        "experimentalDecorators": true,
+        "esModuleInterop": true
+    }
 }

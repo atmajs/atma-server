@@ -24,7 +24,7 @@ var Dev_Scripts = mask.Compo({
 					return ".mask('" + x.path + "')"
 				}
 			}).join('\n');
-		}
+        }
 		this.model = {
 			include: {
 				src: model.include.src,

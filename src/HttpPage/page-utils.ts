@@ -137,7 +137,7 @@ export const page_process = function(page, nodes, onSuccess){
 				Application
 					.current
 					.handlers
-					.get(page.ctx._rewrite, page_rewriteDelegate(page));
+					.get(page.ctx._rewrite, {} as any, page_rewriteDelegate(page));
 				return;
 			}
 			onSuccess(html);

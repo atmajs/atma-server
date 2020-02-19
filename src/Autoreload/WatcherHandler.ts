@@ -1,9 +1,14 @@
 import { path_normalize } from '../util/path'
-import { io, Class, logger, mask, include, Uri } from '../dependency'
+import { io, logger, mask, include, Uri } from '../dependency'
+import { class_EventEmitter } from 'atma-utils';
 
-export class WatcherHandler extends Class.EventEmitter {
+export class WatcherHandler extends class_EventEmitter {
     static get Instance (): WatcherHandler {
         return _instance || (_instance = new WatcherHandler);
+    }
+    constructor () {
+        super();
+        this.fileChanged = this.fileChanged.bind(this);
     }
     watch (file){
         var path = file.uri.toString();
@@ -35,7 +40,7 @@ export class WatcherHandler extends Class.EventEmitter {
 
         return _watchers[path] != null;
     }
-    @Class.deco.self
+
     fileChanged (path, sender, requestedUrl, base){
         if (mask.Module.clearCache) {
             mask.Module.clearCache();
@@ -87,13 +92,13 @@ export class WatcherHandler extends Class.EventEmitter {
 
 var rootFolder = path_normalize(process.cwd() + '/');
 
-class FileWatcher extends Class.EventEmitter {
+class FileWatcher extends class_EventEmitter {
     active = false
     constructor (public file){
         super();
+        this.fileChanged = this.fileChanged.bind(this);
     }
     
-    @Class.deco.self
     fileChanged (path){
         logger.log('<watcher:changed>', path);
 

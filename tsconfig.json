@@ -14,6 +14,7 @@
         "target": "es5",
         "module": "commonjs",
         "sourceMap": false,
-        "experimentalDecorators": true
+        "experimentalDecorators": true,
+        "esModuleInterop": true
     }
 }

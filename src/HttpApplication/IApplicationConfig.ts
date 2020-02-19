@@ -1,3 +1,5 @@
+import { IHttpHandlerConstructor } from '../IHttpHandler';
+
 export interface IApplicationDefinition {
     base?: string
 	args?: {
@@ -20,7 +22,10 @@ export interface IApplicationConfig {
             routes?: {
                 [name: string]: string
             }
-            scripts?: string[]
+            scripts?: string | string[]
+            imports?: {
+                [name: string]: string | string[] | { [name: string]: string | string[] }
+            }
         },
         client?: {
             include?: {
@@ -31,17 +36,23 @@ export interface IApplicationConfig {
                 cfg?: any
                 src?: string
             },
-            scripts?: string[]
-            styles?: string[]
-            routes: {
+            scripts?: string | string[] | { npm: string[] }
+            styles?: string | string[] | { npm: string[] }
+            routes?: {
                 [name: string]: string
+            },
+            imports?: {
+                [name: string]: string | string[] | { [name: string]: string | string[] }
             }
         },
         server?: {
             routes?: {
                 [name: string]: string
             },
-            scripts?: string[]
+            scripts?: string[] | { npm: string[] }
+            imports?: {
+                [name: string]: string | string[] | { [name: string]: string | string[] }
+            }
         }
     },
     handler?: {
@@ -56,14 +67,19 @@ export interface IApplicationConfig {
         [urlPattern: string]: {
             id?: string
             title?: string
+            rewrite?: string
+            controller?: string | any
+            scripts?: string | string[]
+            styles?: string | string[]
         }
     },
     service?: {
         location?: string
+        endpoints?: string
     },
     services?: {
         /** regex pattern : Path to the controllers script file */
-        [urlPattern: string]: string
+        [urlPattern: string]: string | IHttpHandlerConstructor
     },
     subapp?: {
 
@@ -88,10 +104,14 @@ export interface IApplicationConfig {
     // appcfg directories/files configs
     configs?: string | string[]
     // additional appcfg configs    
-    config?: object
+    config?: IApplicationConfig
 
     // appcfg raw sources
     sources?: object[]
+
+    include?: {
+        src?: string
+    }
 }
 
 
@@ -118,6 +138,12 @@ export interface IPageConfiguration {
         [key: string]: string
     },
     pattern?: string
+    errors?: {
+        [statusCode: string]: {
+            masterPath: string,
+            templatePath: string
+        }
+    }
 }
 
 export interface IAppConfigExtended {

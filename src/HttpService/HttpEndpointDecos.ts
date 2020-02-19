@@ -55,7 +55,17 @@ export namespace HttpEndpointDecos {
                 method.meta.origins = origin;
             }
         });
-    }
+    };
+    export function route (route: string) {
+        return createDecorator({
+            forCtor (Ctor, meta) {
+                // files are dynamically parsed and the content resolved
+            },
+            forMethod (Proto, method) {
+                throw new Error('Not implemented');
+            }
+        });
+    };
     export function fromUri ()
     export function fromUri (name: string, Type: Function)
     export function fromUri (opts: IHttpEndpointMethodArgOptions)

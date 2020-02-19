@@ -1,57 +1,58 @@
+
 module.exports = {
 	$config: {
 		$before () {
-			include
+            include
 				.cfg('extentionDefault', { js: 'ts' })
-				.cfg('amd', true);
+                .cfg('amd', true);
 		}	
 	},
 	suites: {
 		'service-dom': {
 			exec: 'dom',
 			env: 'test/service-dom/before.js',
-			tests: 'test/service-dom/**.test',			
+			tests: 'test/service-dom/**.spec.ts',
 		},
 		'service-node': {
 			exec: 'node',
 			env: '/lib/server.js',
-			tests: 'test/service-node/**.test'
+			tests: 'test/service-node/**.spec.ts'
 		},
 
 		'errors': {
 			exec: 'node',
 			env: '/lib/server.js',
-			tests: 'test/error/**.test'
+			tests: 'test/error/**.spec.ts'
 		},
 
 		'examples': {
 			exec: 'browser',
-			tests: 'test/examples/**.test'
+			tests: 'test/examples/**.spec.ts'
 		},
 
 		'page': {
 			exec: 'node',
 			env: '/lib/server.js',
-			tests: 'test/page/**.test'
+			tests: 'test/page/**.spec.ts'
 		},
 
 		'config': {
 			exec: 'node',
 			env: '/lib/server.js',
-			tests: 'test/config/**.test'
+			tests: 'test/config/**.spec.ts'
 		},
 
 		'compo': {
 			exec: 'node',
 			env: '/lib/server.js',
-			tests: 'test/compo/**.test'
+			tests: 'test/compo/**.spec.ts'
 		},
 
 
 		'handlers': {
 			exec: 'node',
 			env: '/lib/server.js',
-			tests: 'test/handlers/**.test'
+			tests: 'test/handlers/**.spec.ts'
 		}
 	}
 };

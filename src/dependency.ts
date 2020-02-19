@@ -8,6 +8,10 @@ if (root.include == null) {
     require('includejs');
 }
 
+let $anyClass: any = Class;
+let $Class = $anyClass.default ?? $anyClass.Class ?? $anyClass;
+
+
 export const ruta        = require('ruta');
 export const mask        = root.mask  || require('maskjs');
 export const jmask       = mask.jmask;
@@ -22,4 +26,4 @@ export const include     = root.include;
 export const includeLib  = root.includeLib;
 
 
-export { Class, logger }
+export { $Class as Class, logger }

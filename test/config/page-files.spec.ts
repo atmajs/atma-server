@@ -1,3 +1,5 @@
+import Config from '../../src/Config/Config';
+
 UTest({
     '//should resolve pages and its rewrites from folder'() {
         var imports = {
@@ -7,7 +9,7 @@ UTest({
                 ]
             }
         };
-        var config = new atma.server.Application.Config({
+        var config = new Config({
             base: './examples/',
             configs: null,
             config: {
