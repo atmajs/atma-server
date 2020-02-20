@@ -8,6 +8,7 @@ import { BarricadeExt } from './BarricadeExt'
 import { IHttpEndpointMethodMeta, IHttpEndpointRutaCollection, IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgMeta } from './HttpEndpointModels'
 import { HttpEndpointDecos } from './HttpEndpointDecos'
 import { HttpEndpointParamUtils } from './HttpEndpointParamUtils'
+import Application from '../HttpApplication/Application';
 
 const METHOD_META_DEFAULT = <IHttpEndpointMethodMeta>{
     secure: null,
@@ -35,7 +36,7 @@ export abstract class HttpEndpoint {
     meta?: IHttpEndpointMeta
     ruta?: { [path: string]: IHttpEndpointMethod }
 
-    constructor(route?: { path: string[] }) {
+    constructor(route: { path: string[] }, public app: Application) {
         if (this.routes == null) {
             //Create ROUTES once
             Object.getPrototypeOf(this).routes = RouteUtils.resolve(this);

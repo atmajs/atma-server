@@ -1,0 +1,9 @@
+{
+  "resolution": "main",
+  "tree": {
+    "src": "https://raw.githubusercontent.com/atmajs/ruta/master/ruta.json",
+    "raw": "github:atmajs/ruta/typings.json",
+    "main": "types/index.d.ts",
+    "name": "ruta"
+  }
+}

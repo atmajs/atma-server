@@ -9,7 +9,6 @@ import { app_isDebug } from './util/app'
 import { class_Dfr } from 'atma-utils'
 import { IncomingMessage } from 'http'
 
-
 var fns_RESPONDERS = [
     'subapps',
     'handlers',
@@ -188,7 +187,6 @@ export default class HandlerFactory {
                 return;
             }
         }
-        console.log('not found', url)
         callback(null);
     }
 
@@ -211,7 +209,13 @@ export default class HandlerFactory {
     } = {}
 };
 
-function processor_tryGet(factory, collection, url, method, base, callback) {
+function processor_tryGet(
+    factory: HandlerFactory, 
+    collection: InstanceType<typeof ruta.Collection>, 
+    url: string, 
+    method: string, 
+    base: string, 
+    callback: (ctr: IHttpHandler) => any) {
 
     let route = collection.get(url, method);
     if (route == null)

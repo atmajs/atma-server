@@ -229,7 +229,9 @@ declare module 'atma-server/HttpService/HttpEndpoint' {
     import { class_Dfr } from 'atma-utils';
     import { IHttpEndpointRutaCollection, IHttpEndpointMeta, IHttpEndpointMethod } from 'atma-server/HttpService/HttpEndpointModels';
     import { HttpEndpointDecos } from 'atma-server/HttpService/HttpEndpointDecos';
+    import Application from 'atma-server/HttpApplication/Application';
     export abstract class HttpEndpoint {
+        app: Application;
         static route: typeof HttpEndpointDecos.route;
         static origin: typeof HttpEndpointDecos.origin;
         static middleware: typeof HttpEndpointDecos.middleware;
@@ -246,9 +248,9 @@ declare module 'atma-server/HttpService/HttpEndpoint' {
         ruta?: {
             [path: string]: IHttpEndpointMethod;
         };
-        constructor(route?: {
+        constructor(route: {
             path: string[];
-        });
+        }, app: Application);
         process(req: IncomingMessage & {
             body?: any;
         }, res: ServerResponse): Promise<any> | void;
