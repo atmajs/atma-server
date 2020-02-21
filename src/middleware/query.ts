@@ -1,6 +1,8 @@
 import { ruta } from '../dependency';
 
-export default function(req, res, next){
+const deserialize = ruta.$utils.query.deserialize;
+
+export function QueryMidd (req, res, next){
 	
 	var url = req.url,
 		q = url.indexOf('?');
@@ -12,4 +14,3 @@ export default function(req, res, next){
 	next();
 };
 
-var deserialize = ruta.$utils.query.deserialize;

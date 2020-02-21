@@ -7,7 +7,9 @@
 //   ../appcfg
 
 declare module 'atma-server' {
-    import { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError } from 'atma-server/HttpError/HttpError';
+    import { StaticMidd } from 'atma-server/middleware/static'; 
+     import { QueryMidd } from 'atma-server/middleware/query'; 
+     import { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError } from 'atma-server/HttpError/HttpError';
     import { IHttpHandler, HttpResponse } from 'atma-server/IHttpHandler';
     import HandlerFactory from 'atma-server/HandlerFactory';
     import HttpErrorPage from 'atma-server/HttpPage/HttpErrorPage';
@@ -18,14 +20,22 @@ declare module 'atma-server' {
     import HttpService from 'atma-server/HttpService/HttpService';
     import { HttpEndpoint } from 'atma-server/HttpService/HttpEndpoint';
     import Middleware from 'atma-server/middleware/export';
-    import './handlers/export';
+    
     export { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError, Application, HttpSubApplication, HttpErrorPage, HttpPage, HandlerFactory, HttpCrudEndpoints, HttpService, IHttpHandler, HttpResponse, HttpEndpoint, Middleware };
     export const middleware: {
-        query: typeof import("./middleware/query").default;
-        static: typeof import("./middleware/static").default;
+            query: typeof QueryMidd;
+            static: typeof StaticMidd;
     };
     export const clean: typeof Application.clean;
     export const StaticContent: any;
+}
+
+declare module 'atma-server/middleware/static' {
+    export function StaticMidd(req: any, res: any, next: any, config: any): void;
+}
+
+declare module 'atma-server/middleware/query' {
+    export function QueryMidd(req: any, res: any, next: any): void;
 }
 
 declare module 'atma-server/HttpError/HttpError' {
@@ -260,11 +270,11 @@ declare module 'atma-server/HttpService/HttpEndpoint' {
 }
 
 declare module 'atma-server/middleware/export' {
-    import queryMidd from 'atma-server/middleware/query';
-    import staticMidd from 'atma-server/middleware/static';
+    import { QueryMidd } from 'atma-server/middleware/query';
+    import { StaticMidd } from 'atma-server/middleware/static';
     const _default: {
-        query: typeof queryMidd;
-        static: typeof staticMidd;
+        query: typeof QueryMidd;
+        static: typeof StaticMidd;
     };
     export default _default;
 }
@@ -613,13 +623,5 @@ declare module 'atma-server/HttpService/HttpEndpointDecos' {
         export function createDecorator(opts: ICreateDecorator): (target: any, propertyKey?: any, descriptor?: any) => any;
         export {};
     }
-}
-
-declare module 'atma-server/middleware/query' {
-    export default function (req: any, res: any, next: any): void;
-}
-
-declare module 'atma-server/middleware/static' {
-    export default function Static(req: any, res: any, next: any, config: any): void;
 }
 
