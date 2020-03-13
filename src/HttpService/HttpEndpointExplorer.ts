@@ -29,6 +29,11 @@ export namespace HttpEndpointExplorer {
                 return null;
             }
             let urlPattern = match[1];
+            if (/^\$/.test(urlPattern)) {
+                // Endpoint Classes have no METHOD spec
+                // The first matched route has one, and look like `$get /foo`
+                return null;
+            }
             return [ `^${urlPattern}`, file.uri.toString() ];
         }).toArrayAsync({ threads: 4 })
 
