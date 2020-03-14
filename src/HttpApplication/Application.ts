@@ -484,13 +484,13 @@ function cfg_doneDelegate(app: Application) {
         if (app_isDebug()) {
             include.cfg('autoreload', true);
         }
-        Promise.all(<[ Promise<[string, string][]>, Promise<any> ]> <any> [
+        Promise.all([
             HttpEndpointExplorer.find(app.config.service.endpoints),
             resources_load(app)
         ]).then(function ([ endpoints ]) {
 
             if (endpoints) {
-                app.handlers.registerServices(endpoints.filter(Boolean), cfg.handler);
+                app.handlers.registerServices(endpoints, cfg.handler);
             }
             app.resolve(app);
         });

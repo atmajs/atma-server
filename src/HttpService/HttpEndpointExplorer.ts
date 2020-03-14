@@ -35,8 +35,8 @@ export namespace HttpEndpointExplorer {
                 return null;
             }
             return [ `^${urlPattern}`, file.uri.toString() ];
-        }).toArrayAsync({ threads: 4 })
+        }).toArrayAsync({ threads: 4 });
 
-        return alot(keyValues).toDictionary(arr => arr[0], arr => arr[1]);
+        return alot(keyValues).filter(Boolean).toDictionary(arr => arr[0], arr => arr[1]);
     }
 }
