@@ -5,6 +5,7 @@ import alot from 'alot'
 import { HttpEndpoint, RouteUtils } from './HttpEndpoint';
 import { IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodMetaResponse, IHttpEndpointMethodMeta } from './HttpEndpointModels';
 import { Json, JsonSchema, JsonUtils } from 'class-json';
+import { obj_getKeys } from '../util/obj';
 
 interface IApiMeta {
     path: string
@@ -49,12 +50,12 @@ export namespace HttpEndpointExplorer {
 
         const Proto = Type.prototype;
         const rgxPath = /^\$([a-z]+) (.+)$/i;
-        for (let key in Proto) {
+        const keys = obj_getKeys(Proto);
+        for (let key of keys) {
             let val = Proto[key];
             if (val == null) {
                 continue;
             }
-            
             let methodMeta = <IHttpEndpointMethodMeta> val.meta;
             if (methodMeta == null) {
                 if (rgxPath.test(key) === false) {
@@ -149,10 +150,10 @@ export namespace HttpEndpointExplorer {
             if (match == null) {
                 return null;
             }
-            let urlPattern = match[1];
+            let urlPattern = match[2];
             if (/^\$/.test(urlPattern)) {
-                // Endpoint Classes have no METHOD spec
-                // The first matched route has one, and look like `$get /foo`
+                // Endpoint Classes must have no METHOD definition
+                // This one, the first matched route, has METHOD, and look like `$get /foo`
                 return null;
             }
             return [ `^${urlPattern}`, file.uri.toString() ];

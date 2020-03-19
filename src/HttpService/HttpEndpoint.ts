@@ -212,36 +212,6 @@ namespace HttpEndpointUtils {
 
     export function getHelpModel(service: HttpEndpoint) {
         return HttpEndpointExplorer.getMeta(( <any> service).constructor);
-        // let routes = service.routes.routes;
-        // let endpoints = [];
-
-        // let i = -1,
-        //     imax = routes.length,
-        //     endpoint, info, meta;
-        // while (++i < imax) {
-        //     endpoint = routes[i];
-        //     info = {
-        //         method: endpoint.method || '*',
-        //         path: endpoint.definition
-        //     };
-        //     if (info.path[0] === '$') {
-        //         info.path = info.path.substring(info.path.indexOf(' ') + 1);
-        //     }
-
-        //     meta = endpoint.value.meta;
-        //     if (meta) {
-        //         info.description = meta.description;
-        //         info.arguments = meta.arguments;
-        //         info.response = meta.response;
-
-        //         if ('secure' in endpoint.value)
-        //             info.secure = endpoint.value.secure || true;
-        //     }
-
-        //     endpoints.push(info);
-        // }
-
-        // return endpoints;
     };
     export function getOptionsHeaders(endpoint: HttpEndpoint, path: string, req: IncomingMessage) {
 

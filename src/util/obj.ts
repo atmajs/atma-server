@@ -35,6 +35,20 @@ export const obj_lazyProperty = function(obj, xpath, init){
     })
 };
 
+
+export function obj_getKeys (x): string[] {
+    let keys = [];
+    let proto = x;
+    while (proto != null && proto != Object.prototype) {
+        keys.push(
+            ...Object.getOwnPropertyNames(proto)
+        );
+        proto = Object.getPrototypeOf(proto);
+    }
+    return keys;
+}
+
+
 /**
  * Max 4 args
  */
