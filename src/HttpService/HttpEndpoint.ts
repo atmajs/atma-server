@@ -9,6 +9,7 @@ import { IHttpEndpointMethodMeta, IHttpEndpointRutaCollection, IHttpEndpointMeta
 import { HttpEndpointDecos } from './HttpEndpointDecos'
 import { HttpEndpointParamUtils } from './HttpEndpointParamUtils'
 import Application from '../HttpApplication/Application';
+import { HttpEndpointExplorer } from './HttpEndpointExplorer';
 
 const METHOD_META_DEFAULT = <IHttpEndpointMethodMeta>{
     secure: null,
@@ -26,6 +27,8 @@ export abstract class HttpEndpoint {
 
     static fromUri = HttpEndpointDecos.fromUri
     static fromBody = HttpEndpointDecos.fromBody
+    static response = HttpEndpointDecos.response
+    static description = HttpEndpointDecos.description
 
     static createDecorator = HttpEndpointDecos.createDecorator
 
@@ -39,7 +42,7 @@ export abstract class HttpEndpoint {
     constructor(route: { path: string[] }, public app: Application) {
         if (this.routes == null) {
             //Create ROUTES once
-            Object.getPrototypeOf(this).routes = RouteUtils.resolve(this);
+            Object.getPrototypeOf(this).routes = RouteUtils.resolveFromType(this);
         }
         if (route == null) {
             return;
@@ -208,36 +211,37 @@ namespace HttpEndpointUtils {
     }
 
     export function getHelpModel(service: HttpEndpoint) {
-        let routes = service.routes.routes;
-        let endpoints = [];
+        return HttpEndpointExplorer.getMeta(( <any> service).constructor);
+        // let routes = service.routes.routes;
+        // let endpoints = [];
 
-        let i = -1,
-            imax = routes.length,
-            endpoint, info, meta;
-        while (++i < imax) {
-            endpoint = routes[i];
-            info = {
-                method: endpoint.method || '*',
-                path: endpoint.definition
-            };
-            if (info.path[0] === '$') {
-                info.path = info.path.substring(info.path.indexOf(' ') + 1);
-            }
+        // let i = -1,
+        //     imax = routes.length,
+        //     endpoint, info, meta;
+        // while (++i < imax) {
+        //     endpoint = routes[i];
+        //     info = {
+        //         method: endpoint.method || '*',
+        //         path: endpoint.definition
+        //     };
+        //     if (info.path[0] === '$') {
+        //         info.path = info.path.substring(info.path.indexOf(' ') + 1);
+        //     }
 
-            meta = endpoint.value.meta;
-            if (meta) {
-                info.description = meta.description;
-                info.arguments = meta.arguments;
-                info.response = meta.response;
+        //     meta = endpoint.value.meta;
+        //     if (meta) {
+        //         info.description = meta.description;
+        //         info.arguments = meta.arguments;
+        //         info.response = meta.response;
 
-                if ('secure' in endpoint.value)
-                    info.secure = endpoint.value.secure || true;
-            }
+        //         if ('secure' in endpoint.value)
+        //             info.secure = endpoint.value.secure || true;
+        //     }
 
-            endpoints.push(info);
-        }
+        //     endpoints.push(info);
+        // }
 
-        return endpoints;
+        // return endpoints;
     };
     export function getOptionsHeaders(endpoint: HttpEndpoint, path: string, req: IncomingMessage) {
 
@@ -319,13 +323,13 @@ namespace HttpEndpointUtils {
 
 }
 
-namespace RouteUtils {
+export namespace RouteUtils {
 
     interface IDefinitions {
         [path: string]: Function | Function[] | IHttpEndpointMethod
     }
 
-    function define(endpoint: HttpEndpoint, defs: IDefinitions, routes: IHttpEndpointRutaCollection) {
+    function define(defs: IDefinitions, routes: IHttpEndpointRutaCollection) {
         for (let path in defs) {
             if (path[0] !== '$') {
                 continue;
@@ -381,12 +385,16 @@ namespace RouteUtils {
         return fillProtoHash(next, hash);
       }
 
-    export function resolve(endpoint: HttpEndpoint) {
+    export function resolveFromType(endpoint: HttpEndpoint) {
+        let prototype = Object.getPrototypeOf(endpoint);
+        return resolveFromProto(prototype);
+    }
+    export function resolveFromProto(prototype) {
         let routes = new ruta.Collection;
-        let properties = fillProtoHash(Object.getPrototypeOf(endpoint), Object.create(null));
+        let properties = fillProtoHash(prototype, Object.create(null));
 
-        define(endpoint, properties, routes);
-        define(endpoint, endpoint.ruta, routes);
+        define(properties, routes);
+        define(prototype.ruta, routes);
         return routes;
     }
 }

@@ -250,6 +250,8 @@ declare module 'atma-server/HttpService/HttpEndpoint' {
         static hasClaim: typeof HttpEndpointDecos.hasClaim;
         static fromUri: typeof HttpEndpointDecos.fromUri;
         static fromBody: typeof HttpEndpointDecos.fromBody;
+        static response: typeof HttpEndpointDecos.response;
+        static description: typeof HttpEndpointDecos.description;
         static createDecorator: typeof HttpEndpointDecos.createDecorator;
         protected rootCharCount: number;
         protected dfr: class_Dfr;
@@ -266,6 +268,10 @@ declare module 'atma-server/HttpService/HttpEndpoint' {
         }, res: ServerResponse): Promise<any> | void;
         resolve(...args: any[]): void;
         reject(error: any): void;
+    }
+    export namespace RouteUtils {
+        function resolveFromType(endpoint: HttpEndpoint): any;
+        function resolveFromProto(prototype: any): any;
     }
 }
 
@@ -544,6 +550,8 @@ declare module 'atma-server/HttpService/HttpEndpointModels' {
         (req: IncomingMessage, res: ServerResponse, params: any): void | any | Promise<any>;
     }
     export interface IHttpEndpointMeta {
+        path?: string;
+        description?: string;
         headers?: any;
         origins?: string;
         secure?: boolean | {
@@ -557,22 +565,25 @@ declare module 'atma-server/HttpService/HttpEndpointModels' {
     export interface IHttpEndpointMethodArgOptions {
         Type: Function;
         name?: string;
-        optional?: string;
+        optional?: boolean;
         validate?: (val: any) => string;
     }
     export interface IHttpEndpointMethodArgMeta {
         Type?: any;
         from: 'uri' | 'body';
         name?: string;
+        description?: string;
         optional?: boolean;
         validate?: (val: any) => string;
     }
     export interface IHttpEndpointMethodMeta {
+        path?: string;
         headers?: any;
         origins?: string;
         description?: string;
         arguments?: any;
         response?: any;
+        responses?: IHttpEndpointMethodMetaResponse[];
         strict?: boolean;
         secure?: boolean | {
             roles?: string[];
@@ -584,6 +595,11 @@ declare module 'atma-server/HttpService/HttpEndpointModels' {
         key?: string;
         meta?: IHttpEndpointMethodMeta;
         process: IHttpEndpointMiddleware;
+    }
+    export interface IHttpEndpointMethodMetaResponse {
+        status?: number;
+        Type?: any;
+        description?: string;
     }
     export interface IHttpEndpointRutaItem {
         definition: string;
@@ -602,7 +618,7 @@ declare module 'atma-server/HttpService/HttpEndpointModels' {
 }
 
 declare module 'atma-server/HttpService/HttpEndpointDecos' {
-    import { IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgOptions } from 'atma-server/HttpService/HttpEndpointModels';
+    import { IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgOptions, IHttpEndpointMethodMetaResponse } from 'atma-server/HttpService/HttpEndpointModels';
     export namespace HttpEndpointDecos {
         export function middleware(fn: (req: any, res?: any, params?: any) => Promise<any> | any | void): (target: any, propertyKey: any, descriptor: any) => any;
         export function isAuthorized(): (target: any, propertyKey?: any, descriptor?: any) => any;
@@ -610,8 +626,10 @@ declare module 'atma-server/HttpService/HttpEndpointDecos' {
         export function hasClaim(...claims: string[]): (target: any, propertyKey?: any, descriptor?: any) => any;
         export function origin(origin: string): (target: any, propertyKey?: any, descriptor?: any) => any;
         export function route(route: string): (target: any, propertyKey?: any, descriptor?: any) => any;
+        export function description(txt: string): (target: any, propertyKey?: any, descriptor?: any) => any;
+        export function response(response: IHttpEndpointMethodMetaResponse): (target: any, propertyKey?: any, descriptor?: any) => any;
         export function fromUri(): any;
-        export function fromUri(name: string, Type: Function): any;
+        export function fromUri(name: string, Type?: Function): any;
         export function fromUri(opts: IHttpEndpointMethodArgOptions): any;
         export function fromBody(): any;
         export function fromBody(Type: Function): any;

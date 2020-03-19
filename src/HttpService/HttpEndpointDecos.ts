@@ -1,4 +1,4 @@
-import { IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgMeta, IHttpEndpointMethodArgOptions } from './HttpEndpointModels';
+import { IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgMeta, IHttpEndpointMethodArgOptions, IHttpEndpointMethodMetaResponse } from './HttpEndpointModels';
 import { Types } from './HttpEndpointParamUtils';
 
 export namespace HttpEndpointDecos {
@@ -58,16 +58,43 @@ export namespace HttpEndpointDecos {
     };
     export function route (route: string) {
         return createDecorator({
-            forCtor (Ctor, meta) {
+            forCtor (Ctor, meta: IHttpEndpointMeta) {
                 // files are dynamically parsed and the content resolved
+                meta.path = route;
             },
-            forMethod (Proto, method) {
-                throw new Error('Not implemented');
+            forMethod (Proto, method: IHttpEndpointMethod) {
+                method.meta.path = route;
+            }
+        });
+    };
+    export function description (txt: string) {
+        return createDecorator({
+            forCtor (Ctor, meta: IHttpEndpointMeta) {
+                meta.description = txt;
+            },
+            forMethod (Proto, method: IHttpEndpointMethod) {
+                method.meta.description = txt;
+            }
+        });
+    };
+    export function response (response: IHttpEndpointMethodMetaResponse) {
+        return createDecorator({
+            forCtor (Ctor, meta: IHttpEndpointMeta) {
+                throw new Error('Only the endpoint routes support response decorator');
+            },
+            forMethod (Proto, method: IHttpEndpointMethod) {
+                if (method.meta.responses == null) {
+                    method.meta.responses = [];
+                }
+                if (response.status == null) {
+                    response.status = 200;
+                }
+                method.meta.responses.push(response);
             }
         });
     };
     export function fromUri ()
-    export function fromUri (name: string, Type: Function)
+    export function fromUri (name: string, Type?: Function)
     export function fromUri (opts: IHttpEndpointMethodArgOptions)
     export function fromUri (mix?: any, Type?: Function) {
         let opts: IHttpEndpointMethodArgOptions;

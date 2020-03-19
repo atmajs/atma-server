@@ -5,6 +5,8 @@ export interface IHttpEndpointMiddleware {
 }
 
 export interface IHttpEndpointMeta {
+    path?: string
+    description?: string
     headers?: any
     origins?: string
     secure?: boolean | {
@@ -17,22 +19,25 @@ export interface IHttpEndpointMeta {
 export interface IHttpEndpointMethodArgOptions {
     Type: Function
     name?: string
-    optional?: string
+    optional?: boolean
     validate?: (val: any) => string
 }
 export interface IHttpEndpointMethodArgMeta {
     Type?: any,
     from: 'uri' | 'body',
     name?: string
+    description?: string
     optional?: boolean
     validate?: (val: any) => string
 }
 export interface IHttpEndpointMethodMeta {
+    path?: string
     headers?: any
     origins?: string
     description?: string
     arguments?: any
     response?: any
+    responses?: IHttpEndpointMethodMetaResponse[]
     strict?: boolean
     secure?: boolean | {
         roles?: string[]
@@ -44,6 +49,11 @@ export interface IHttpEndpointMethod {
     key?: string
     meta?: IHttpEndpointMethodMeta
     process: IHttpEndpointMiddleware
+}
+export interface IHttpEndpointMethodMetaResponse {
+    status?: number, 
+    Type?: any, 
+    description?: string 
 }
 
 export interface IHttpEndpointRutaItem {

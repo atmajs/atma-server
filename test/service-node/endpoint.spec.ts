@@ -122,7 +122,7 @@ UTest({
             }
 
             let req = { url: '/?foo=f&bar=b', method: 'GET', headers: {} };
-            let foo = new Foo();
+            let foo = new Foo(null, null);
 
             let result = await foo.process(req as any, null);
             deepEq_(result, {
@@ -148,7 +148,7 @@ UTest({
             }
 
             let req = { url: '/', method: 'GET', headers: {}, body: { date: new Date() } };
-            let foo = new Foo();
+            let foo = new Foo(null, null);
 
             let result = await foo.process(req as any, null);
             eq_(result.ticks, req.body.date.getTime());
