@@ -7,7 +7,7 @@ import { HttpResponse } from '../IHttpHandler';
 import { BarricadeExt } from './BarricadeExt'
 import { IHttpEndpointMethodMeta, IHttpEndpointRutaCollection, IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgMeta } from './HttpEndpointModels'
 import { HttpEndpointDecos } from './HttpEndpointDecos'
-import { HttpEndpointParamUtils } from './HttpEndpointParamUtils'
+import { HttpEndpointParamUtils, Types } from './HttpEndpointParamUtils'
 import Application from '../HttpApplication/Application';
 import { HttpEndpointExplorer } from './HttpEndpointExplorer';
 
@@ -31,6 +31,7 @@ export abstract class HttpEndpoint {
     static description = HttpEndpointDecos.description
 
     static createDecorator = HttpEndpointDecos.createDecorator
+    static Types = Types
 
     protected rootCharCount: number
     protected dfr: class_Dfr
@@ -116,13 +117,14 @@ export abstract class HttpEndpoint {
             }
         }
 
-        let params = null;
+        let params: any[] = null;
         let paramsMeta = this.meta?.endpointsParams?.[endpoint.key];
         if (paramsMeta != null) {
             params = [];
             for (let i = 0; i < paramsMeta.length; i++) {
                 params[i] = HttpEndpointParamUtils.resolveParam(req, entry.current.params, paramsMeta[i]);
             }
+            params.push(req, res)
         }
 
         let result = params == null 

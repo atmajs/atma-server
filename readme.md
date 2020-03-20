@@ -230,14 +230,17 @@ But the interface ``` (Deferred + process(req, res)) ``` is same also for HttpSe
 Class and decorators oriented [HttpService](#httpservice)
 
 ```typescript
-import { HttpEndpoint } from 'atma-server'
+import { HttpEndpoint, deco } from 'atma-server'
 
-@HttpEndpoint.isAuthorized()
+@deco.route('/foo')
+@deco.isAuthorized()
 export default class MyEndpoint extends HttpEndpoint {
 
-    @HttpEndpoint.isInRole('admin')
-    async '$get /' () {
-        return Promise.resolve({ foo: 1})
+    @deco.isInRole('admin')
+    async '$get /:id' (
+        @deco.fromUri('id', Number) id: number 
+    ) {
+        return service.fetch(id)
     }
 }
 ```
@@ -250,6 +253,10 @@ export default class MyEndpoint extends HttpEndpoint {
 * `HttpEndpoint.origin(origin: string = "*")`
 * `HttpEndpoint.middleware(fn: (req, res?, params?) => Promise<any> | any | void)`
 * `HttpEndpoint.createDecorator(methods: ICreateDecorator)`
+* `HttpEndpoint.fromUri(name, Type?)`
+* `HttpEndpoint.fromBody(Type)`
+
+> Decorators are also accessable via `deco` export, e.g.: `deco.isAuthorized()`
 
 ```typescript
 interface ICreateDecorator {

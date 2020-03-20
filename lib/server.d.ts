@@ -5,6 +5,7 @@
 //   ../atma-utils
 //   ../atma-logger
 //   ../appcfg
+//   ../class-json
 
 declare module 'atma-server' {
     import { StaticMidd } from 'atma-server/middleware/static'; 
@@ -21,6 +22,7 @@ declare module 'atma-server' {
     import { HttpEndpoint } from 'atma-server/HttpService/HttpEndpoint';
     import Middleware from 'atma-server/middleware/export';
     
+    import { HttpEndpointDecos } from 'atma-server/HttpService/HttpEndpointDecos';
     export { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError, Application, HttpSubApplication, HttpErrorPage, HttpPage, HandlerFactory, HttpCrudEndpoints, HttpService, IHttpHandler, HttpResponse, HttpEndpoint, Middleware };
     export const middleware: {
             query: typeof QueryMidd;
@@ -28,6 +30,19 @@ declare module 'atma-server' {
     };
     export const clean: typeof Application.clean;
     export const StaticContent: any;
+    export const deco: {
+            route: typeof HttpEndpointDecos.route;
+            origin: typeof HttpEndpointDecos.origin;
+            middleware: typeof HttpEndpointDecos.middleware;
+            isAuthorized: typeof HttpEndpointDecos.isAuthorized;
+            isInRole: typeof HttpEndpointDecos.isInRole;
+            hasClaim: typeof HttpEndpointDecos.hasClaim;
+            fromUri: typeof HttpEndpointDecos.fromUri;
+            fromBody: typeof HttpEndpointDecos.fromBody;
+            response: typeof HttpEndpointDecos.response;
+            description: typeof HttpEndpointDecos.description;
+            createDecorator: typeof HttpEndpointDecos.createDecorator;
+    };
 }
 
 declare module 'atma-server/middleware/static' {
@@ -239,6 +254,7 @@ declare module 'atma-server/HttpService/HttpEndpoint' {
     import { class_Dfr } from 'atma-utils';
     import { IHttpEndpointRutaCollection, IHttpEndpointMeta, IHttpEndpointMethod } from 'atma-server/HttpService/HttpEndpointModels';
     import { HttpEndpointDecos } from 'atma-server/HttpService/HttpEndpointDecos';
+    import { Types } from 'atma-server/HttpService/HttpEndpointParamUtils';
     import Application from 'atma-server/HttpApplication/Application';
     export abstract class HttpEndpoint {
         app: Application;
@@ -253,6 +269,7 @@ declare module 'atma-server/HttpService/HttpEndpoint' {
         static response: typeof HttpEndpointDecos.response;
         static description: typeof HttpEndpointDecos.description;
         static createDecorator: typeof HttpEndpointDecos.createDecorator;
+        static Types: typeof Types;
         protected rootCharCount: number;
         protected dfr: class_Dfr;
         routes: IHttpEndpointRutaCollection;
@@ -283,6 +300,32 @@ declare module 'atma-server/middleware/export' {
         static: typeof StaticMidd;
     };
     export default _default;
+}
+
+declare module 'atma-server/HttpService/HttpEndpointDecos' {
+    import { IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgOptions, IHttpEndpointMethodMetaResponse } from 'atma-server/HttpService/HttpEndpointModels';
+    export namespace HttpEndpointDecos {
+        export function middleware(fn: (req: any, res?: any, params?: any) => Promise<any> | any | void): (target: any, propertyKey: any, descriptor: any) => any;
+        export function isAuthorized(): (target: any, propertyKey?: any, descriptor?: any) => any;
+        export function isInRole(...roles: string[]): (target: any, propertyKey?: any, descriptor?: any) => any;
+        export function hasClaim(...claims: string[]): (target: any, propertyKey?: any, descriptor?: any) => any;
+        export function origin(origin: string): (target: any, propertyKey?: any, descriptor?: any) => any;
+        export function route(route: string): (target: any, propertyKey?: any, descriptor?: any) => any;
+        export function description(txt: string): (target: any, propertyKey?: any, descriptor?: any) => any;
+        export function response(response: IHttpEndpointMethodMetaResponse): (target: any, propertyKey?: any, descriptor?: any) => any;
+        export function fromUri(): any;
+        export function fromUri(name: string, Type?: Function): any;
+        export function fromUri(opts: IHttpEndpointMethodArgOptions): any;
+        export function fromBody(): any;
+        export function fromBody(Type: Function): any;
+        export function fromBody(opts: IHttpEndpointMethodArgOptions): any;
+        interface ICreateDecorator {
+            forCtor(Ctor: Function, meta: IHttpEndpointMeta): Function | void;
+            forMethod(Proto: any, method: IHttpEndpointMethod): IHttpEndpointMethod | void;
+        }
+        export function createDecorator(opts: ICreateDecorator): (target: any, propertyKey?: any, descriptor?: any) => any;
+        export {};
+    }
 }
 
 declare module 'atma-server/HttpApplication/IApplicationConfig' {
@@ -617,29 +660,25 @@ declare module 'atma-server/HttpService/HttpEndpointModels' {
     }
 }
 
-declare module 'atma-server/HttpService/HttpEndpointDecos' {
-    import { IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgOptions, IHttpEndpointMethodMetaResponse } from 'atma-server/HttpService/HttpEndpointModels';
-    export namespace HttpEndpointDecos {
-        export function middleware(fn: (req: any, res?: any, params?: any) => Promise<any> | any | void): (target: any, propertyKey: any, descriptor: any) => any;
-        export function isAuthorized(): (target: any, propertyKey?: any, descriptor?: any) => any;
-        export function isInRole(...roles: string[]): (target: any, propertyKey?: any, descriptor?: any) => any;
-        export function hasClaim(...claims: string[]): (target: any, propertyKey?: any, descriptor?: any) => any;
-        export function origin(origin: string): (target: any, propertyKey?: any, descriptor?: any) => any;
-        export function route(route: string): (target: any, propertyKey?: any, descriptor?: any) => any;
-        export function description(txt: string): (target: any, propertyKey?: any, descriptor?: any) => any;
-        export function response(response: IHttpEndpointMethodMetaResponse): (target: any, propertyKey?: any, descriptor?: any) => any;
-        export function fromUri(): any;
-        export function fromUri(name: string, Type?: Function): any;
-        export function fromUri(opts: IHttpEndpointMethodArgOptions): any;
-        export function fromBody(): any;
-        export function fromBody(Type: Function): any;
-        export function fromBody(opts: IHttpEndpointMethodArgOptions): any;
-        interface ICreateDecorator {
-            forCtor(Ctor: Function, meta: IHttpEndpointMeta): Function | void;
-            forMethod(Proto: any, method: IHttpEndpointMethod): IHttpEndpointMethod | void;
+declare module 'atma-server/HttpService/HttpEndpointParamUtils' {
+    import { IHttpEndpointMethodArgMeta } from 'atma-server/HttpService/HttpEndpointModels';
+    import { Serializable } from 'class-json';
+    export namespace Types {
+        class ArrayOfString {
         }
-        export function createDecorator(opts: ICreateDecorator): (target: any, propertyKey?: any, descriptor?: any) => any;
-        export {};
+        class ArrayOfNumber {
+        }
+        function ArrayOf(Type: any): ArrayOfInner;
+        class Json extends Serializable<Json> {
+        }
     }
+    class ArrayOfInner {
+        Type: any;
+        constructor(Type: any);
+    }
+    export namespace HttpEndpointParamUtils {
+        function resolveParam(req: any, params: any, meta: IHttpEndpointMethodArgMeta): any;
+    }
+    export {};
 }
 

@@ -12,18 +12,19 @@ import { HttpEndpoint } from './HttpService/HttpEndpoint'
 import Middleware from './middleware/export'
 
 import './handlers/export';
+import { HttpEndpointDecos } from './HttpService/HttpEndpointDecos'
 
 
 export {
-    HttpError, 
-    NotFoundError, 
-    RequestError, 
-    RuntimeError, 
+    HttpError,
+    NotFoundError,
+    RequestError,
+    RuntimeError,
     SecurityError,
     Application,
     HttpSubApplication,
     HttpErrorPage,
-    HttpPage,  
+    HttpPage,
     HandlerFactory,
     HttpCrudEndpoints,
     HttpService,
@@ -31,8 +32,21 @@ export {
     HttpResponse,
     HttpEndpoint,
     Middleware
-}; 
+};
 
 export const middleware = Middleware;
 export const clean = Application.clean;
 export const StaticContent = require('static-content');
+export const deco = {
+    route: HttpEndpointDecos.route,
+    origin: HttpEndpointDecos.origin,
+    middleware: HttpEndpointDecos.middleware,
+    isAuthorized: HttpEndpointDecos.isAuthorized,
+    isInRole: HttpEndpointDecos.isInRole,
+    hasClaim: HttpEndpointDecos.hasClaim,
+    fromUri: HttpEndpointDecos.fromUri,
+    fromBody: HttpEndpointDecos.fromBody,
+    response: HttpEndpointDecos.response,
+    description: HttpEndpointDecos.description,
+    createDecorator: HttpEndpointDecos.createDecorator,
+}
