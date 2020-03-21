@@ -13,6 +13,7 @@ import Middleware from './middleware/export'
 
 import './handlers/export';
 import { HttpEndpointDecos } from './HttpService/HttpEndpointDecos'
+import { LifecycleEvents } from './HttpApplication/LifecycleEvents'
 
 
 export {
@@ -31,7 +32,8 @@ export {
     IHttpHandler,
     HttpResponse,
     HttpEndpoint,
-    Middleware
+    Middleware,
+    LifecycleEvents
 };
 
 export const middleware = Middleware;

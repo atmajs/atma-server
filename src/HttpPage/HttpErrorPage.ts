@@ -65,8 +65,8 @@ class HttpErrorPage extends HttpPageBase {
 	
 		process (req, res, config){
 			this
-				.done(pageError_sendDelegate(req, res, this.model))
-				.fail(pageError_failDelegate(req, res, this.model))
+				.done(pageError_sendDelegate(req, res, this.model, this.app))
+				.fail(pageError_failDelegate(req, res, this.model, this.app))
 				;
 			page_processRequest(this, req, res, config);
 		}

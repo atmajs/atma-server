@@ -23,7 +23,8 @@ declare module 'atma-server' {
     import Middleware from 'atma-server/middleware/export';
     
     import { HttpEndpointDecos } from 'atma-server/HttpService/HttpEndpointDecos';
-    export { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError, Application, HttpSubApplication, HttpErrorPage, HttpPage, HandlerFactory, HttpCrudEndpoints, HttpService, IHttpHandler, HttpResponse, HttpEndpoint, Middleware };
+    import { LifecycleEvents } from 'atma-server/HttpApplication/LifecycleEvents';
+    export { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError, Application, HttpSubApplication, HttpErrorPage, HttpPage, HandlerFactory, HttpCrudEndpoints, HttpService, IHttpHandler, HttpResponse, HttpEndpoint, Middleware, LifecycleEvents };
     export const middleware: {
             query: typeof QueryMidd;
             static: typeof StaticMidd;
@@ -158,7 +159,6 @@ declare module 'atma-server/HttpPage/HttpPage' {
 }
 
 declare module 'atma-server/HttpApplication/Application' {
-    import { Class } from 'atma-server/dependency';
     import HandlerFactory from 'atma-server/HandlerFactory';
     import Config from 'atma-server/Config/Config';
     import MiddlewareRunner from 'atma-server/Business/Middleware';
@@ -166,7 +166,10 @@ declare module 'atma-server/HttpApplication/Application' {
     import HttpRewriter from 'atma-server/HttpRewrites/HttpRewriter';
     import { ServerResponse, IncomingMessage } from 'http';
     import * as net from 'net';
-    class Application extends Class.Deferred {
+    import { class_Dfr } from 'atma-utils';
+    import { LifecycleEvents } from 'atma-server/HttpApplication/LifecycleEvents';
+    class Application extends class_Dfr {
+        lifecycle: LifecycleEvents;
         isRoot: boolean;
         isHttpsForced: boolean;
         handlers: HandlerFactory;
@@ -326,6 +329,37 @@ declare module 'atma-server/HttpService/HttpEndpointDecos' {
         export function createDecorator(opts: ICreateDecorator): (target: any, propertyKey?: any, descriptor?: any) => any;
         export {};
     }
+}
+
+declare module 'atma-server/HttpApplication/LifecycleEvents' {
+    import { class_EventEmitter } from 'atma-utils';
+    import { ServerResponse, IncomingMessage } from 'http';
+    export type EventType = 'AppStart' | 'HandlerSuccess' | 'HandlerError';
+    export class LifecycleEvents extends class_EventEmitter {
+        static Instance: LifecycleEvents;
+        on(event: EventType, cb: (event: LifecycleEvent, req?: IncomingMessage, res?: ServerResponse) => void): this;
+        emit(event: EventType, ...args: any[]): this;
+        emitEvent(event: LifecycleEvent, req?: any, res?: any): void;
+        completeAppStart(start: number): void;
+        completeHandlerSuccess(start: number, req: IncomingMessage, res: ServerResponse): void;
+        completeHandlerError(start: number, req: IncomingMessage, res: ServerResponse, error: Error): void;
+    }
+    export class LifecycleSpan {
+        start: number;
+        end: number;
+        constructor();
+    }
+    class LifecycleEvent {
+        time: number;
+        type: EventType;
+        message: string;
+        user: string;
+        url: string;
+        status: number;
+        error: Error;
+        define(type: EventType, time: number, message: string, url?: string, status?: number, error?: Error, user?: string): void;
+    }
+    export {};
 }
 
 declare module 'atma-server/HttpApplication/IApplicationConfig' {
@@ -546,8 +580,8 @@ declare module 'atma-server/Config/Config' {
 
 declare module 'atma-server/Business/Middleware' {
     export default class MiddlewareRunner {
-        arr: any;
-        constructor(arr: any);
+        arr: Function[];
+        constructor(arr: Function[]);
         process(req: any, res: any, callback: any, config: any): void;
         add(mix: any): this;
         static create(arr: any): MiddlewareRunner;

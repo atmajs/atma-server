@@ -77,9 +77,9 @@ export const HttpError: IHttpErrorConstructor = <any>Class({
                         mix.toString(), statusCode || mix.statusCode || mix.status
                     );
                 }
-                let msg = mix.message,
-                    code = statusCode || mix.statusCode || mix.status,
-                    error;
+                let msg = mix.message;
+                let code = statusCode || mix.statusCode || mix.status;
+                let error;
 
                 error = new HttpError(msg, code);
                 error._json = mix;

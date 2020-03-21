@@ -1,4 +1,4 @@
-import { include, logger, Class, obj_extend } from '../dependency'
+import { include, logger, obj_extend } from '../dependency'
 import { Request, Response } from './Message'
 import { cli_arguments } from '../util/cli'
 import { app_isDebug } from '../util/app'
@@ -24,10 +24,16 @@ import * as http from 'http'
 import * as https from 'https'
 import * as net from 'net'
 import { HttpEndpointExplorer } from '../HttpService/HttpEndpointExplorer'
+import { class_EventEmitter, class_Dfr } from 'atma-utils'
+import { LifecycleEvents } from './LifecycleEvents'
 
-let _emitter = new Class.EventEmitter();
+let _emitter = new class_EventEmitter();
 
-class Application extends Class.Deferred {
+class Application extends class_Dfr {
+
+    private startedAt = Date.now();
+
+    lifecycle = LifecycleEvents.Instance
 
     // <Boolean>, if instance is the root application, and not one of the subapps
     isRoot = false
@@ -258,6 +264,8 @@ class Application extends Class.Deferred {
             ;
 
         _emitter.trigger('listen', this);
+
+        this.lifecycle.completeAppStart(this.startedAt);
         return this._server;
     }
     getSubApp(path) {
@@ -296,7 +304,7 @@ class Application extends Class.Deferred {
         }
 
         // send json
-        send_Error(req, res, error);
+        send_Error(req, res, error, null, this, Date.now());
     }
 
     static current: Application = null
@@ -307,7 +315,7 @@ class Application extends Class.Deferred {
     static Config = Config
     static clean() {
         Application.current = null;
-        _emitter = new Class.EventEmitter;
+        _emitter = new class_EventEmitter;
         return this;
     }
     static create(config: IApplicationConfig): Application {
@@ -354,12 +362,13 @@ export function respond_Raw(app, req, res) {
 }
 function middleware_processDelegate(middlewareRunner) {
     return function (app, handler: IHttpHandler, req, res) {
+        const startedAt = Date.now();
 
         middlewareRunner.process(req, res, done, app.config);
         function done(error) {
             if (error) {
-                let headers = handler.meta && handler.meta.headers;
-                send_Error(req, res, error, headers);
+                let headers = handler.meta?.headers;
+                send_Error(req, res, error, headers, app, startedAt);
                 return;
             }
             handler_process(app, handler, req, res);
@@ -387,18 +396,19 @@ function handler_process(app, handler, req, res) {
         .log('<request>', req.url);
 
     let result = null;
+    let startedAt = Date.now();
     try {
         result = handler.process(req, res, app.config);
     } catch (error) {
-        handler_await(app, handler, req, res, Promise.reject(error));
+        handler_await(app, handler, req, res, Promise.reject(error), startedAt);
         return;
     }
     if (result != null) {
         if (typeof result.then === 'function') {
-            handler_await(app, handler, req, res, result);
+            handler_await(app, handler, req, res, result, startedAt);
             return;
         }
-        handler_complete(app, handler, req, res, result);
+        handler_complete(app, handler, req, res, result, null, null, null, startedAt);
         return;
     }
 
@@ -406,9 +416,9 @@ function handler_process(app, handler, req, res) {
         // Handler responds to the request itself
         return;
     }
-    handler_await(app, handler, req, res, handler);
+    handler_await(app, handler, req, res, handler, startedAt);
 }
-function handler_await(app, handler, req, res, dfr) {
+function handler_await(app, handler, req, res, dfr, startedAt) {
     dfr.then(
         function onSuccess(mix: string | Buffer | HttpResponse | any, statusCode, mimeType, headers) {
             let content = null;
@@ -420,7 +430,7 @@ function handler_await(app, handler, req, res, dfr) {
             } else {
                 content = mix;
             }
-            handler_complete(app, handler, req, res, content, statusCode, mimeType, headers);
+            handler_complete(app, handler, req, res, content, statusCode, mimeType, headers, startedAt);
         },
         function onError(error, statusCode) {
             error = (<any>HttpError).create(error, statusCode);
@@ -429,22 +439,24 @@ function handler_await(app, handler, req, res, dfr) {
                 return;
             }
             let allHeaders = handler_resolveHeaders(app, handler);
-            send_Error(req, res, error, allHeaders);
+            send_Error(req, res, error, allHeaders, app, startedAt);
         }
     );
 }
 function handler_complete(
-    app,
+    app: Application,
     handler: IHttpHandler,
     req: IncomingMessage,
     res: ServerResponse,
     content: string | Buffer | any,
-    statusCode = null,
-    mimeType = null,
-    headers = null) {
-    let send = handler.send || send_Content;
+    statusCode: number,
+    mimeType: string,
+    headers,
+    startedAt: number) 
+{
+    let send = handler.send ?? send_Content;
     let allHeaders = handler_resolveHeaders(app, handler, headers);
-    send(req, res, content, statusCode, mimeType, allHeaders);
+    send(req, res, content, statusCode, mimeType, allHeaders, app, startedAt);
 }
 function handler_resolveHeaders(app, handler: IHttpHandler, overrides = null) {
     let headers_Handler = handler.meta && handler.meta.headers,
