@@ -334,7 +334,7 @@ declare module 'atma-server/HttpService/HttpEndpointDecos' {
 declare module 'atma-server/HttpApplication/LifecycleEvents' {
     import { class_EventEmitter } from 'atma-utils';
     import { ServerResponse, IncomingMessage } from 'http';
-    export type EventType = 'AppStart' | 'HandlerSuccess' | 'HandlerError';
+    export type EventType = 'AppStart' | 'HandlerSuccess' | 'HandlerError' | 'Error';
     export class LifecycleEvents extends class_EventEmitter {
         static Instance: LifecycleEvents;
         on(event: EventType, cb: (event: LifecycleEvent, req?: IncomingMessage, res?: ServerResponse) => void): this;
@@ -343,6 +343,7 @@ declare module 'atma-server/HttpApplication/LifecycleEvents' {
         completeAppStart(start: number): void;
         completeHandlerSuccess(start: number, req: IncomingMessage, res: ServerResponse): void;
         completeHandlerError(start: number, req: IncomingMessage, res: ServerResponse, error: Error): void;
+        emitError(error: Error, req?: IncomingMessage): void;
     }
     export class LifecycleSpan {
         start: number;

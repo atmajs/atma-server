@@ -1,8 +1,7 @@
 import { class_EventEmitter } from 'atma-utils';
 import { ServerResponse, IncomingMessage } from 'http';
 
-export type EventType = 'AppStart' | 'HandlerSuccess' | 'HandlerError';
-
+export type EventType = 'AppStart' | 'HandlerSuccess' | 'HandlerError' | 'Error';
 
 export class LifecycleEvents extends class_EventEmitter {
 
@@ -52,6 +51,18 @@ export class LifecycleEvents extends class_EventEmitter {
             error
         );
         this.emitEvent(EVENT, req, res);
+    }
+    emitError (error: Error, req?: IncomingMessage) {
+        const message = `${error}`;
+        EVENT.define(
+            'Error',
+            0,
+            message,
+            req?.url,
+            0,
+            error
+        );
+        this.emitEvent(EVENT);
     }
 }
 
