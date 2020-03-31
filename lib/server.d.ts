@@ -349,7 +349,7 @@ declare module 'atma-server/HttpApplication/LifecycleEvents' {
         end: number;
         constructor();
     }
-    class LifecycleEvent {
+    export class LifecycleEvent {
         time: number;
         type: EventType;
         message: string;
@@ -357,9 +357,9 @@ declare module 'atma-server/HttpApplication/LifecycleEvents' {
         url: string;
         status: number;
         error: Error;
+        /** Do NOT create event objects to prevent GC */
         define(type: EventType, time: number, message: string, url?: string, status?: number, error?: Error, user?: string): void;
     }
-    export {};
 }
 
 declare module 'atma-server/HttpApplication/IApplicationConfig' {

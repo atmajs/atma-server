@@ -13,7 +13,7 @@ import Middleware from './middleware/export'
 
 import './handlers/export';
 import { HttpEndpointDecos } from './HttpService/HttpEndpointDecos'
-import { LifecycleEvents } from './HttpApplication/LifecycleEvents'
+import { LifecycleEvents, LifecycleEvent } from './HttpApplication/LifecycleEvents'
 
 
 export {
