@@ -252,18 +252,21 @@ function processor_tryGet(
 
 }
 
+let COUNTER = 0;
+
 function processor_loadAndInit(factory, url, route, callback) {
     if (memory_canResolve(url)) {
         memory_resolve(factory, url, route, callback);
         return;
     }
 
+    const key = `Handler${++COUNTER}`
     factory
         .app
         .resources
-        .js(url + '::Handler')
+        .js(url + `::${key}`)
         .done(function (resp) {
-            let Handler = resp.Handler;
+            let Handler = resp[key];
             if (Handler == null) {
                 logger.error('<handler> invalid route', url);
                 callback(new ErrorHandler('Invalid route: ' + url));
