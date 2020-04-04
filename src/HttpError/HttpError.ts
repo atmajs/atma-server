@@ -1,4 +1,5 @@
 import { Class, is_String, is_Object } from '../dependency'
+import { app_isDebug } from '../util/app';
 
 export const HttpError: IHttpErrorConstructor = <any>Class({
     Base: Error,
@@ -17,44 +18,51 @@ export const HttpError: IHttpErrorConstructor = <any>Class({
     name: 'HttpError',
     statusCode: 500,
     get stack() {
-        if (this._error == null)
+        if (this._error == null) {
             return;
+        }
 
-        var stack = this._error.stack.split('\n'),
-            imax = stack.length,
-            start = 8,
-            startRgx = /(atma\-server)|(atma\-class)/i;
+        let stack = this._error.stack.split('\n');
+        let imax = stack.length;
+        let start = 1;
+        let end = imax;
+        let cursor = 0;
+        let before = true;
+        let atmaRgx = /[\\\/]atma\-/;
 
-        // while (++start < imax) {
-        // 	if (startRgx.test(stack[start]) === false)
-        // 		break;
-        // }
-
-        var end = start + 1;
-        var rgx = /\[as \w+Error\]/;
-        while (++end < imax) {
-            if (rgx.test(stack[end]))
-                break;
+        while (++cursor < imax) {
+            if (atmaRgx.test(stack[cursor])) {
+                if (before) {
+                    start = cursor + 1;
+                    continue;
+                }
+                if (before === false) {
+                    end = cursor;
+                    break;
+                }
+            }
+            before = false;
         }
 
         return stack[0] + '\n' + stack.slice(start, end).join('\n');
     },
 
-    toString: function () {
+    toString () {
 
         return this.message
             ? this.name + ': ' + this.message
             : this.name
             ;
     },
-    toJSON: function () {
+    toJSON () {
         if (this._json != null)
             return this._json;
 
         return {
             name: this.name,
             error: this.message,
-            code: this.statusCode
+            code: this.statusCode,
+            stack: app_isDebug ? this.stack : void 0
         };
     },
     Static: {
