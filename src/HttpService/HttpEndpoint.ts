@@ -149,7 +149,8 @@ export abstract class HttpEndpoint {
             return promise as any;
         }
 
-        result.then((mix, statusCode, mimeType, headers) => {
+        let hasCatch = typeof result.catch === 'function';
+        let catchable = result.then((mix, statusCode, mimeType, headers) => {
             HttpEndpointUtils.onComplete(
                 path,
                 req,
@@ -162,7 +163,13 @@ export abstract class HttpEndpoint {
                 mimeType,
                 headers
             );
-        }, error => promise.reject(error));
+        }, hasCatch ? void 0 : error => promise.reject(error));
+
+        if (hasCatch) {
+            catchable.catch(err => {
+                promise.reject(err)
+            });
+        }
 
         return promise as any;
     }

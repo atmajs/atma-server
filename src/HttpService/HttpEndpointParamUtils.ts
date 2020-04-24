@@ -173,7 +173,7 @@ namespace TypeConverter {
         let instance = Type.fromJSON?.(json) ?? JsonConvert.fromJSON(json, { Type });
         let error = Type.validate != null
             ? Type.validate(instance)
-            : JsonValidate.validate(instance)
+            : JsonValidate.validate(instance, { Type })
 
         if (error != null && error.length !== 0) {
             // Try handle different cases

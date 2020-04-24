@@ -17,7 +17,7 @@ class FooEndpoint extends HttpEndpoint {
         };
     }
     async '$get /async/error'(req) {
-        throw new Error('AsyncError');
+        throw new Error('AsyncException');
     }
     async '$get /async/reject'(req) {
         return Promise.reject(new Error('RejectError'));
@@ -65,7 +65,9 @@ UTest({
         
         srv
             .get('/foo/async/foo')
-            .end(done);
+            .end(() => {
+                done();
+            });
     },
     'should throw sync value' (done) {
         app.lifecycle.on('HandlerSuccess', assert.avoid());
@@ -83,13 +85,13 @@ UTest({
         app.lifecycle.on('HandlerSuccess', assert.avoid());
         app.lifecycle.on('HandlerError', <any> assert.await((event, req, res) => {
             eq_(typeof event.time, 'number');
-            has_(String(event.error), 'AsyncError');
+            has_(String(event.error), 'AsyncException');
             eq_(event.url, '/foo/async/error');
         }));
         
         srv
             .get('/foo/async/error')
-            .end(done);
+            .end(() => done());
     },
     'should reject async value' (done) {
         app.lifecycle.on('HandlerSuccess', assert.avoid());
