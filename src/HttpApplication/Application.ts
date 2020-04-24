@@ -62,7 +62,7 @@ class Application extends class_Dfr {
     resources = null
 
     // Stores all exports from `resources`
-    lib = {}
+    lib: { [key: string]: any } = {}
 
     // webSockets
     webSockets = null

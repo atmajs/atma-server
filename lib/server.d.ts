@@ -181,7 +181,9 @@ declare module 'atma-server/HttpApplication/Application' {
         _responders: any;
         middleware: any;
         resources: any;
-        lib: {};
+        lib: {
+            [key: string]: any;
+        };
         webSockets: any;
         config: IAppConfigExtended & IApplicationConfig;
         args: {
