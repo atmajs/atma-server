@@ -1,6 +1,6 @@
-import Autoreload from '../Autoreload/Autoreload'
-import Application from '../HttpApplication/Application'
 import { app_isDebug } from '../util/app';
+import { Autoreload } from '../Autoreload/Autoreload'
+import Application from '../HttpApplication/Application'
 
 const StaticContent = require('static-content');
 

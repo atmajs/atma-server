@@ -7,7 +7,7 @@ import HandlerFactory from '../HandlerFactory'
 import WebSocket from '../WebSocket'
 import Config from '../Config/Config'
 import MiddlewareRunner from '../Business/Middleware'
-import Autoreload from '../Autoreload/Autoreload'
+import { Autoreload } from '../Autoreload/Autoreload'
 import HttpErrorPage from '../HttpPage/HttpErrorPage'
 import { initilizeEmbeddedComponents } from '../compos/exports'
 import { send_Error, send_Content } from '../util/send'
@@ -62,7 +62,7 @@ class Application extends class_Dfr {
     resources = null
 
     // Stores all exports from `resources`
-    lib = null
+    lib = {}
 
     // webSockets
     webSockets = null
@@ -494,7 +494,7 @@ function cfg_doneDelegate(app: Application) {
 
         app.rewriter.addRules(cfg.rewriteRules);
         if (app_isDebug()) {
-            include.cfg('autoreload', true);
+            Autoreload.enable(this);
         }
         Promise.all([
             HttpEndpointExplorer.find(app.config.service.endpoints, app.config.base),
@@ -539,7 +539,7 @@ function resources_load(app: Application) {
         app
             .resources
             .done(function (resp) {
-                app.lib = resp;
+                app.lib = obj_extend(app.lib, resp);
 
                 let projects = config.projects;
                 if (projects) {
