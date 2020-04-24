@@ -212,10 +212,6 @@ class Application extends class_Dfr {
             this.webSockets.listen(this._server);
         }
 
-        if (app_isDebug()) {
-            this.autoreload();
-        }
-
         let processFn = this.process;
 
         let ssl = this.config.$get('server.ssl');
@@ -266,6 +262,10 @@ class Application extends class_Dfr {
         _emitter.trigger('listen', this);
 
         this.lifecycle.completeAppStart(this.startedAt);
+        
+        if (app_isDebug()) {
+            this.autoreload();
+        }
         return this._server;
     }
     getSubApp(path) {
@@ -493,9 +493,6 @@ function cfg_doneDelegate(app: Application) {
             ;
 
         app.rewriter.addRules(cfg.rewriteRules);
-        if (app_isDebug()) {
-            app.autoreload();
-        }
         Promise.all([
             HttpEndpointExplorer.find(app.config.service.endpoints, app.config.base),
             resources_load(app)
