@@ -5,7 +5,7 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.4.54",
+    "version": "0.4.57",
     "main": "./lib/server.js",
     "types": "./lib/server.d.ts",
     "repository": {
@@ -21,11 +21,11 @@
         "atma-logger": ">0.0.81",
         "atma-utils": "^0.1.35",
         "class-json": "^0.2.87",
-        "includejs": "^0.15.38",
+        "includejs": "^0.15.43",
         "maskjs": "^0.71.57",
         "ruta": "^0.2.59",
         "socket.io": "^2.3.0",
-        "static-content": "^1.1.25"
+        "static-content": "^1.1.28"
     },
     "scripts": {
         "build": "app-bundler && npm run dts",
@@ -42,7 +42,6 @@
         "atma": "^0.12.17",
         "atma-io-middleware-importer": "^1.1.30",
         "atma-io-middleware-yml": "^1.1.25",
-        "atma-loader-babel": "^1.0.21",
         "atma-loader-ts": "^1.1.12",
         "body-parser": "latest",
         "class-mongo": "^0.2.69",
@@ -153,7 +152,6 @@
             }
         },
         "plugins": [
-            "atma-loader-babel",
             "atma-loader-ts",
             "atma-io-middleware-yml"
         ]

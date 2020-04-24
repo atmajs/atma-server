@@ -497,7 +497,7 @@ function cfg_doneDelegate(app: Application) {
             include.cfg('autoreload', true);
         }
         Promise.all([
-            HttpEndpointExplorer.find(app.config.service.endpoints),
+            HttpEndpointExplorer.find(app.config.service.endpoints, app.config.base),
             resources_load(app)
         ]).then(function ([ endpoints ]) {
 
