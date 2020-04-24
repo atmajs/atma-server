@@ -357,11 +357,12 @@ declare module 'atma-server/HttpApplication/LifecycleEvents' {
         type: EventType;
         message: string;
         user: string;
+        method: string;
         url: string;
         status: number;
         error: Error;
         /** Do NOT create event objects to prevent GC */
-        define(type: EventType, time: number, message: string, url?: string, status?: number, error?: Error, user?: string): void;
+        define(type: EventType, time: number, message: string, method?: string, url?: string, status?: number, error?: Error, user?: string): void;
     }
 }
 

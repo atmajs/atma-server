@@ -34,6 +34,7 @@ export class LifecycleEvents extends class_EventEmitter {
             'HandlerSuccess',
             time,
             `${req.url} completed in ${time}ms`,
+            req.method,
             req.url,
             res.statusCode,
         );
@@ -46,6 +47,7 @@ export class LifecycleEvents extends class_EventEmitter {
             'HandlerError',
             time,
             message,
+            req.method,
             req.url,
             res.statusCode,
             error
@@ -58,6 +60,7 @@ export class LifecycleEvents extends class_EventEmitter {
             'Error',
             0,
             message,
+            req?.method,
             req?.url,
             0,
             error
@@ -81,6 +84,7 @@ export class LifecycleEvent {
     type: EventType
     message: string
     user: string
+    method: string
     url: string
     status: number
     error: Error
@@ -90,6 +94,7 @@ export class LifecycleEvent {
         type: EventType,
         time: number,
         message: string,
+        method?: string,
         url?: string,
         status?: number,
         error?: Error,
@@ -99,6 +104,7 @@ export class LifecycleEvent {
         this.type = type;
         this.message = message;
         this.user = user;
+        this.method = method;
         this.url = url;
         this.error = error;
         this.status = status;
