@@ -494,7 +494,7 @@ function cfg_doneDelegate(app: Application) {
 
         app.rewriter.addRules(cfg.rewriteRules);
         if (app_isDebug()) {
-            Autoreload.enable(this);
+            app.autoreload();
         }
         Promise.all([
             HttpEndpointExplorer.find(app.config.service.endpoints, app.config.base),
