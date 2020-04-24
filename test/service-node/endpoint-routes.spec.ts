@@ -20,10 +20,9 @@ UTest({
         app.done(done as any);
     },
 
-    async 'should resolve endpoint paths' () {
+    async '!should resolve endpoint paths' () {
         let endpoints = await HttpEndpointExplorer.find(app.config.service.endpoints);
-
-        let checkKey = '/api/v1/lorem';
+        let checkKey = '^/api/v1/lorem';
         let checkVal = '/test/fixtures/Endpoints/LoremEndpoint.ts';
         
         eq_(checkKey in endpoints, true);
