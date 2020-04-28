@@ -69,9 +69,30 @@ namespace UriExtractor {
     function toTree(params) {
         let obj = {};
         for (let key in params) {
-            obj_setProperty(obj, key, params[key]);
+            let val = params[key];
+            if (isJson(val)) {
+                try {
+                    val = JSON.parse(val);
+                } catch (error) {
+                    console.error('400: Unexpected URI JSON');
+                }
+            }
+            obj_setProperty(obj, key, val);
         }
         return obj;
+    }
+    function isJson(str: string) {
+        if (typeof str !== 'string') {
+            return false;
+        }
+        let c = str[0];
+        if (c === '{') {
+            return str[str.length - 1] === '}'
+        }
+        if (c === '[') {
+            return str[str.length - 1] === ']'
+        }
+        return false;
     }
 
 
