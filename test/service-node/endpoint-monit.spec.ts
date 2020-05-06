@@ -1,5 +1,5 @@
 import { HttpEndpoint } from '../../src/HttpService/HttpEndpoint'
-import { Application } from '../../src/export';
+import { Application, HttpError } from '../../src/export';
 
 class FooEndpoint extends HttpEndpoint {
 
@@ -18,6 +18,9 @@ class FooEndpoint extends HttpEndpoint {
     }
     async '$get /async/error'(req) {
         throw new Error('AsyncException');
+    }
+    async '$get /async/httperror'(req) {
+        throw new HttpError('MyHttpException', 501);
     }
     async '$get /async/reject'(req) {
         return Promise.reject(new Error('RejectError'));
@@ -52,7 +55,7 @@ UTest({
             eq_(typeof event.time, 'number');
             eq_(event.url, '/foo/sync/foo');
         }));
-        
+
         srv
             .get('/foo/sync/foo')
             .end(done);
@@ -62,7 +65,7 @@ UTest({
             eq_(typeof event.time, 'number');
             eq_(event.url, '/foo/async/foo');
         }));
-        
+
         srv
             .get('/foo/async/foo')
             .end(() => {
@@ -76,21 +79,34 @@ UTest({
             has_(String(event.error), 'SyncError');
             eq_(event.url, '/foo/sync/error');
         }));
-        
+
         srv
             .get('/foo/sync/error')
             .end(done);
     },
-    'should throw async value' (done) {
+    'should throw exception in async' (done) {
         app.lifecycle.on('HandlerSuccess', assert.avoid());
         app.lifecycle.on('HandlerError', <any> assert.await((event, req, res) => {
             eq_(typeof event.time, 'number');
             has_(String(event.error), 'AsyncException');
             eq_(event.url, '/foo/async/error');
         }));
-        
+
         srv
             .get('/foo/async/error')
+            .end(() => done());
+    },
+    'should throw httperror in async' (done) {
+        app.lifecycle.on('HandlerSuccess', assert.avoid());
+        app.lifecycle.on('HandlerError', <any> assert.await((event, req, res) => {
+            eq_(typeof event.time, 'number');
+            has_(String(event.error), 'MyHttpException');
+            eq_(event.url, '/foo/async/httperror');
+            eq_(event.status, 501);
+        }));
+
+        srv
+            .get('/foo/async/httperror')
             .end(() => done());
     },
     'should reject async value' (done) {
@@ -100,7 +116,7 @@ UTest({
             has_(String(event.error), 'RejectError');
             eq_(event.url, '/foo/async/reject');
         }));
-        
+
         srv
             .get('/foo/async/reject')
             .end(done);

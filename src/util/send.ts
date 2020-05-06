@@ -19,7 +19,7 @@ export function send_Error (req: IncomingMessage, res: ServerResponse, error, he
     if (error instanceof HttpError === false) {
         error = (<any>HttpError).create(error);
     }
-    
+
     send_Content(
         req,
         res
@@ -34,15 +34,16 @@ export function send_Error (req: IncomingMessage, res: ServerResponse, error, he
 };
 
 export function send_Content (
-    req: IncomingMessage, 
-    res: ServerResponse, 
-    content: string | Buffer | any | Error, 
-    statusCode: number, 
-    mimeType, 
-    headers, 
-    app: Application, 
+    req: IncomingMessage,
+    res: ServerResponse,
+    content: string | Buffer | any | Error,
+    statusCode: number,
+    mimeType,
+    headers,
+    app: Application,
     startedAt: number,
-    error?) {
+    error?
+) {
 
     if (typeof content !== 'string' && content instanceof Buffer === false) {
 
@@ -72,10 +73,15 @@ export function send_Content (
             res.setHeader(key, headers[key]);
         }
     }
-    if (res.statusCode < 400) {
-        app?.lifecycle.completeHandlerSuccess(startedAt, req, res);
-    } else {
-        app?.lifecycle.completeHandlerError(startedAt, req, res, error);
+    if (app != null) {
+        if (res.statusCode < 400) {
+            app?.lifecycle.completeHandlerSuccess(startedAt, req, res);
+        } else {
+            if (error == null && typeof content === 'string') {
+                error = new Error(`Undefined error: ${content.substring(0, 400)}`);
+            }
+            app?.lifecycle.completeHandlerError(startedAt, req, res, error);
+        }
     }
     res.end(content);
 };
