@@ -42,7 +42,7 @@ export class LifecycleEvents extends class_EventEmitter {
     }
     completeHandlerError (start: number, req: IncomingMessage, res: ServerResponse, error: Error) {
         const time = Date.now() - start;
-        const message = `${req.url} completed in ${time}ms with error: ${error}`;
+        const message = `[${req.method}] ${req.url} completed in ${time}ms with error[${res.statusCode}]: ${error}`;
         EVENT.define(
             'HandlerError',
             time,
@@ -70,7 +70,7 @@ export class LifecycleEvents extends class_EventEmitter {
 }
 
 export class LifecycleSpan {
-    
+
     start = Date.now();
     end: number;
 
