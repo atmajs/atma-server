@@ -5,15 +5,16 @@ export const HttpError: IHttpErrorConstructor = <any>Class({
     Base: Error,
     _error: null,
     _json: null,
-    Construct: function (message, statusCode) {
+    Construct: function (mix, statusCode) {
         if (this instanceof HttpError === false)
-            return new HttpError(message, statusCode);
+            return new HttpError(mix, statusCode);
 
-        this._error = new Error(message);
-        this.message = String(message);
+        this._error = typeof mix === 'string' ? new Error(mix) : mix;
+        this.message = String(this._error.message);
 
-        if (statusCode != null)
+        if (statusCode != null) {
             this.statusCode = statusCode;
+        }
     },
     name: 'HttpError',
     statusCode: 500,
@@ -28,7 +29,7 @@ export const HttpError: IHttpErrorConstructor = <any>Class({
         let end = imax;
         let cursor = 0;
         let before = true;
-        let atmaRgx = /[\\\/]atma\-/;
+        let atmaRgx = /node_modules[\\\/]atma\-/;
 
         while (++cursor < imax) {
             if (atmaRgx.test(stack[cursor])) {
@@ -74,9 +75,7 @@ export const HttpError: IHttpErrorConstructor = <any>Class({
                 return mix;
 
             if (mix instanceof Error) {
-                let error = new HttpError(mix.message, statusCode || 500);
-                error._error = mix;
-                return error;
+                return new HttpError(mix, statusCode || 500);
             }
 
             if (is_Object(mix)) {
@@ -115,6 +114,7 @@ export interface IHttpError {
     _error?: Error
 }
 export interface IHttpErrorConstructor {
+    new(error: Error, statusCode?: number): IHttpError
     new(message: string, statusCode?: number): IHttpError
 }
 
@@ -212,7 +212,7 @@ function createError(id, code) {
 // 			return error;
 // 		}
 // 		return new RuntimeError('Invalid error object: ' + mix);
-// 	}	
+// 	}
 // }
 
 // export class RequestError extends HttpError {

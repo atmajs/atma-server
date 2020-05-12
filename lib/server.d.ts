@@ -71,6 +71,7 @@ declare module 'atma-server/HttpError/HttpError' {
         _error?: Error;
     }
     export interface IHttpErrorConstructor {
+        new (error: Error, statusCode?: number): IHttpError;
         new (message: string, statusCode?: number): IHttpError;
     }
 }

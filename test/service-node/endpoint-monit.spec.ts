@@ -78,18 +78,22 @@ UTest({
             eq_(typeof event.time, 'number');
             has_(String(event.error), 'SyncError');
             eq_(event.url, '/foo/sync/error');
+            has_(event.error.stack, '/endpoint-monit.spec.ts');
         }));
 
         srv
             .get('/foo/sync/error')
             .end(done);
     },
-    'should throw exception in async' (done) {
+    '!should throw exception in async' (done) {
         app.lifecycle.on('HandlerSuccess', assert.avoid());
         app.lifecycle.on('HandlerError', <any> assert.await((event, req, res) => {
             eq_(typeof event.time, 'number');
             has_(String(event.error), 'AsyncException');
             eq_(event.url, '/foo/async/error');
+
+            console.log('>', event.message)
+            console.log('>', event.error.stack)
         }));
 
         srv
