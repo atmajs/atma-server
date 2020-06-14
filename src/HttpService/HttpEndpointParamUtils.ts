@@ -54,10 +54,10 @@ namespace UriExtractor {
             if (converter != null) {
                 val = converter.convert(val);
             }
-            if (converter.validate) {
-                let error = converter.validate(val);
+            if (meta.validate) {
+                let error = meta.validate(val);
                 if (error) {
-                    throw new HttpError(`Invalid URI Parameter '${meta.name}' with value '${str}': `, 400);
+                    throw new HttpError(`Invalid URI Parameter '${meta.name}' with value '${str}': ${error}`, 400);
                 }
             }
             return val;
