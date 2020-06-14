@@ -127,6 +127,15 @@ namespace UriExtractor {
             }
         },
         {
+            Type: Date,
+            convert(val: string) {
+                if (val == null) {
+                    return val;
+                }
+                return new Date(val);
+            }
+        },
+        {
             Type: Boolean,
             convert(val: string) {
                 if (val == null) {
