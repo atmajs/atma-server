@@ -148,34 +148,35 @@ export namespace HttpEndpointDecos {
     }
 
     function ensureEndpointArgsMeta (
-        proto: any, 
-        methodName: string, 
-        paramFrom: 'uri' | 'body', 
+        proto: any,
+        methodName: string,
+        paramFrom: 'uri' | 'body',
         paramIndex: number,
         opts: IHttpEndpointMethodArgOptions,
     ): IHttpEndpointMethodArgMeta[] {
 
         let meta = proto.meta ?? (proto.meta = {});
         if (meta.endpointsParams == null) meta.endpointsParams = {};
-        
+
         let params = meta.endpointsParams[methodName];
         if (params == null) {
             params = meta.endpointsParams[methodName] = [];
         }
-        
+
         let paramMeta = <IHttpEndpointMethodArgMeta> {
             from: paramFrom,
             Type: opts.Type,
             name: opts.name,
-            validate: opts.validate
+            validate: opts.validate,
+            optional: opts.optional
         };
         params[paramIndex] = paramMeta;
         return params;
     }
 
     function ensureEndpointMeta (mix: any): IHttpEndpointMeta {
-        let proto = typeof mix === 'function' 
-            ? mix.prototype 
+        let proto = typeof mix === 'function'
+            ? mix.prototype
             : Object.getPrototypeOf(mix)
             ;
         let meta = proto.meta;
@@ -216,7 +217,7 @@ export namespace HttpEndpointDecos {
             let result = ensureEndpointMethod(current);
 
             result = opts.forMethod(target, result) || result;
-            
+
             if (viaProperty) {
                 target[propertyKey] = result;
                 return;
@@ -235,7 +236,7 @@ export namespace HttpEndpointDecos {
         if (Array.isArray(currentVal)) {
             return [ fn, ...currentVal ];
         }
-    
+
         currentVal.process = <any> mergeMiddleware(currentVal.process, fn);
     }
 }
