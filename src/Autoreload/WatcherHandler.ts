@@ -4,7 +4,7 @@ import { class_EventEmitter } from 'atma-utils';
 
 export class WatcherHandler extends class_EventEmitter {
     static get Instance (): WatcherHandler {
-        return _instance || (_instance = new WatcherHandler);
+        return _instance ?? (_instance = new WatcherHandler);
     }
     constructor () {
         super();
@@ -41,27 +41,28 @@ export class WatcherHandler extends class_EventEmitter {
         return _watchers[path] != null;
     }
 
-    fileChanged (path, sender, requestedUrl, base){
+    fileChanged (absPath, sender, requestedUrl?: string, base?: string){
         if (mask.Module.clearCache) {
             mask.Module.clearCache();
         }
         if (sender === 'filewatcher') {
-            var rel = requestedUrl || ('/' + path.replace(rootFolder, ''));
+            let rel = requestedUrl ?? ('/' + absPath.replace(rootFolder, ''));
 
-            if (include.getResource(rel) == null)
-                this.trigger('fileChange', rel, path);
+            if (include.getResource(rel) == null) {
+                this.trigger('fileChange', rel, absPath);
+            }
 
             return;
         }
-        if (this.isWatching(new io.File(path))) {
+        if (this.isWatching(new io.File(absPath))) {
             return;
         }
         if (base) {
             base = new Uri(base).toLocalFile();
-            path = path.replace(base, '');
+            absPath = absPath.replace(base, '');
         }
 
-        this.trigger('fileChange', path);
+        this.trigger('fileChange', absPath);
 
         /**
         *  include.autoreload feature also listens for file changes
@@ -75,7 +76,7 @@ export class WatcherHandler extends class_EventEmitter {
         *   });
         */
     }
-    
+
     bind (callback){
 
         return this
@@ -90,7 +91,7 @@ export class WatcherHandler extends class_EventEmitter {
 
 
 
-var rootFolder = path_normalize(process.cwd() + '/');
+const rootFolder = path_normalize(process.cwd() + '/');
 
 class FileWatcher extends class_EventEmitter {
     active = false
@@ -98,7 +99,7 @@ class FileWatcher extends class_EventEmitter {
         super();
         this.fileChanged = this.fileChanged.bind(this);
     }
-    
+
     fileChanged (path){
         logger.log('<watcher:changed>', path);
 

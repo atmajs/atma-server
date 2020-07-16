@@ -11,8 +11,8 @@ Application.on('configurate', function(app){
 	StaticContent.on('file', file => {
 		Autoreload.watchFile(file)
 	});
-	Autoreload.getWatcher().on('fileChange', (path, file) => {
-		StaticContent.Cache.remove(file);
+	Autoreload.getWatcher().on('fileChange', (relPath: string, absPath: string) => {
+		StaticContent.Cache.remove(absPath);
 	});
 });
 

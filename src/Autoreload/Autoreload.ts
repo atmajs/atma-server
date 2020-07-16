@@ -9,7 +9,7 @@ export const Autoreload = {
         if (this.enabled) {
             return;
         }
-        
+
         this.enabled = true;
         app
             .webSockets
@@ -45,18 +45,20 @@ export const Autoreload = {
 
         this.watchFile(file);
     },
-    watchFile(file) {
-        if (!(file.uri && file.uri.file))
+    watchFile(file: InstanceType<typeof io.File>) {
+        if (!file.uri?.file) {
             // virtual file?
             return;
-        if (/\.map$/.test(file.uri.file))
+        }
+        if (/\.map$/.test(file.uri.file)) {
             return;
-
-        if (Watcher.isWatching(file))
+        }
+        if (Watcher.isWatching(file)) {
             return;
-
-        if (io.File.prototype.exists.call(file) === false)
+        }
+        if (io.File.prototype.exists.call(file) === false) {
             return;
+        }
 
         Watcher.watch(file);
     },
@@ -68,7 +70,7 @@ export const Autoreload = {
         Watcher.fileChanged(path, sender, null, this.base);
     },
 
-    isWatching(file) {
+    isWatching(file: string | InstanceType<typeof io.File>) {
         if (typeof file === 'string') {
             file = new io.File(file);
         }

@@ -178,6 +178,9 @@ class Application extends class_Dfr {
             return;
 
         Autoreload.enable(this);
+        Autoreload.getWatcher().on('fileChange', (relPath: string, absPath: string) => {
+            Application.trigger('autoreload', relPath, absPath);
+        });
     }
     listen() {
         let port, server;
@@ -262,7 +265,7 @@ class Application extends class_Dfr {
         _emitter.trigger('listen', this);
 
         this.lifecycle.completeAppStart(this.startedAt);
-        
+
         if (app_isDebug()) {
             this.autoreload();
         }
@@ -452,7 +455,7 @@ function handler_complete(
     statusCode: number,
     mimeType: string,
     headers,
-    startedAt: number) 
+    startedAt: number)
 {
     let send = handler.send ?? send_Content;
     let allHeaders = handler_resolveHeaders(app, handler, headers);
