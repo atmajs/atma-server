@@ -37,6 +37,9 @@ export class LifecycleEvents extends class_EventEmitter {
             req.method,
             req.url,
             res.statusCode,
+            null,
+            '',
+            req.headers['x-forwarded-for'] as string || req.connection.remoteAddress
         );
         this.emitEvent(EVENT, req, res);
     }
@@ -50,7 +53,9 @@ export class LifecycleEvents extends class_EventEmitter {
             req.method,
             req.url,
             res.statusCode,
-            error
+            error,
+            '',
+            req.headers['x-forwarded-for'] as string || req.connection.remoteAddress
         );
         this.emitEvent(EVENT, req, res);
     }
@@ -84,6 +89,7 @@ export class LifecycleEvent {
     type: EventType
     message: string
     user: string
+    ip: string
     method: string
     url: string
     status: number
@@ -99,6 +105,7 @@ export class LifecycleEvent {
         status?: number,
         error?: Error,
         user?: string,
+        ip?: string,
     ) {
         this.time = time;
         this.type = type;
@@ -108,6 +115,7 @@ export class LifecycleEvent {
         this.url = url;
         this.error = error;
         this.status = status;
+        this.ip = ip;
     }
 }
 
