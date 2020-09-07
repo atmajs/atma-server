@@ -67,7 +67,7 @@ export abstract class HttpEndpoint {
             return Promise.resolve(HttpEndpointUtils.getHelpModel(this));
         }
 
-        if (this.meta != null){ 
+        if (this.meta != null){
             if (secure_canAccess(req, this.meta.secure) === false) {
                 return Promise.reject(new SecurityError('Access Denied'));
             }
@@ -127,7 +127,7 @@ export abstract class HttpEndpoint {
             params.push(req, res)
         }
 
-        let result = params == null 
+        let result = params == null
             ? endpoint.process.call(this, req, res, entry.current.params)
             : endpoint.process.apply(this, params);
 
@@ -347,7 +347,7 @@ export namespace RouteUtils {
             routes.add(path, responder);
         }
     }
-    
+
     function fillProtoHash(proto, hash) {
         var keys = Object.getOwnPropertyNames(proto);
         for (var i = 0; i < keys.length; i++) {

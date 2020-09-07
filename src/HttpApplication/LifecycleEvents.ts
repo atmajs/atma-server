@@ -28,7 +28,7 @@ export class LifecycleEvents extends class_EventEmitter {
         );
         this.emitEvent(EVENT);
     }
-    completeHandlerSuccess (start: number, req: IncomingMessage, res: ServerResponse) {
+    completeHandlerSuccess (start: number, req: IncomingMessage & {user?: { email: string }}, res: ServerResponse) {
         const time = Date.now() - start;
         EVENT.define(
             'HandlerSuccess',
@@ -38,12 +38,12 @@ export class LifecycleEvents extends class_EventEmitter {
             req.url,
             res.statusCode,
             null,
-            '',
+            req.user?.email,
             req.headers['x-forwarded-for'] as string || req.connection.remoteAddress
         );
         this.emitEvent(EVENT, req, res);
     }
-    completeHandlerError (start: number, req: IncomingMessage, res: ServerResponse, error: Error) {
+    completeHandlerError (start: number, req: IncomingMessage & {user?: { email: string }}, res: ServerResponse, error: Error) {
         const time = Date.now() - start;
         const message = `[${req.method}] ${req.url} completed in ${time}ms with error[${res.statusCode}]: ${error}`;
         EVENT.define(
@@ -54,12 +54,12 @@ export class LifecycleEvents extends class_EventEmitter {
             req.url,
             res.statusCode,
             error,
-            '',
+            req.user?.email,
             req.headers['x-forwarded-for'] as string || req.connection.remoteAddress
         );
         this.emitEvent(EVENT, req, res);
     }
-    emitError (error: Error, req?: IncomingMessage) {
+    emitError (error: Error, req?: IncomingMessage & {user?: { email: string }}) {
         const message = `${error}`;
         EVENT.define(
             'Error',
@@ -68,7 +68,9 @@ export class LifecycleEvents extends class_EventEmitter {
             req?.method,
             req?.url,
             0,
-            error
+            error,
+            req?.user?.email,
+            req?.headers['x-forwarded-for'] as string || req?.connection.remoteAddress
         );
         this.emitEvent(EVENT);
     }

@@ -344,9 +344,21 @@ declare module 'atma-server/HttpApplication/LifecycleEvents' {
         emit(event: EventType, ...args: any[]): this;
         emitEvent(event: LifecycleEvent, req?: any, res?: any): void;
         completeAppStart(start: number): void;
-        completeHandlerSuccess(start: number, req: IncomingMessage, res: ServerResponse): void;
-        completeHandlerError(start: number, req: IncomingMessage, res: ServerResponse, error: Error): void;
-        emitError(error: Error, req?: IncomingMessage): void;
+        completeHandlerSuccess(start: number, req: IncomingMessage & {
+            user?: {
+                email: string;
+            };
+        }, res: ServerResponse): void;
+        completeHandlerError(start: number, req: IncomingMessage & {
+            user?: {
+                email: string;
+            };
+        }, res: ServerResponse, error: Error): void;
+        emitError(error: Error, req?: IncomingMessage & {
+            user?: {
+                email: string;
+            };
+        }): void;
     }
     export class LifecycleSpan {
         start: number;
