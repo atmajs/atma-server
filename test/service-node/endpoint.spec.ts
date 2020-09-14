@@ -131,6 +131,32 @@ UTest({
             });
             eq_(HttpEndpoint.prototype.meta, null, 'meta of the base class must be always null');
         },
+        async 'should parse params to type' () {
+            class FooModel {
+                @Json.type(Boolean)
+                foo: boolean
+                @Json.type(Number)
+                bar: number
+            }
+            class Foo extends HttpEndpoint {
+                '$get /' (
+                    @HttpEndpoint.fromUri({ Type: FooModel }) json
+                ) {
+                    return json;
+                }
+            }
+
+            let req = { url: '/?foo=false&bar=12', method: 'GET', headers: {} };
+            let foo = new Foo(null, null);
+
+            let result = await foo.process(req as any, null);
+            console.log(result, '<<')
+            deepEq_(result, {
+                foo: false,
+                bar: 12
+            });
+            eq_(HttpEndpoint.prototype.meta, null, 'meta of the base class must be always null');
+        },
         async 'should parse body' () {
 
             class User extends Serializable<User> {
