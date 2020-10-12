@@ -26,6 +26,7 @@ import * as net from 'net'
 import { HttpEndpointExplorer } from '../HttpService/HttpEndpointExplorer'
 import { class_EventEmitter, class_Dfr } from 'atma-utils'
 import { LifecycleEvents } from './LifecycleEvents'
+import { HttpEndpointUtils } from '../HttpService/HttpEndpoint'
 
 let _emitter = new class_EventEmitter();
 
@@ -394,7 +395,7 @@ function handler_resolve(app: Application, req, res, next, callback) {
         });
 
 }
-function handler_process(app, handler, req, res) {
+function handler_process(app: Application, handler: IHttpHandler, req: http.IncomingMessage, res) {
     logger(95)
         .log('<request>', req.url);
 
@@ -415,13 +416,19 @@ function handler_process(app, handler, req, res) {
         return;
     }
 
-    if (handler.done == null) {
+    if (handler.then == null) {
         // Handler responds to the request itself
         return;
     }
     handler_await(app, handler, req, res, handler, startedAt);
 }
-function handler_await(app, handler, req, res, dfr, startedAt) {
+function handler_await(app: Application
+    , handler: IHttpHandler
+    , req: http.IncomingMessage
+    , res
+    , dfr
+    , startedAt: number
+) {
     dfr.then(
         function onSuccess(mix: string | Buffer | HttpResponse | any, statusCode, mimeType, headers) {
             let content = null;
@@ -441,7 +448,12 @@ function handler_await(app, handler, req, res, dfr, startedAt) {
                 handler.sendError(error, req, res, app.config);
                 return;
             }
-            let allHeaders = handler_resolveHeaders(app, handler);
+            let headers = null;
+            let origins = handler?.meta.origins;
+            if (origins) {
+                headers = HttpEndpointUtils.getCorsHeaders(req, handler);
+            }
+            let allHeaders = handler_resolveHeaders(app, handler, headers);
             send_Error(req, res, error, allHeaders, app, startedAt);
         }
     );
@@ -462,9 +474,8 @@ function handler_complete(
     send(req, res, content, statusCode, mimeType, allHeaders, app, startedAt);
 }
 function handler_resolveHeaders(app, handler: IHttpHandler, overrides = null) {
-    let headers_Handler = handler.meta && handler.meta.headers,
-        headers_App = app.config.headers;
-
+    let headers_Handler = handler.meta?.headers;
+    let headers_App = app.config?.headers;
     if (headers_Handler == null && headers_App == null) {
         return overrides;
     }

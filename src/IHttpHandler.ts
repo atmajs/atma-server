@@ -12,9 +12,12 @@ export interface IHttpHandlerConstructor {
 export interface IHttpHandler {
     meta?: {
         headers?: { [key: string]: string }
+        origins?: string
     }
-	process (req: IncomingMessage, res: ServerResponse, config?: IApplicationConfig): void | PromiseLike<any | HttpResponse>
+    process (req: IncomingMessage, res: ServerResponse, config?: IApplicationConfig): void | PromiseLike<any | HttpResponse>
     send? (req, res, content, statusCode, mimeType, allHeaders)
+    sendError? (error, req, res, config)
+    then? (ok, error)
 };
 
 export class HttpResponse {

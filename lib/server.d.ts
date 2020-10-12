@@ -90,9 +90,12 @@ declare module 'atma-server/IHttpHandler' {
             headers?: {
                 [key: string]: string;
             };
+            origins?: string;
         };
         process(req: IncomingMessage, res: ServerResponse, config?: IApplicationConfig): void | PromiseLike<any | HttpResponse>;
         send?(req: any, res: any, content: any, statusCode: any, mimeType: any, allHeaders: any): any;
+        sendError?(error: any, req: any, res: any, config: any): any;
+        then?(ok: any, error: any): any;
     }
     export class HttpResponse {
         content: string | Buffer | any;
@@ -256,45 +259,59 @@ declare module 'atma-server/HttpService/HttpService' {
 }
 
 declare module 'atma-server/HttpService/HttpEndpoint' {
+    import { IApiMeta } from 'atma-server/HttpService/HttpEndpointExplorer'; 
+     /// <reference types="node" />
     import { IncomingMessage, ServerResponse } from 'http';
     import { class_Dfr } from 'atma-utils';
+    import { HttpResponse, IHttpHandler } from 'atma-server/IHttpHandler';
     import { IHttpEndpointRutaCollection, IHttpEndpointMeta, IHttpEndpointMethod } from 'atma-server/HttpService/HttpEndpointModels';
     import { HttpEndpointDecos } from 'atma-server/HttpService/HttpEndpointDecos';
     import { Types } from 'atma-server/HttpService/HttpEndpointParamUtils';
     import Application from 'atma-server/HttpApplication/Application';
     export abstract class HttpEndpoint {
-        app: Application;
-        static route: typeof HttpEndpointDecos.route;
-        static origin: typeof HttpEndpointDecos.origin;
-        static middleware: typeof HttpEndpointDecos.middleware;
-        static isAuthorized: typeof HttpEndpointDecos.isAuthorized;
-        static isInRole: typeof HttpEndpointDecos.isInRole;
-        static hasClaim: typeof HttpEndpointDecos.hasClaim;
-        static fromUri: typeof HttpEndpointDecos.fromUri;
-        static fromBody: typeof HttpEndpointDecos.fromBody;
-        static response: typeof HttpEndpointDecos.response;
-        static description: typeof HttpEndpointDecos.description;
-        static createDecorator: typeof HttpEndpointDecos.createDecorator;
-        static Types: typeof Types;
-        protected rootCharCount: number;
-        protected dfr: class_Dfr;
-        routes: IHttpEndpointRutaCollection;
-        meta?: IHttpEndpointMeta;
-        ruta?: {
-            [path: string]: IHttpEndpointMethod;
-        };
-        constructor(route: {
-            path: string[];
-        }, app: Application);
-        process(req: IncomingMessage & {
-            body?: any;
-        }, res: ServerResponse): Promise<any> | void;
-        resolve(...args: any[]): void;
-        reject(error: any): void;
+            app: Application;
+            static route: typeof HttpEndpointDecos.route;
+            static origin: typeof HttpEndpointDecos.origin;
+            static middleware: typeof HttpEndpointDecos.middleware;
+            static isAuthorized: typeof HttpEndpointDecos.isAuthorized;
+            static isInRole: typeof HttpEndpointDecos.isInRole;
+            static hasClaim: typeof HttpEndpointDecos.hasClaim;
+            static fromUri: typeof HttpEndpointDecos.fromUri;
+            static fromBody: typeof HttpEndpointDecos.fromBody;
+            static response: typeof HttpEndpointDecos.response;
+            static description: typeof HttpEndpointDecos.description;
+            static createDecorator: typeof HttpEndpointDecos.createDecorator;
+            static Types: typeof Types;
+            protected rootCharCount: number;
+            protected dfr: class_Dfr;
+            routes: IHttpEndpointRutaCollection;
+            meta?: IHttpEndpointMeta;
+            ruta?: {
+                    [path: string]: IHttpEndpointMethod;
+            };
+            constructor(route: {
+                    path: string[];
+            }, app: Application);
+            process(req: IncomingMessage & {
+                    body?: any;
+            }, res: ServerResponse): Promise<any> | void;
+            resolve(...args: any[]): void;
+            reject(error: any): void;
+    }
+    export namespace HttpEndpointUtils {
+            function onComplete(path: string, req: IncomingMessage, res: ServerResponse, endpoint: HttpEndpoint, endpointMethod: IHttpEndpointMethod, promise: class_Dfr, mix: any | HttpResponse, statusCode?: number, mimeType?: string, headers?: any): void;
+            function getHelpModel(service: HttpEndpoint): IApiMeta;
+            function getCorsHeaders(req: IncomingMessage, handler: IHttpHandler): {
+                    'Access-Control-Allow-Methods': string[];
+                    'Access-Control-Allow-Credentials': string;
+                    'Access-Control-Allow-Headers': string | string[];
+                    'Access-Control-Allow-Origin': string;
+            };
+            function getOptionsHeaders(endpoint: HttpEndpoint, path: string, req: IncomingMessage): {};
     }
     export namespace RouteUtils {
-        function resolveFromType(endpoint: HttpEndpoint): any;
-        function resolveFromProto(prototype: any): any;
+            function resolveFromType(endpoint: HttpEndpoint): any;
+            function resolveFromProto(prototype: any): any;
     }
 }
 
@@ -637,6 +654,47 @@ declare module 'atma-server/HttpRewrites/HttpRewriter' {
             SERVER_ADDR(req: IncomingMessage): string;
         };
     }
+}
+
+declare module 'atma-server/HttpService/HttpEndpointExplorer' {
+    import { HttpEndpoint } from 'atma-server/HttpService/HttpEndpoint';
+    export interface IApiMeta {
+        path: string;
+        description: string;
+        paths: IApiRouteMeta[];
+    }
+    interface IApiRouteMeta {
+        path: string;
+        description: string;
+        method: 'get' | 'post' | 'put' | 'option' | 'patch';
+        operationId: string;
+        security?: {
+            authorized: boolean;
+            claims?: string[];
+            roles?: string[];
+        };
+        parameters: IApiRouteParameterMeta[];
+        responses: IApiRouteResponseMeta[];
+    }
+    interface IApiRouteParameterMeta {
+        name: string;
+        in: 'query' | 'body';
+        description: string;
+        required: boolean;
+        schema: any;
+    }
+    interface IApiRouteResponseMeta {
+        statusCode: number;
+        description: string;
+        schema: any;
+    }
+    export namespace HttpEndpointExplorer {
+        function getMeta<T extends (new (...args: any[]) => HttpEndpoint)>(Type: T): IApiMeta;
+        function find(path: string, base?: string): Promise<{
+            [urlPattern: string]: string;
+        }>;
+    }
+    export {};
 }
 
 declare module 'atma-server/HttpService/HttpEndpointModels' {

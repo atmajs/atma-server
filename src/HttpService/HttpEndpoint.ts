@@ -3,7 +3,7 @@ import { NotFoundError, SecurityError, RequestError } from '../HttpError/HttpErr
 import { ruta, logger, obj_extend, obj_extendDefaults, is_Function, is_Array, is_Object } from '../dependency'
 import { secure_canAccess, service_validateArgs } from './utils'
 import { class_Dfr } from 'atma-utils';
-import { HttpResponse } from '../IHttpHandler';
+import { HttpResponse, IHttpHandler } from '../IHttpHandler';
 import { BarricadeExt } from './BarricadeExt'
 import { IHttpEndpointMethodMeta, IHttpEndpointRutaCollection, IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgMeta } from './HttpEndpointModels'
 import { HttpEndpointDecos } from './HttpEndpointDecos'
@@ -182,7 +182,7 @@ export abstract class HttpEndpoint {
     }
 }
 
-namespace HttpEndpointUtils {
+export namespace HttpEndpointUtils {
     const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'HEAD', 'DELETE'];
     const HEADER_ALLOW_ORIGIN = 'Access-Control-Allow-Origin';
 
@@ -211,7 +211,7 @@ namespace HttpEndpointUtils {
         else {
             content = mix;
         }
-        if (endpoint.meta != null && endpoint.meta.origins) {
+        if (endpoint.meta?.origins) {
             let corsHeaders = getOptionsHeaders(endpoint, path, req);
             headers = headers == null ? corsHeaders : obj_extend(headers, corsHeaders);
         }
@@ -222,6 +222,17 @@ namespace HttpEndpointUtils {
     export function getHelpModel(service: HttpEndpoint) {
         return HttpEndpointExplorer.getMeta(( <any> service).constructor);
     };
+    export function getCorsHeaders(req: IncomingMessage, handler: IHttpHandler) {
+
+        let headers = {
+            'Access-Control-Allow-Methods': [ req.method ],
+            'Access-Control-Allow-Credentials': 'true',
+            'Access-Control-Allow-Headers': req.headers['access-control-request-headers'] || 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
+            'Access-Control-Allow-Origin': handler.meta?.origins ?? ''
+        };
+        rewriteAllowedOrigins(req, headers);
+        return headers;
+    }
     export function getOptionsHeaders(endpoint: HttpEndpoint, path: string, req: IncomingMessage) {
 
         let headers = {},
@@ -258,7 +269,7 @@ namespace HttpEndpointUtils {
         }
 
         let methods = allowedMethods.join(',');
-        if (methods.indexOf('OPTIONS') === -1) {
+        if (methods.includes('OPTIONS') === false) {
             methods += ',OPTIONS';
         }
 

@@ -1,13 +1,13 @@
 import { File, env } from 'atma-io'
 import { class_Uri } from 'atma-utils'
-import { fs_exploreFiles } from '../util/fs'
 import alot from 'alot'
-import { HttpEndpoint, RouteUtils } from './HttpEndpoint';
-import { IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodMetaResponse, IHttpEndpointMethodMeta } from './HttpEndpointModels';
-import { Json, JsonSchema, JsonUtils } from 'class-json';
+import { fs_exploreFiles } from '../util/fs'
+import { HttpEndpoint } from './HttpEndpoint';
+import { IHttpEndpointMeta, IHttpEndpointMethodMeta } from './HttpEndpointModels';
+import { JsonSchema, JsonUtils } from 'class-json';
 import { obj_getKeys } from '../util/obj';
 
-interface IApiMeta {
+export interface IApiMeta {
     path: string
     description: string
     paths: IApiRouteMeta[]
@@ -90,7 +90,7 @@ export namespace HttpEndpointExplorer {
                 }
             }) ?? [];
 
-            
+
             const apiRoute: IApiRouteMeta = {
                 path: route[2],
                 method: <any> route[1],
