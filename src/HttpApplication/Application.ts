@@ -449,7 +449,7 @@ function handler_await(app: Application
                 return;
             }
             let headers = null;
-            let origins = handler?.meta.origins;
+            let origins = handler?.meta?.origins;
             if (origins) {
                 headers = HttpEndpointUtils.getCorsHeaders(req, handler);
             }
