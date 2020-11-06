@@ -156,8 +156,9 @@ export namespace HttpEndpointDecos {
     ): IHttpEndpointMethodArgMeta[] {
 
         let meta = proto.meta ?? (proto.meta = {});
-        if (meta.endpointsParams == null) meta.endpointsParams = {};
-
+        if (meta.endpointsParams == null) {
+            meta.endpointsParams = {};
+        }
         let params = meta.endpointsParams[methodName];
         if (params == null) {
             params = meta.endpointsParams[methodName] = [];

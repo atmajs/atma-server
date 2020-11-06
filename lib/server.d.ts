@@ -773,6 +773,7 @@ declare module 'atma-server/HttpService/HttpEndpointModels' {
 declare module 'atma-server/HttpService/HttpEndpointParamUtils' {
     import { IHttpEndpointMethodArgMeta } from 'atma-server/HttpService/HttpEndpointModels';
     import { Serializable } from 'class-json';
+    import { IServerRequest } from 'atma-server/models/IServerRequest';
     export namespace Types {
         class ArrayOfString {
         }
@@ -787,8 +788,17 @@ declare module 'atma-server/HttpService/HttpEndpointParamUtils' {
         constructor(Type: any);
     }
     export namespace HttpEndpointParamUtils {
-        function resolveParam(req: any, params: any, meta: IHttpEndpointMethodArgMeta): any;
+        function resolveParam(req: IServerRequest, params: any, meta: IHttpEndpointMethodArgMeta): any;
     }
     export {};
+}
+
+declare module 'atma-server/models/IServerRequest' {
+    import http from 'http';
+    export interface IServerRequest extends http.IncomingMessage {
+        body?: any;
+        files?: any;
+        user?: any;
+    }
 }
 

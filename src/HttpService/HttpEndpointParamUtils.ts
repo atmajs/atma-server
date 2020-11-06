@@ -2,6 +2,8 @@ import { IHttpEndpointMethodArgMeta } from './HttpEndpointModels'
 import { obj_setProperty } from 'atma-utils'
 import { HttpError } from '../HttpError/HttpError'
 import { Serializable, JsonConvert, JsonValidate } from 'class-json'
+import { IServerRequest } from '../models/IServerRequest';
+import { FormDataUtil } from '../util/FormDataUtil';
 
 export namespace Types {
     export class ArrayOfString { }
@@ -23,14 +25,16 @@ class ArrayOfInner {
 
 export namespace HttpEndpointParamUtils {
 
-    export function resolveParam(req, params, meta: IHttpEndpointMethodArgMeta) {
+    export function resolveParam(req: IServerRequest, params, meta: IHttpEndpointMethodArgMeta) {
         if (meta.from === 'uri') {
             return UriExtractor.get(params, meta);
         }
-        return BodyExtractor.get(req.body, meta);
+        let body = req.body;
+        if (req.headers['content-type']?.includes?.('multipart/form-data')) {
+            body = FormDataUtil.map(body, req.files);
+        }
+        return BodyExtractor.get(body, meta);
     }
-
-
 }
 
 namespace BodyExtractor {

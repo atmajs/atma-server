@@ -63,7 +63,6 @@ export abstract class HttpEndpoint {
 
         let iQuery = req.url.indexOf('?');
         if (iQuery !== -1 && /\bhelp\b/.test(req.url.substring(iQuery))) {
-
             return Promise.resolve(HttpEndpointUtils.getHelpModel(this));
         }
 
