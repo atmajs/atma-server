@@ -67,7 +67,14 @@ namespace UriExtractor {
             return val;
         }
         let obj = toTree(params);
-        return TypeConverter.fromType(obj, meta.Type);
+        let json = TypeConverter.fromType(obj, meta.Type);
+        if (meta.validate) {
+            let error = meta.validate(json);
+            if (error) {
+                throw new HttpError(`Invalid URI Parameters: ${error}`, 400);
+            }
+        }
+        return json;
     }
 
     function toTree(params) {

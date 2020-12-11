@@ -10,6 +10,7 @@ import { HttpEndpointDecos } from './HttpEndpointDecos'
 import { HttpEndpointParamUtils, Types } from './HttpEndpointParamUtils'
 import Application from '../HttpApplication/Application';
 import { HttpEndpointExplorer } from './HttpEndpointExplorer';
+import { cors_rewriteAllowedOrigins } from '../util/cors';
 
 const METHOD_META_DEFAULT = <IHttpEndpointMethodMeta>{
     secure: null,
@@ -229,7 +230,7 @@ export namespace HttpEndpointUtils {
             'Access-Control-Allow-Headers': req.headers['access-control-request-headers'] || 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
             'Access-Control-Allow-Origin': handler.meta?.origins ?? ''
         };
-        rewriteAllowedOrigins(req, headers);
+        cors_rewriteAllowedOrigins(req, headers);
         return headers;
     }
     export function getOptionsHeaders(endpoint: HttpEndpoint, path: string, req: IncomingMessage) {
@@ -282,33 +283,9 @@ export namespace HttpEndpointUtils {
         };
 
         obj_extendDefaults(headers, cors);
-        rewriteAllowedOrigins(req, headers);
+        cors_rewriteAllowedOrigins(req, headers);
         return headers;
     };
-
-    function rewriteAllowedOrigins(req, headers) {
-        let current: string = req.headers['host'];
-        if (!current) {
-            return;
-        }
-        let origin = headers[HEADER_ALLOW_ORIGIN];
-        if (!origin || origin === '*') {
-            return;
-        }
-        let hosts = origin.split(' ');
-        for (let i = 0; i < hosts.length; i++) {
-            let host = hosts[i];
-            let globIndex = host.indexOf('*');
-            if (globIndex > -1) {
-                host = host.substring(globIndex + 2);
-            }
-            let index = current.toLowerCase().indexOf(host.toLowerCase());
-            if (index + host.length === current.length) {
-                headers[HEADER_ALLOW_ORIGIN] = host;
-                return;
-            }
-        }
-    }
 
 }
 

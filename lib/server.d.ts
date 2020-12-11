@@ -799,6 +799,7 @@ declare module 'atma-server/models/IServerRequest' {
         body?: any;
         files?: any;
         user?: any;
+        session?: any;
     }
 }
 

@@ -1,4 +1,5 @@
 import { Class } from '../dependency'
+import { IServerRequest } from '../models/IServerRequest';
 
 type ISecureObj = boolean | {
     role?: (string | IRequestCheck)
@@ -19,8 +20,8 @@ type IClaimsUser = {
     claims?: (string | { name: string})[]
 }
 
-export function secure_canAccess (req, secure: ISecureObj){
-    if (secure == null) {
+export function secure_canAccess (req: IServerRequest, secure: ISecureObj){
+    if (secure == null || req.method === 'OPTIONS') {
         return true;
     }
     if (typeof secure === 'boolean') {

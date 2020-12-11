@@ -4,6 +4,7 @@ import { secure_canAccess, service_validateArgs } from './utils'
 import { Barricade } from './Barricade'
 import { class_Dfr } from 'atma-utils';
 import { HttpResponse } from '../IHttpHandler';
+import { cors_rewriteAllowedOrigins } from '../util/cors';
 
 let HttpServiceProto = Class({
     Extends: Class.Deferred,
@@ -211,33 +212,10 @@ let HttpServiceProto = Class({
             };
 
             obj_extendDefaults(headers, cors);
-            rewriteAllowedOrigins(req, headers);
+            cors_rewriteAllowedOrigins(req, headers);
             return headers;
         };
 
-        function rewriteAllowedOrigins(req, headers) {
-            let current: string = req.headers['host'];
-            if (!current) {
-                return;
-            }
-            let origin = headers[HEADER_ALLOW_ORIGIN];
-            if (!origin || origin === '*') {
-                return;
-            }
-            let hosts = origin.split(' ');
-            for (let i = 0; i < hosts.length; i++) {
-                let host = hosts[i];
-                let globIndex = host.indexOf('*');
-                if (globIndex > -1) {
-                    host = host.substring(globIndex + 2);
-                }
-                let index = current.toLowerCase().indexOf(host.toLowerCase());
-                if (index + host.length === current.length) {
-                    headers[HEADER_ALLOW_ORIGIN] = host;
-                    return;
-                }
-            }
-        }
 
     }())
 });
