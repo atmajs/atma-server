@@ -48,6 +48,9 @@ namespace UriExtractor {
         if (meta.name) {
             let val = params[meta.name];
             if (val == null) {
+                if (meta.default != null) {
+                    return meta.default;
+                }
                 if (meta.optional !== true) {
                     throw new HttpError(`URI Parameter '${meta.name}' is undefined`, 400);
                 }

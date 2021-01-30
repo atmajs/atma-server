@@ -24,13 +24,13 @@ import * as http from 'http'
 import * as https from 'https'
 import * as net from 'net'
 import { HttpEndpointExplorer } from '../HttpService/HttpEndpointExplorer'
-import { class_EventEmitter, class_Dfr } from 'atma-utils'
+import { class_EventEmitter, class_Dfr, mixin } from 'atma-utils'
 import { LifecycleEvents } from './LifecycleEvents'
 import { HttpEndpointUtils } from '../HttpService/HttpEndpoint'
 
 let _emitter = new class_EventEmitter();
 
-class Application extends class_Dfr {
+class Application extends mixin(class_Dfr, class_EventEmitter) {
 
     private startedAt = Date.now();
 
@@ -66,7 +66,7 @@ class Application extends class_Dfr {
     lib: { [key: string]: any } = {}
 
     // webSockets
-    webSockets = null
+    webSockets: WebSocket = null
 
     config: IAppConfigExtended & IApplicationConfig
     args: {
@@ -173,7 +173,7 @@ class Application extends class_Dfr {
         respond_Raw(this, req, res);
         return res;
     }
-    autoreload(httpServer?) {
+    autoreload(httpServer?: net.Server) {
         this._server = this._server || httpServer;
         if (this._server == null)
             return;
@@ -183,12 +183,16 @@ class Application extends class_Dfr {
             Application.trigger('autoreload', relPath, absPath);
         });
     }
-    listen() {
+
+    listen()
+    listen(port: number)
+    listen(server: net.Server | { listen: Function })
+    listen(...args) {
         let port, server;
-        let i = arguments.length,
-            mix;
+        let i = args.length;
+        let mix;
         while (--i > -1) {
-            mix = arguments[i];
+            mix = args[i];
             if (mix == null)
                 continue;
 
@@ -495,6 +499,8 @@ function cfg_doneDelegate(app: Application) {
     return function () {
         _emitter.trigger('configurate', app);
 
+        Autoreload.prepare(app);
+
         initilizeEmbeddedComponents(app);
         let cfg = app.config;
         app
@@ -507,6 +513,7 @@ function cfg_doneDelegate(app: Application) {
             ;
 
         app.rewriter.addRules(cfg.rewriteRules);
+
         Promise.all([
             HttpEndpointExplorer.find(app.config.service.endpoints, app.config.base),
             resources_load(app)
@@ -561,7 +568,7 @@ function resources_load(app: Application) {
                     }
                 }
 
-                resolve();
+                resolve(null);
             });
     });
 }

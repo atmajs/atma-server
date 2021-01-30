@@ -5,7 +5,7 @@ import { secure_canAccess, service_validateArgs } from './utils'
 import { class_Dfr } from 'atma-utils';
 import { HttpResponse, IHttpHandler } from '../IHttpHandler';
 import { BarricadeExt } from './BarricadeExt'
-import { IHttpEndpointMethodMeta, IHttpEndpointRutaCollection, IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgMeta } from './HttpEndpointModels'
+import { IHttpEndpointMethodMeta, IHttpEndpointRutaCollection, IHttpEndpointMeta, IHttpEndpointMethod } from './HttpEndpointModels'
 import { HttpEndpointDecos } from './HttpEndpointDecos'
 import { HttpEndpointParamUtils, Types } from './HttpEndpointParamUtils'
 import Application from '../HttpApplication/Application';

@@ -20,7 +20,7 @@ type IClaimsUser = {
     claims?: (string | { name: string})[]
 }
 
-export function secure_canAccess (req: IServerRequest, secure: ISecureObj){
+export function secure_canAccess (req: IServerRequest, secure: ISecureObj) {
     if (secure == null || req.method === 'OPTIONS') {
         return true;
     }

@@ -16,17 +16,21 @@ export interface IHttpEndpointMeta {
     endpointsParams?: { [method: string]: IHttpEndpointMethodArgMeta[] }
 }
 
-export interface IHttpEndpointMethodArgOptions {
-    Type: Function
+export type IHttpParamContstructor<T = any> = (new (x?) => T) | ((x?) => T)
+export interface IHttpEndpointMethodArgOptions<T = any> {
+    Type?: IHttpParamContstructor
+    ArrayType?: Function
     name?: string
     optional?: boolean
+    default?: T
     validate?: (val: any) => string
 }
 export interface IHttpEndpointMethodArgMeta {
-    Type?: any,
-    from: 'uri' | 'body',
+    Type?: any
+    from: 'uri' | 'body'
     name?: string
     description?: string
+    default?: any
     optional?: boolean
     validate?: (val: any) => string
 }
@@ -51,9 +55,9 @@ export interface IHttpEndpointMethod {
     process: IHttpEndpointMiddleware
 }
 export interface IHttpEndpointMethodMetaResponse {
-    status?: number, 
-    Type?: any, 
-    description?: string 
+    status?: number,
+    Type?: any,
+    description?: string
 }
 
 export interface IHttpEndpointRutaItem {
@@ -63,8 +67,10 @@ export interface IHttpEndpointRutaItem {
     }
     value: IHttpEndpointMethod
 }
-export interface IHttpEndpointRutaCollection {
-    routes: IHttpEndpointRutaItem[]
-    get(path: string, method?: string): IHttpEndpointRutaItem
-    add(pathDefinition: string, mix: any)
-}
+// export interface IHttpEndpointRutaCollection {
+//     routes: IHttpEndpointRutaItem[]
+//     get(path: string, method?: string): IHttpEndpointRutaItem
+//     add(pathDefinition: string, mix: any)
+// }
+
+export type IHttpEndpointRutaCollection = InstanceType<typeof ruta.Collection>;

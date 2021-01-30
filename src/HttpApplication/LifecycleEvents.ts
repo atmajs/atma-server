@@ -3,7 +3,7 @@ import { ServerResponse, IncomingMessage } from 'http';
 
 export type EventType = 'AppStart' | 'HandlerSuccess' | 'HandlerError' | 'Error';
 
-export class LifecycleEvents extends class_EventEmitter {
+export class LifecycleEvents extends (class_EventEmitter as any) {
 
     static Instance = new LifecycleEvents()
 

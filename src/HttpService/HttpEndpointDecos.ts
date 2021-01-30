@@ -1,4 +1,4 @@
-import { IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgMeta, IHttpEndpointMethodArgOptions, IHttpEndpointMethodMetaResponse } from './HttpEndpointModels';
+import { IHttpEndpointMeta, IHttpEndpointMethod, IHttpEndpointMethodArgMeta, IHttpEndpointMethodArgOptions, IHttpEndpointMethodMetaResponse, IHttpParamContstructor } from './HttpEndpointModels';
 import { Types } from './HttpEndpointParamUtils';
 
 export namespace HttpEndpointDecos {
@@ -94,9 +94,9 @@ export namespace HttpEndpointDecos {
         });
     };
     export function fromUri ()
-    export function fromUri (name: string, Type?: Function)
+    export function fromUri (name: string, Type?: IHttpParamContstructor)
     export function fromUri (opts: IHttpEndpointMethodArgOptions)
-    export function fromUri (mix?: any, Type?: Function) {
+    export function fromUri (mix?: any, Type?: IHttpParamContstructor) {
         let opts: IHttpEndpointMethodArgOptions;
         if (mix == null) {
             opts = {
@@ -136,6 +136,9 @@ export namespace HttpEndpointDecos {
         } else if (typeof mix === 'object') {
             opts = mix;
         }
+        if (opts.ArrayType != null) {
+            opts.Type = <any> Types.ArrayOf(opts.ArrayType);
+        }
         return function (target, propertyKey, index) {
             ensureEndpointArgsMeta(
                 target,
@@ -164,10 +167,30 @@ export namespace HttpEndpointDecos {
             params = meta.endpointsParams[methodName] = [];
         }
 
+        let Type = opts.Type;
+        if (Type == null && opts.default != null) {
+            let type = typeof opts.default;
+            if (type === 'string') {
+                Type = String;
+            } else if (type === 'number') {
+                Type = Number;
+            } else if (type === 'boolean') {
+                Type = Boolean;
+            }
+        }
+
+        let name = opts.name;
+        if (name == null && (Type === Number || Type === Boolean || Type === String)) {
+            // primitives
+            //- no way to get the param name? decorator provides only method name?
+            //- name = methodName;
+            console.error(`URI Param in ${methodName} is primitive but the query name is not set.`);
+        }
         let paramMeta = <IHttpEndpointMethodArgMeta> {
             from: paramFrom,
-            Type: opts.Type,
-            name: opts.name,
+            Type: Type,
+            name: name,
+            default: opts.default,
             validate: opts.validate,
             optional: opts.optional
         };

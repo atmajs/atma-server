@@ -2,7 +2,11 @@ import { path_normalize } from '../util/path'
 import { io, logger, mask, include, Uri } from '../dependency'
 import { class_EventEmitter } from 'atma-utils';
 
-export class WatcherHandler extends class_EventEmitter {
+interface IWatcherEvents {
+    fileChange(rel, absPath?, reqPath?)
+}
+
+export class WatcherHandler extends class_EventEmitter<IWatcherEvents> {
     static get Instance (): WatcherHandler {
         return _instance ?? (_instance = new WatcherHandler);
     }
@@ -11,19 +15,17 @@ export class WatcherHandler extends class_EventEmitter {
         this.fileChanged = this.fileChanged.bind(this);
     }
     watch (file){
-        var path = file.uri.toString();
-
-        if (_watchers[path] != null)
+        let path = file.uri.toString();
+        if (_watchers[path] != null) {
             return;
-
-        var watcher
-        watcher = new FileWatcher(file);
+        }
+        let watcher = new FileWatcher(file);
         watcher.bind(this.fileChanged);
 
         _watchers[path] = watcher;
     }
     unwatch (file, callback?){
-        var path = file.uri.toString();
+        let path = file.uri.toString();
 
         if (_watchers[path] == null) {
             logger.log('<watcher> No watchers', path);
@@ -36,7 +38,7 @@ export class WatcherHandler extends class_EventEmitter {
     }
 
     isWatching (file){
-        var path = file.uri.toString();
+        let path = file.uri.toString();
 
         return _watchers[path] != null;
     }
@@ -130,6 +132,7 @@ class FileWatcher extends class_EventEmitter {
 
 
 
-var _watchers = {};
-var _instance = null;
+let _watchers = {} as { [path: string]: FileWatcher };
+let _instance: WatcherHandler = null;
+
 export default new WatcherHandler;

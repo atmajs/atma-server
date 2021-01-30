@@ -17,10 +17,10 @@ var fns_RESPONDERS = [
 ];
 
 export default class HandlerFactory {
-    subapps: typeof Routes
-    handlers: typeof Routes
-    services: typeof Routes
-    pages: typeof Routes
+    subapps: InstanceType<typeof Routes>
+    handlers: InstanceType<typeof Routes>
+    services: InstanceType<typeof Routes>
+    pages: InstanceType<typeof Routes>
 
     constructor(public app: Application) {
 
@@ -210,11 +210,11 @@ export default class HandlerFactory {
 };
 
 function processor_tryGet(
-    factory: HandlerFactory, 
-    collection: InstanceType<typeof ruta.Collection>, 
-    url: string, 
-    method: string, 
-    base: string, 
+    factory: HandlerFactory,
+    collection: InstanceType<typeof ruta.Collection>,
+    url: string,
+    method: string,
+    base: string,
     callback: (ctr: IHttpHandler) => any) {
 
     let route = collection.get(url, method);

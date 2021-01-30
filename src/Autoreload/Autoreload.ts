@@ -1,31 +1,53 @@
 import { io, include, mask, Uri } from '../dependency'
 import Watcher from './WatcherHandler'
 import ConnectionSocket from './ConnectionSocket'
+import Application from '../HttpApplication/Application'
 
+class AutoreloadInner {
+    prepared = false
+    enabled = false
 
-export const Autoreload = {
-    enabled: false,
-    enable(app) {
+    app: Application
+    base: string
+
+    watcher = Watcher
+
+    prepare (app: Application, debug?: boolean) {
+        if (app.config.debug || debug === true) {
+            let configs = new io.Directory('server/config/');
+            if (configs.exists()) {
+                configs.watch(reloadConfigDelegate(app));
+            }
+
+            include.cfg('autoreload', this);
+            mask.cfg('allowCache', false);
+
+            this.watcher.on('fileChange', (path) => {
+                app.emit('fileChange', path);
+            });
+            this.prepared = true;
+        }
+    }
+
+    enable(app: Application) {
         if (this.enabled) {
             return;
         }
+        if (this.prepared !== true) {
+            this.prepare(app, true);
+        }
 
+        this.app = app;
         this.enabled = true;
+
         app
             .webSockets
             .registerHandler('/browser', ConnectionSocket)
             ;
 
-        var configs = new io.Directory('server/config/');
-        if (configs.exists())
-            configs.watch(reloadConfigDelegate(app));
-
-        include.cfg('autoreload', this);
-        mask.cfg('allowCache', false);
-
         this.base = app.config.base;
         return this;
-    },
+    }
 
     watch(requestedUrl, config) {
         if (/\.[\w]+$/.test(requestedUrl) === false) {
@@ -33,18 +55,18 @@ export const Autoreload = {
             return;
         }
 
-        var q = requestedUrl.indexOf('?');
+        let q = requestedUrl.indexOf('?');
         if (q !== -1)
             requestedUrl = requestedUrl.substring(0, q);
 
-        var root = config.static || config.base || '/',
+        let root = config.static || config.base || '/',
             path = Uri.combine(root, requestedUrl),
             file = new io.File(path)
             ;
         (<any>file).requestedUrl = requestedUrl;
 
         this.watchFile(file);
-    },
+    }
     watchFile(file: InstanceType<typeof io.File>) {
         if (!file.uri?.file) {
             // virtual file?
@@ -53,44 +75,45 @@ export const Autoreload = {
         if (/\.map$/.test(file.uri.file)) {
             return;
         }
-        if (Watcher.isWatching(file)) {
+        if (this.watcher.isWatching(file)) {
             return;
         }
         if (io.File.prototype.exists.call(file) === false) {
             return;
         }
 
-        Watcher.watch(file);
-    },
+        this.watcher.watch(file);
+    }
     unwatch(path) {
-        Watcher.unwatch(new io.File(path));
-    },
+        this.watcher.unwatch(new io.File(path));
+    }
 
     fileChanged(path, sender?) {
-        Watcher.fileChanged(path, sender, null, this.base);
-    },
+        this.watcher.fileChanged(path, sender, null, this.base);
+    }
 
     isWatching(file: string | InstanceType<typeof io.File>) {
         if (typeof file === 'string') {
             file = new io.File(file);
         }
-        return Watcher.isWatching(file);
-    },
+        return this.watcher.isWatching(file);
+    }
 
     listenDirectory(dir, callback) {
         new io
             .Directory(dir)
             .watch(callback)
             ;
-    },
+    }
 
     getWatcher() {
-        return Watcher;
+        return this.watcher;
     }
-};
+}
 
+export const Autoreload = new AutoreloadInner;
 
-//var root = path_resolveSystemUrl('/');
+//let root = path_resolveSystemUrl('/');
 
 function reloadConfigDelegate(app) {
 
