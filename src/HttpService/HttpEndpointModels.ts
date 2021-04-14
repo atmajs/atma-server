@@ -1,4 +1,5 @@
 import { IncomingMessage, ServerResponse } from 'http'
+import { Collection } from 'ruta';
 
 export interface IHttpEndpointMiddleware {
     (req: IncomingMessage, res: ServerResponse, params: any): void | any | Promise<any>
@@ -73,4 +74,4 @@ export interface IHttpEndpointRutaItem {
 //     add(pathDefinition: string, mix: any)
 // }
 
-export type IHttpEndpointRutaCollection = InstanceType<typeof ruta.Collection>;
+export type IHttpEndpointRutaCollection = InstanceType<typeof Collection>;
