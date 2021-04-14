@@ -3,9 +3,14 @@ test/
 builds/
 examples/
 ts-temp/
+tools/
 
 .komodotools
 .npmignore
+.vscode
+.gitattributes
 *.komodoproject
 
 build.js
+tsconfig.json
+tsconfig-build.json

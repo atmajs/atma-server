@@ -1,10 +1,11 @@
-import { Class, ruta, logger, obj_extend, is_Function, is_Array, is_Object, obj_extendDefaults } from '../dependency'
+import { Class, logger, obj_extend, is_Function, is_Array, is_Object, obj_extendDefaults } from '../dependency'
 import { NotFoundError, SecurityError, RequestError } from '../HttpError/HttpError'
 import { secure_canAccess, service_validateArgs } from './utils'
 import { Barricade } from './Barricade'
 import { class_Dfr } from 'atma-utils';
 import { HttpResponse } from '../IHttpHandler';
 import { cors_rewriteAllowedOrigins } from '../util/cors';
+import { Collection } from 'ruta'
 
 let HttpServiceProto = Class({
     Extends: Class.Deferred,
@@ -233,7 +234,7 @@ export default function HttpService(mix, ...params) {
 
     var proto = endpoints_merge(args);
 
-    var routes = new ruta.Collection,
+    var routes = new Collection,
         defs = proto.ruta || proto.routes || proto,
         path, responder, x
         ;

@@ -1,7 +1,7 @@
 import { is_Object } from 'atma-utils'
 import { ServerResponse, IncomingMessage } from 'http';
 import { mime_HTML, mime_JSON } from '../const/mime'
-import { HttpError, RuntimeError } from '../HttpError/HttpError'
+import { HttpErrorUtil, RuntimeError } from '../HttpError/HttpError'
 import { cors_ensure } from '../util/cors'
 import Application from '../HttpApplication/Application';
 
@@ -16,10 +16,10 @@ export function send_JSON (req: IncomingMessage, res: ServerResponse, json, stat
 };
 
 export function send_Error (req: IncomingMessage, res: ServerResponse, error, headers, app: Application, startedAt: number) {
-    if (error instanceof HttpError === false) {
-        error = (<any>HttpError).create(error);
+    if (error != null && 'toJSON' in error === false) {
+        // indirect check if error is the HttpError instance
+        error = HttpErrorUtil.create(error);
     }
-
     send_Content(
         req,
         res

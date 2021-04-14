@@ -2,7 +2,7 @@ import HttpService from '../../src/HttpService/HttpService';
 import { HttpError } from '../../src/HttpError/HttpError';
 import Application from '../../src/HttpApplication/Application';
 
-var rejectService = HttpService({
+let rejectService = HttpService({
     '/string'() {
         this.reject('String reject');
     },
@@ -16,7 +16,7 @@ var rejectService = HttpService({
         this.reject({ error: 'FooError', baz: 'Lorem' });
     }
 });
-var app = Application.create({
+let app = Application.create({
     configs: null,
     config: {
         debug: true,
@@ -25,7 +25,7 @@ var app = Application.create({
         }
     }
 });
-var srv = require('supertest')(
+let srv = require('supertest')(
     require('http').createServer(app.process)
 );
 
@@ -42,10 +42,10 @@ UTest({
             .end(function (err, res) {
                 eq_(err, null);
 
-                var error = JSON.parse(res.text);
+                let error = JSON.parse(res.text);
                 eq_(error.code, 500);
                 eq_(error.error, 'String reject');
-                deepEq_(Object.keys(error), ['name', 'error', 'code']);
+                deepEq_(Object.keys(error), ['name', 'error', 'code', 'stack']);
                 done();
             });
     },
@@ -57,11 +57,11 @@ UTest({
             .end(function (err, res) {
                 eq_(err, null);
 
-                var error = JSON.parse(res.text);
+                let error = JSON.parse(res.text);
                 eq_(error.code, 500);
                 eq_(error.error, 'Native reject');
 
-                deepEq_(Object.keys(error), ['name', 'error', 'code']);
+                deepEq_(Object.keys(error), ['name', 'error', 'code', 'stack']);
                 done();
             });
 
@@ -74,10 +74,10 @@ UTest({
             .end(function (err, res) {
                 eq_(err, null);
 
-                var error = JSON.parse(res.text);
+                let error = JSON.parse(res.text);
                 eq_(error.code, 503);
                 eq_(error.error, 'Http reject');
-                deepEq_(Object.keys(error), ['name', 'error', 'code']);
+                deepEq_(Object.keys(error), ['name', 'error', 'code', 'stack']);
                 done();
             });
     },
@@ -88,7 +88,7 @@ UTest({
             .expect(500)
             .end(function (err, res) {
                 eq_(err, null);
-                var error = JSON.parse(res.text);
+                let error = JSON.parse(res.text);
                 deepEq_(error, {
                     error: 'FooError',
                     baz: 'Lorem'

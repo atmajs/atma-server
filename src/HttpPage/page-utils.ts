@@ -1,11 +1,11 @@
 import Application from '../HttpApplication/Application'
 import HttpPage from './HttpPage'
 import HttpContext from './HttpContext'
-import { logger, Class, mask, ruta, is_Object } from '../dependency'
+import { logger, Class, mask, is_Object } from '../dependency'
 import MiddlewareRunner from '../Business/Middleware'
 import { send_Content } from '../util/send'
 import { mime_HTML, mime_PLAIN } from '../const/mime'
-
+import { parse } from 'ruta'
 
 export const page_Create = function (classProto) {
 
@@ -30,7 +30,7 @@ export const page_Create = function (classProto) {
 
 
 export const page_rewriteDelegate = function (page) {
-    var ctx = page.ctx;
+    let ctx = page.ctx;
 
     if (ctx.rewriteCount == null)
         ctx.rewriteCount = 1;
@@ -68,11 +68,9 @@ export const page_processRequestDelegate = function (page, req, res, config) {
 
 export const page_processRequest = function (page, req, res, config) {
     if (page.pattern) {
-        var query = ruta
-            .parse(page.pattern, req.url)
-            .params;
+        let query = parse(page.pattern, req.url).params;
 
-        for (var key in query) {
+        for (let key in query) {
             if (page.query[key] == null)
                 page.query[key] = query[key];
         }
@@ -90,7 +88,7 @@ export const page_processRequest = function (page, req, res, config) {
     }
     if ('secure' in page.data) {
 
-        var user = req.user,
+        let user = req.user,
             secure = page.data.secure,
             role = secure && secure.role
             ;
@@ -116,7 +114,7 @@ export const page_pathAddAlias = function (path, alias) {
     if (path == null || path === '')
         return null;
 
-    var i = path.indexOf('::');
+    let i = path.indexOf('::');
     if (i !== -1)
         path = path.slice(0, -i);
 
@@ -153,12 +151,12 @@ let page_processPartial
         __getResources(page, page.ctx.config, function (meta) {
 
             if (meta.templates) {
-                var node = mask.jmask(':html').text(meta.templates);
+                let node = mask.jmask(':html').text(meta.templates);
                 nodes.push(node);
             }
 
             page_process(page, nodes, function (html) {
-                var json = {
+                let json = {
                     type: 'partial',
                     html: html,
                     scripts: meta.scripts,
@@ -169,7 +167,7 @@ let page_processPartial
         });
     };
     function __getTemplate(page, nodes, selector) {
-        var arr = [],
+        let arr = [],
             selectors = selector.split(';'),
             imax = selectors.length,
             i = -1,
@@ -195,7 +193,7 @@ let page_processPartial
         if (Styles == null)
             Styles = mask.getHandler('atma:styles');
 
-        var styles = Styles.getModel(page, config, true)
+        let styles = Styles.getModel(page, config, true)
 
         Scripts.getModel(page, config, true, function (scripts) {
             cb({
@@ -205,7 +203,7 @@ let page_processPartial
         })
     }
 
-    var Scripts, Styles;
+    let Scripts, Styles;
 }());
 export { page_processPartial }
 
@@ -218,7 +216,7 @@ export const pageError_sendDelegate = function (req, res, error, app) {
 
 export const pageError_failDelegate = function (req, res, error, app) {
     return function (internalError) {
-        var str = is_Object(internalError)
+        let str = is_Object(internalError)
             ? JSON.stringify(internalError)
             : internalError
             ;

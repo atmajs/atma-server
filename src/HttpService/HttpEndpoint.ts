@@ -1,6 +1,6 @@
 import { IncomingMessage, ServerResponse } from 'http'
 import { NotFoundError, SecurityError, RequestError } from '../HttpError/HttpError'
-import { ruta, logger, obj_extend, obj_extendDefaults, is_Function, is_Array, is_Object } from '../dependency'
+import { logger, obj_extend, obj_extendDefaults, is_Function, is_Array, is_Object } from '../dependency'
 import { secure_canAccess, service_validateArgs } from './utils'
 import { class_Dfr } from 'atma-utils';
 import { HttpResponse, IHttpHandler } from '../IHttpHandler';
@@ -11,6 +11,7 @@ import { HttpEndpointParamUtils, Types } from './HttpEndpointParamUtils'
 import Application from '../HttpApplication/Application';
 import { HttpEndpointExplorer } from './HttpEndpointExplorer';
 import { cors_rewriteAllowedOrigins } from '../util/cors';
+import { Collection } from 'ruta'
 
 const METHOD_META_DEFAULT = <IHttpEndpointMethodMeta>{
     secure: null,
@@ -356,7 +357,7 @@ export namespace RouteUtils {
         return resolveFromProto(prototype);
     }
     export function resolveFromProto(prototype) {
-        let routes = new ruta.Collection;
+        let routes = new Collection;
         let properties = fillProtoHash(prototype, Object.create(null));
 
         define(properties, routes);

@@ -150,7 +150,6 @@ UTest({
             let foo = new Foo(null, null);
 
             let result = await foo.process(req as any, null);
-            console.log(result, '<<')
             deepEq_(result, {
                 foo: false,
                 bar: 12

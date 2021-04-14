@@ -1,4 +1,4 @@
-import { io, Class, logger, include, mask, Uri, includeLib, is_Array, is_String } from '../dependency'
+import { io, logger, include, mask, Uri, includeLib, is_Array, is_String } from '../dependency'
 import { path_hasProtocol } from '../util/path'
 import IncludeUtils from './IncludeUtils'
 import PathUtils from './PathUtils'

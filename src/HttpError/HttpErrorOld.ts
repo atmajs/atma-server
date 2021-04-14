@@ -1,90 +1,37 @@
 import { Class, is_String, is_Object } from '../dependency'
 import { app_isDebug } from '../util/app';
 
-export class HttpError extends Error {
-    _error = null
-    _json = null
-    constructor (mix, statusCode?) {
-        super(mix);
+export const HttpError: IHttpErrorConstructor = <any>Class({
+    Base: Error,
+    _error: null,
+    _json: null,
+    Construct: function (mix, statusCode) {
+        if (this instanceof HttpError === false)
+            return new HttpError(mix, statusCode);
 
-        this._error = typeof mix === 'string'
-            ? new Error(mix)
-            : mix;
+        this._error = typeof mix === 'string' ? new Error(mix) : mix;
         this.message = String(this._error.message);
 
         if (statusCode != null) {
             this.statusCode = statusCode;
         }
-
-        if (this.toJSON == null) {
-            Object.assign(this, Methods);
-        }
-
-        if (this.toJSON == null) {
-            Object.assign(this, Methods);
-            this.stack = this._error.stack;
-        }
-
-        this.stack = HttpErrorUtil.parseStackTrace(this._error);
-    }
-    name = 'HttpError'
-    statusCode = 500
-
-
-    toString () {
-
-        return this.message
-            ? this.name + ': ' + this.message
-            : this.name
-            ;
-    }
-    toJSON () {
-        if (this._json != null)
-            return this._json;
-
-        return {
-            name: this.name,
-            error: this.message,
-            code: this.statusCode,
-            stack: app_isDebug ? this.stack : void 0
-        };
-    }
-};
-
-const Methods = {
-    toString: function (this: HttpError) {
-
-        return this.message
-            ? this.name + ': ' + this.message
-            : this.name
-            ;
     },
-    toJSON: function (this: HttpError) {
-        if (this._json != null)
-            return this._json;
-
-        return {
-            name: this.name,
-            error: this.message,
-            code: this.statusCode,
-            stack: app_isDebug ? this.stack : void 0
-        };
-    }
-}
-
-export namespace HttpErrorUtil {
-    export function parseStackTrace (error: Error) {
-        if (error == null) {
+    name: 'HttpError',
+    statusCode: 500,
+    get stack() {
+        if (this._error == null) {
             return;
         }
 
-        let stack = error.stack.split('\n');
+        let stack = this._error.stack.split('\n');
         let imax = stack.length;
         let start = 1;
         let end = imax;
         let cursor = 0;
         let before = true;
         let atmaRgx = /node_modules[\\\/]atma\-/;
+
+
 
         while (++cursor < imax) {
             if (atmaRgx.test(stack[cursor])) {
@@ -101,8 +48,58 @@ export namespace HttpErrorUtil {
         }
 
         return stack[0] + '\n' + stack.slice(start, end).join('\n');
-    }
+    },
 
+    toString () {
+
+        return this.message
+            ? this.name + ': ' + this.message
+            : this.name
+            ;
+    },
+    toJSON () {
+        if (this._json != null)
+            return this._json;
+
+        return {
+            name: this.name,
+            error: this.message,
+            code: this.statusCode,
+            stack: app_isDebug ? this.stack : void 0
+        };
+    },
+    Static: {
+        create: function (mix, statusCode) {
+            if (is_String(mix))
+                return new HttpError(mix, statusCode);
+
+            if (mix._error != null) /* instanceof HttpError (weakness of instanceof)*/
+                return mix;
+
+            if (mix instanceof Error) {
+                return new HttpError(mix, statusCode || 500);
+            }
+
+            if (is_Object(mix)) {
+                if (mix.toString !== _obj_toString) {
+                    return new HttpError(
+                        mix.toString(), statusCode || mix.statusCode || mix.status
+                    );
+                }
+                let msg = mix.message || mix.error;
+                let code = statusCode || mix.statusCode || mix.status;
+                let error;
+
+                error = new HttpError(msg, code);
+                error._json = mix;
+                return error;
+            }
+            return new RuntimeError('Invalid error object: ' + mix);
+        }
+    }
+});
+
+export namespace HttpErrorUtil {
     export function create (mix, statusCode?: number) {
         if (is_String(mix))
             return new HttpError(mix, statusCode);
@@ -158,14 +155,20 @@ export interface IHttpErrorConstructor {
 var _obj_toString = Object.prototype.toString;
 
 function createError(id, code) {
-    return class extends HttpError {
+    const Ctor = Class({
+        Base: HttpError,
+        Construct: function (...args) {
 
-        constructor (mix, status?) {
-            super(mix, status);
-        }
-        statusCode = code
-        name = id
-    };
+            if (this instanceof Ctor === false) {
+                var arguments_ = [null].concat(...args);
+                return new (Ctor.bind.apply(Ctor, arguments_));
+            }
+
+        },
+        statusCode: code,
+        name: id
+    });
+    return Ctor as IHttpErrorConstructor;
 }
 
 // export class HttpError {

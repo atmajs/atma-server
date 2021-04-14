@@ -61,8 +61,8 @@ namespace UriExtractor {
             if (converter != null) {
                 val = converter.convert(val);
             }
-            if (meta.validate) {
-                let error = meta.validate(val);
+            if (meta.validate || converter.validate) {
+                let error = (meta.validate ?? converter.validate)(val);
                 if (error) {
                     throw new HttpError(`Invalid URI Parameter '${meta.name}' with value '${str}': ${error}`, 400);
                 }
@@ -119,7 +119,12 @@ namespace UriExtractor {
         return null;
     }
 
-    let Converters = [
+    interface IConverter {
+        Type: new (...args) => any
+        convert (val): any
+        validate (val): string
+    }
+    let Converters = <IConverter[]>[
         {
             Type: String,
             convert(val) {
@@ -138,6 +143,7 @@ namespace UriExtractor {
                 if (isNaN(val)) {
                     return `Is not a number`;
                 }
+                return null;
             }
         },
         {
@@ -182,6 +188,7 @@ namespace UriExtractor {
                 if (arr.some(isNaN)) {
                     return `Contains invalid number`;
                 }
+                return null;
             }
         },
         {

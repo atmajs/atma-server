@@ -2,7 +2,7 @@ import { include, logger, obj_extend } from '../dependency'
 import { Request, Response } from './Message'
 import { cli_arguments } from '../util/cli'
 import { app_isDebug } from '../util/app'
-import { HttpError } from '../HttpError/HttpError'
+import { HttpError, HttpErrorUtil } from '../HttpError/HttpError'
 import HandlerFactory from '../HandlerFactory'
 import WebSocket from '../WebSocket'
 import Config from '../Config/Config'
@@ -157,8 +157,8 @@ class Application extends mixin(class_Dfr, class_EventEmitter) {
         );
     }
     execute(url, method, body, headers) {
-        let req = new Request(url, method, body, headers),
-            res = new Response;
+        let req = new Request(url, method, body, headers);
+        let res = new Response;
 
         // @TODO ? middleware pipeline in RAW requests
         //this._responders.process(
@@ -302,12 +302,12 @@ class Application extends mixin(class_Dfr, class_EventEmitter) {
 
         error = error == null
             ? new HttpError('Endpoint not found: ' + req.url, 404)
-            : (<any>HttpError).create(error)
+            : HttpErrorUtil.create(error)
             ;
 
         let accept = req.headers['accept'];
         if (accept == null || accept.indexOf('text/html') !== -1) {
-            (<any>HttpErrorPage).send(error, req, res, this.config);
+            HttpErrorPage.send(error, req, res, this.config);
             return;
         }
 
@@ -444,10 +444,20 @@ function handler_await(app: Application
             } else {
                 content = mix;
             }
-            handler_complete(app, handler, req, res, content, statusCode, mimeType, headers, startedAt);
+            handler_complete(
+                app
+                , handler
+                , req
+                , res
+                , content
+                , statusCode
+                , mimeType
+                , headers
+                , startedAt
+            );
         },
         function onError(error, statusCode) {
-            error = (<any>HttpError).create(error, statusCode);
+            error = HttpErrorUtil.create(error, statusCode);
             if (handler.sendError) {
                 handler.sendError(error, req, res, app.config);
                 return;

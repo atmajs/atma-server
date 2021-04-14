@@ -1,16 +1,16 @@
-import { ruta } from '../dependency';
+import { _ } from 'ruta';
 
-const deserialize = ruta.$utils.query.deserialize;
+const deserialize = _.query.deserialize;
 
 export function QueryMidd (req, res, next){
-	
-	var url = req.url,
-		q = url.indexOf('?');
-	
-	req.query = q === -1
-		? {}
-		: deserialize(url.substring(q + 1));
-		
-	next();
+
+    var url = req.url,
+        q = url.indexOf('?');
+
+    req.query = q === -1
+        ? {}
+        : deserialize(url.substring(q + 1));
+
+    next();
 };
 

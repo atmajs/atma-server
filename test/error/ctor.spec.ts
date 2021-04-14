@@ -12,16 +12,23 @@ UTest({
         check(new Ctor('Baz'));
     },
     'valid inheritance'() {
-        var error = new RequestError('txt');
+        let httpError = new HttpError('txt');
+        eq_(httpError.name, 'HttpError');
+        is_(httpError.toJSON, Function);
+
+
+        let error = new RequestError('txt');
         assert(error instanceof Error, 'instanceof Error');
-        assert(error instanceof HttpError, 'instanceof HttpError');
+        assert(error.name, 'RequestError');
+        is_(error.toJSON, Function);
     },
     'proper stacktrace'() {
 
-        var err = new SecurityError('baz');
+        let err = new SecurityError('baz');
         eq_(err.message, 'baz');
         eq_(err.name, 'SecurityError');
         eq_(String(err), 'SecurityError: baz');
-        has_(err.stack.split('\n')[1], 'proper stacktrace')
+
+        has_(err.stack, 'proper stacktrace')
     }
 })

@@ -1,17 +1,18 @@
-import { io, Class, logger, include, mask, Uri, includeLib } from '../dependency'
+import { logger, include, mask, Uri, includeLib } from '../dependency'
+import memd from 'memd'
 
 export default {
 
-    $getScripts: Class.Fn.memoize(function (pageID) {
-        var scripts = getResources('scripts', this.env).slice();
+    $getScripts: memd.fn.memoize(function (pageID) {
+        let scripts = getResources('scripts', this.env).slice();
         if (pageID)
             scripts = scripts.concat(this.$getScriptsForPageOnly(pageID));
 
         return scripts;
     }),
 
-    $getScriptsForPageOnly: Class.Fn.memoize(function (pageID) {
-        var page = this.pages[pageID],
+    $getScriptsForPageOnly: memd.fn.memoize(function (pageID) {
+        let page = this.pages[pageID],
             scripts = [];
 
         if (page == null) {
@@ -35,7 +36,7 @@ export default {
         }
 
         if (page.view && page.view.controller) {
-            var path = this.$formatPath(
+            let path = this.$formatPath(
                 this.page.location.viewController,
                 page.view.controller
             );
@@ -49,7 +50,7 @@ export default {
 
     $getStyles: function (pageID) {
 
-        var cfg = this,
+        let cfg = this,
             styles = getResources('styles', cfg.env).slice();
 
         if (pageID)
@@ -59,7 +60,7 @@ export default {
     },
 
     $getStylesForPageOnly: function (pageID) {
-        var cfg = this,
+        let cfg = this,
             page = cfg.pages[pageID],
             styles = [];
 
@@ -84,7 +85,7 @@ export default {
         }
 
         if (page.compo) {
-            var path = this.$getCompo(page),
+            let path = this.$getCompo(page),
                 resource = include.getResource(path);
             if (resource != null) {
 
@@ -102,7 +103,7 @@ export default {
 
 
         if (page.view && page.view.style) {
-            var path = this.$formatPath(
+            let path = this.$formatPath(
                 this.page.location.viewStyle,
                 page.view.style);
 
@@ -114,7 +115,7 @@ export default {
     },
 
     $getInclude: function () {
-        var env = this.env,
+        let env = this.env,
             include = {
                 src: '',
                 routes: {},
@@ -140,14 +141,14 @@ export default {
     },
 
     $getIncludeForPageOnly: function (pageID) {
-        var page = this.pages[pageID],
+        let page = this.pages[pageID],
             include = {};
 
         return page && page.include ? incl_extend(include, page.include) : include;
     },
 
     $getTemplate: function (pageData) {
-        
+
         let template = pageData.template ?? this.page.index?.template;
         if (template == null) {
             return null;
@@ -157,48 +158,48 @@ export default {
         return Uri.combine(this.base, path);
     },
     $getMaster: function (pageData) {
-        var master = pageData.master || this.page.index.master,
+        let master = pageData.master || this.page.index.master,
             location = this.page.location.master,
             path = this.$formatPath(location, master)
             ;
         return Uri.combine(this.base, path);
     },
     $getController: function (pageData) {
-        var controller = pageData.controller || this.page.index.controller;
+        let controller = pageData.controller || this.page.index.controller;
         if (controller == null)
             return null;
 
-        var location = this.page.location.controller,
+        let location = this.page.location.controller,
             path = this.$formatPath(location, controller)
             ;
         return Uri.combine(this.base, path);
     },
     $getCompo: function (pageData) {
-        var compo = pageData.compo;
+        let compo = pageData.compo;
         if (compo == null)
             return null;
 
-        var location = this.page.location.compo || this.page.location.controller,
+        let location = this.page.location.compo || this.page.location.controller,
             path = this.$formatPath(location, compo)
             ;
         return Uri.combine(this.base, path);
     },
     $getImports: function (targetEnv) {
-        var both = this.env.both.imports,
+        let both = this.env.both.imports,
             target = this.env[targetEnv].imports;
 
-        var types = {
+        let types = {
             'mask': ' mask ',
             'script': ' js es6 jsx ts',
             'style': ' css less sass scss '
         };
         function getType(path) {
-            var ext = /\w+$/.exec(path);
+            let ext = /\w+$/.exec(path);
             if (ext == null) {
                 logger.error('Not parsable extension', path);
                 return 'unknown';
             }
-            for (var type in types) {
+            for (let type in types) {
                 if (types[type].indexOf(ext) > -1) {
                     return type;
                 }
@@ -218,16 +219,15 @@ export default {
 };
 
 
-var getResources = Class.Fn.memoize(function (type, env, pckg?, routes?) {
+const getResources = memd.fn.memoize(function (type, env, pckg?, routes?) {
 
-    var Routes = new includeLib.Routes(),
-        array = [];
-
+    let Routes = new includeLib.Routes();
+    let array = [];
 
     function register(obj) {
         if (obj == null)
             return;
-        for (var key in obj) {
+        for (let key in obj) {
             Routes.register(key, obj[key]);
         }
     }
@@ -255,7 +255,7 @@ var getResources = Class.Fn.memoize(function (type, env, pckg?, routes?) {
 
         case 'scripts':
         case 'styles':
-            var obj = pckg || env;
+            let obj = pckg || env;
             resolve(obj.client && obj.client[type]);
             resolve(obj.both && obj.both[type]);
             break;
@@ -302,7 +302,7 @@ function obj_extend(target, source, dismissKey = null) {
     if (target == null)
         target = {};
 
-    for (var key in source) {
+    for (let key in source) {
         if (key === dismissKey)
             continue;
 
@@ -312,7 +312,7 @@ function obj_extend(target, source, dismissKey = null) {
     return target;
 }
 
-var _flatternResources;
+let _flatternResources;
 (function () {
     _flatternResources = function (mix, base) {
         if (mix == null) {
@@ -329,14 +329,14 @@ var _flatternResources;
         }
     };
     function _fromObj(json, base) {
-        var arr = [];
-        for (var key in json) {
+        let arr = [];
+        for (let key in json) {
             arr = arr.concat(_flatternResources(json[key], _combinePath(base, key)));
         }
         return arr;
     }
     function _fromArray(arr, base) {
-        var out = [],
+        let out = [],
             imax = arr.length,
             i = -1;
         while (++i < imax) {

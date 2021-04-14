@@ -2,14 +2,15 @@ import Application from './HttpApplication/Application'
 import HttpSubApplication from './HttpApplication/SubApp'
 import HttpPage from './HttpPage/HttpPage'
 import { IHttpHandler, IHttpHandlerDef } from './IHttpHandler'
-import { mask, include, logger, Class, Uri, Routes, is_String, is_Function, is_Object } from './dependency'
+import { mask, include, logger, Uri, is_String, is_Function, is_Object } from './dependency'
 import { page_flatternPageViewRoutes } from './util/page'
 import { path_hasProtocol } from './util/path'
 import { app_isDebug } from './util/app'
 import { class_Dfr } from 'atma-utils'
 import { IncomingMessage } from 'http'
+import { Collection } from 'ruta'
 
-var fns_RESPONDERS = [
+const fns_RESPONDERS = [
     'subapps',
     'handlers',
     'services',
@@ -17,17 +18,17 @@ var fns_RESPONDERS = [
 ];
 
 export default class HandlerFactory {
-    subapps: InstanceType<typeof Routes>
-    handlers: InstanceType<typeof Routes>
-    services: InstanceType<typeof Routes>
-    pages: InstanceType<typeof Routes>
+    subapps: InstanceType<typeof Collection>
+    handlers: InstanceType<typeof Collection>
+    services: InstanceType<typeof Collection>
+    pages: InstanceType<typeof Collection>
 
     constructor(public app: Application) {
 
-        this.subapps = new Routes();
-        this.handlers = new Routes();
-        this.services = new Routes();
-        this.pages = new Routes();
+        this.subapps = new Collection();
+        this.handlers = new Collection();
+        this.services = new Collection();
+        this.pages = new Collection();
     }
 
     registerPages(pages_, pageCfg) {
