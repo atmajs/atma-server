@@ -1,7 +1,8 @@
 import { QueryMidd } from './query'
-import { StaticMidd } from './static'
+import { StaticMidd, createStaticMidd } from './static'
 
 export default {
     query: QueryMidd,
-    static: StaticMidd
+    static: StaticMidd,
+    files: createStaticMidd
 };

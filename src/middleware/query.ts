@@ -4,12 +4,12 @@ const deserialize = _.query.deserialize;
 
 export function QueryMidd (req, res, next){
 
-    var url = req.url,
-        q = url.indexOf('?');
+    const url = req.url;
+    const qIdx = url.indexOf('?');
 
-    req.query = q === -1
+    req.query = qIdx === -1
         ? {}
-        : deserialize(url.substring(q + 1));
+        : deserialize(url.substring(qIdx + 1));
 
     next();
 };

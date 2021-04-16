@@ -8,7 +8,8 @@
 //   ../class-json
 
 declare module 'atma-server' {
-    import { StaticMidd } from 'atma-server/middleware/static'; 
+    import { createStaticMidd } from 'atma-server/middleware/static'; 
+     import { StaticMidd } from 'atma-server/middleware/static'; 
      import { QueryMidd } from 'atma-server/middleware/query'; 
      import { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError } from 'atma-server/HttpError/HttpError';
     import { IHttpHandler, HttpResponse } from 'atma-server/IHttpHandler';
@@ -28,6 +29,7 @@ declare module 'atma-server' {
     export const middleware: {
             query: typeof QueryMidd;
             static: typeof StaticMidd;
+            files: typeof createStaticMidd;
     };
     export const clean: typeof Application.clean;
     export const StaticContent: any;
@@ -48,6 +50,22 @@ declare module 'atma-server' {
 
 declare module 'atma-server/middleware/static' {
     export function StaticMidd(req: any, res: any, next: any, config: any): void;
+    export interface IStaticServConfig {
+        base?: string;
+        mimeTypes?: {
+            [MimeTypeString: string]: string[];
+        };
+        extensions?: {
+            [Extension: string]: {
+                mimeType?: string;
+                encoding?: string | 'buffer' | 'UTF-8';
+                maxAge?: Number;
+            };
+        };
+        defaultMimeType?: string;
+        headers?: any;
+    }
+    export function createStaticMidd(config: IStaticServConfig): any;
 }
 
 declare module 'atma-server/middleware/query' {
@@ -395,10 +413,11 @@ declare module 'atma-server/HttpService/HttpEndpoint' {
 
 declare module 'atma-server/middleware/export' {
     import { QueryMidd } from 'atma-server/middleware/query';
-    import { StaticMidd } from 'atma-server/middleware/static';
+    import { StaticMidd, createStaticMidd } from 'atma-server/middleware/static';
     const _default: {
         query: typeof QueryMidd;
         static: typeof StaticMidd;
+        files: typeof createStaticMidd;
     };
     export default _default;
 }
