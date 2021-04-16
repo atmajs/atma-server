@@ -2,16 +2,17 @@ import { IHttpHandlerConstructor } from '../IHttpHandler';
 
 export interface IApplicationDefinition {
     base?: string
-	args?: {
-		[key: string]: string
-	}
+    args?: {
+        [key: string]: string
+    }
     disablePackageJson?: boolean
-	config?: IApplicationConfig
-	configs?: string | string[]
+    config?: IApplicationConfig
+    configs?: string | string[]
 }
 
 export interface IApplicationConfig {
     base?: string
+    static?: string
     debug?: boolean
     env?: {
         both?: {
@@ -62,7 +63,7 @@ export interface IApplicationConfig {
         /** regex pattern : Path to the controllers script file */
         [urlPattern: string]: string
     },
-    page?: IPageConfiguration,        
+    page?: IPageConfiguration,
     pages?: {
         [urlPattern: string]: {
             id?: string
@@ -103,7 +104,7 @@ export interface IApplicationConfig {
 
     // appcfg directories/files configs
     configs?: string | string[]
-    // additional appcfg configs    
+    // additional appcfg configs
     config?: IApplicationConfig
 
     // appcfg raw sources
@@ -117,13 +118,13 @@ export interface IApplicationConfig {
 
 export interface IPageConfiguration {
     location?: {
-        controller?: string 
-        template?: string 
-        master?: string 
-        viewTemplate?: string 
-        viewController?: string 
-        viewStyle?: string 
-        pageFiles?: string 
+        controller?: string
+        template?: string
+        master?: string
+        viewTemplate?: string
+        viewController?: string
+        viewStyle?: string
+        pageFiles?: string
     }
     extension?: {
         javascript?: string
@@ -147,7 +148,7 @@ export interface IPageConfiguration {
 }
 
 export interface IAppConfigExtended {
-    $get(path: string): any 
+    $get(path: string): any
     $getController(data: IPageConfiguration): any
     $getImports(type: 'server' | 'client' | 'both'): { path: string, type: 'mask' | 'script' | 'css' | 'html' }[]
     projects: {

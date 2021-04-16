@@ -508,6 +508,7 @@ declare module 'atma-server/HttpApplication/IApplicationConfig' {
     }
     export interface IApplicationConfig {
         base?: string;
+        static?: string;
         debug?: boolean;
         env?: {
             both?: {
