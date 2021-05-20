@@ -76,7 +76,7 @@ export interface IApplicationConfig {
     },
     service?: {
         location?: string
-        endpoints?: string
+        endpoints?: string | string[]
     },
     services?: {
         /** regex pattern : Path to the controllers script file */
@@ -98,6 +98,12 @@ export interface IApplicationConfig {
         rule: string
         conditions: Array<{ condition: string }>
     }>
+
+    redirectRules?: Array<{
+        rule: string
+        conditions: Array<{ condition: string }>
+    }>
+
     disablePackageJson?: boolean
 
     buildDirectory?: string

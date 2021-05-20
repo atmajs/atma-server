@@ -30,9 +30,11 @@ import { HttpEndpointUtils } from '../HttpService/HttpEndpoint'
 
 let _emitter = new class_EventEmitter();
 
-class Application extends mixin(class_Dfr, class_EventEmitter) {
+class Application extends class_EventEmitter {
 
     private startedAt = Date.now();
+
+    promise = new class_Dfr();
 
     lifecycle = LifecycleEvents.Instance
 
@@ -75,6 +77,7 @@ class Application extends mixin(class_Dfr, class_EventEmitter) {
     _baseConfig: IApplicationConfig
 
     rewriter = new HttpRewriter
+    redirects = new HttpRewriter
 
     constructor(proto: IApplicationDefinition = {}) {
         super();
@@ -103,9 +106,6 @@ class Application extends mixin(class_Dfr, class_EventEmitter) {
         if (this.isRoot && app_isDebug() !== true) {
             logger.cfg('color', 'none');
         }
-
-
-        return this;
     }
 
     //@obsolete
@@ -143,6 +143,12 @@ class Application extends mixin(class_Dfr, class_EventEmitter) {
         return this;
     }
     process(req: IncomingMessage, res: ServerResponse, next?) {
+        if (this.redirects) {
+            let responded = this.redirects.redirect(req, res);
+            if (responded) {
+                return;
+            }
+        }
         if (this.rewriter) {
             this.rewriter.rewrite(req);
         }
@@ -182,6 +188,13 @@ class Application extends mixin(class_Dfr, class_EventEmitter) {
         Autoreload.getWatcher().on('fileChange', (relPath: string, absPath: string) => {
             Application.trigger('autoreload', relPath, absPath);
         });
+    }
+
+    done (fn) {
+        this.promise.then(fn);
+    }
+    fail (fn) {
+        this.promise.then(null, fn);
     }
 
     listen()
@@ -326,8 +339,12 @@ class Application extends mixin(class_Dfr, class_EventEmitter) {
         _emitter = new class_EventEmitter;
         return this;
     }
-    static create(config: IApplicationConfig): Application {
-        return new Application(config);
+    static create(config: IApplicationConfig): Promise<Application> {
+        return new Promise((resolve, reject) => {
+            new Application(config)
+                .promise
+                .then(resolve, reject);
+        });;
     }
 };
 
@@ -523,6 +540,7 @@ function cfg_doneDelegate(app: Application) {
             ;
 
         app.rewriter.addRules(cfg.rewriteRules);
+        app.redirects.addRules(cfg.redirectRules);
 
         Promise.all([
             HttpEndpointExplorer.find(app.config.service.endpoints, app.config.base),
@@ -532,7 +550,7 @@ function cfg_doneDelegate(app: Application) {
             if (endpoints) {
                 app.handlers.registerServices(endpoints, cfg.handler);
             }
-            app.resolve(app);
+            app.promise.resolve(app);
         });
     }
 }

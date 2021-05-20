@@ -1,26 +1,25 @@
+import { send_REDIRECT } from '../util/send';
+
 export default class HttpContext {
-	_rewrite: string;
-	_redirect: string;
+    _rewrite: string;
+    _redirect: string;
 
-	constructor(public page, public config, public req, public res) {
+    debug?: boolean | {
+        breakOn?: string
+    }
 
-	}
+    constructor(public page, public config, public req, public res) {
 
-	redirect(url, code) {
-		if (code == null)
-			code = 302;
+    }
 
-		this.res.statusCode = code;
-		this.res.setHeader('Location', url);
-		this.res.setHeader('Content-Length', '0');
-		this.res.end();
+    redirect(url, code = 302) {
 
-		this._redirect = url;
-	}
+        send_REDIRECT(this.res, url, code);
+        this._redirect = url;
+    }
 
-	rewrite(url) {
+    rewrite(url) {
 
-		this._rewrite = url;
-	}
-
+        this._rewrite = url;
+    }
 }

@@ -2,8 +2,8 @@
 // Dependencies for this module:
 //   ../http
 //   ../ruta
-//   ../atma-utils
 //   ../net
+//   ../atma-utils
 //   ../ruta/route/RouteCollection
 //   ../class-json
 
@@ -231,6 +231,7 @@ declare module 'atma-server/HttpPage/HttpErrorPage' {
         constructor(error: any, pageData: any, config: any);
         static send(error: any, req: any, res: any, config: any): void;
         process(req: any, res: any, config: any): void;
+        _load(): this;
     }
     export default HttpErrorPage;
 }
@@ -249,8 +250,6 @@ declare module 'atma-server/HttpPage/HttpPage' {
 }
 
 declare module 'atma-server/HttpApplication/Application' {
-    import { Statics } from 'atma-utils'; 
-     /// <reference types="node" />
     import { Response } from 'atma-server/HttpApplication/Message';
     import HandlerFactory from 'atma-server/HandlerFactory';
     import WebSocket from 'atma-server/WebSocket';
@@ -262,61 +261,64 @@ declare module 'atma-server/HttpApplication/Application' {
     import * as net from 'net';
     import { class_EventEmitter, class_Dfr } from 'atma-utils';
     import { LifecycleEvents } from 'atma-server/HttpApplication/LifecycleEvents';
-    const Application_base: Statics<typeof class_Dfr> & Statics<typeof class_EventEmitter> & (new () => class_Dfr & class_EventEmitter<Record<string | number | symbol, (...args: any) => any>>);
-    class Application extends Application_base {
-            lifecycle: LifecycleEvents;
-            isRoot: boolean;
-            isHttpsForced: boolean;
-            handlers: HandlerFactory;
-            _server: net.Server;
-            _sslServer: net.Server;
-            _innerPipe: MiddlewareRunner;
-            _outerPipe: MiddlewareRunner;
-            _responder: any;
-            _responders: any;
-            middleware: any;
-            resources: any;
-            lib: {
-                    [key: string]: any;
-            };
-            webSockets: WebSocket;
-            config: IAppConfigExtended & IApplicationConfig;
-            args: {
-                    [key: string]: string;
-            };
-            _baseConfig: IApplicationConfig;
-            rewriter: HttpRewriter;
-            constructor(proto?: IApplicationDefinition);
-            respond(req: any, res: any, next: any): void;
-            responder(data: any): (req: any, res: any, next: any) => void;
-            responders(array: any): void;
-            /**
-                * :before - Array|Function - Middleware fns in OUTER pipe, before main responder
-                * :middleware - Arrat|Function - Middleware fns in INNER pipe, before the Handler
-                * :after - Array|Function - Middlewarefns in OUTER pipe, after the Handler
-                */
-            processor(data?: {
-                    before?: Function[];
-                    after?: Function[];
-                    middleware?: Function[];
-            }): this;
-            process(req: IncomingMessage, res: ServerResponse, next?: any): void;
-            execute(url: any, method: any, body: any, headers: any): Response;
-            autoreload(httpServer?: net.Server): void;
-            listen(): any;
-            listen(port: number): any;
-            listen(server: net.Server | {
-                    listen: Function;
-            }): any;
-            getSubApp(path: any): any;
-            static current: Application;
-            static on: any;
-            static off: any;
-            static once: any;
-            static trigger: any;
-            static Config: typeof Config;
-            static clean(): typeof Application;
-            static create(config: IApplicationConfig): Application;
+    class Application extends class_EventEmitter {
+        promise: class_Dfr;
+        lifecycle: LifecycleEvents;
+        isRoot: boolean;
+        isHttpsForced: boolean;
+        handlers: HandlerFactory;
+        _server: net.Server;
+        _sslServer: net.Server;
+        _innerPipe: MiddlewareRunner;
+        _outerPipe: MiddlewareRunner;
+        _responder: any;
+        _responders: any;
+        middleware: any;
+        resources: any;
+        lib: {
+            [key: string]: any;
+        };
+        webSockets: WebSocket;
+        config: IAppConfigExtended & IApplicationConfig;
+        args: {
+            [key: string]: string;
+        };
+        _baseConfig: IApplicationConfig;
+        rewriter: HttpRewriter;
+        redirects: HttpRewriter;
+        constructor(proto?: IApplicationDefinition);
+        respond(req: any, res: any, next: any): void;
+        responder(data: any): (req: any, res: any, next: any) => void;
+        responders(array: any): void;
+        /**
+          * :before - Array|Function - Middleware fns in OUTER pipe, before main responder
+          * :middleware - Arrat|Function - Middleware fns in INNER pipe, before the Handler
+          * :after - Array|Function - Middlewarefns in OUTER pipe, after the Handler
+          */
+        processor(data?: {
+            before?: Function[];
+            after?: Function[];
+            middleware?: Function[];
+        }): this;
+        process(req: IncomingMessage, res: ServerResponse, next?: any): void;
+        execute(url: any, method: any, body: any, headers: any): Response;
+        autoreload(httpServer?: net.Server): void;
+        done(fn: any): void;
+        fail(fn: any): void;
+        listen(): any;
+        listen(port: number): any;
+        listen(server: net.Server | {
+            listen: Function;
+        }): any;
+        getSubApp(path: any): any;
+        static current: Application;
+        static on: any;
+        static off: any;
+        static once: any;
+        static trigger: any;
+        static Config: typeof Config;
+        static clean(): typeof Application;
+        static create(config: IApplicationConfig): Promise<Application>;
     }
     export function respond_Raw(app: any, req: any, res: any): void;
     export default Application;
@@ -584,7 +586,7 @@ declare module 'atma-server/HttpApplication/IApplicationConfig' {
         };
         service?: {
             location?: string;
-            endpoints?: string;
+            endpoints?: string | string[];
         };
         services?: {
             /** regex pattern : Path to the controllers script file */
@@ -599,6 +601,12 @@ declare module 'atma-server/HttpApplication/IApplicationConfig' {
         websocket?: {};
         websockets?: {};
         rewriteRules?: Array<{
+            rule: string;
+            conditions: Array<{
+                condition: string;
+            }>;
+        }>;
+        redirectRules?: Array<{
             rule: string;
             conditions: Array<{
                 condition: string;
@@ -661,17 +669,28 @@ declare module 'atma-server/HttpApplication/IApplicationConfig' {
 declare module 'atma-server/HttpPage/HttpPageBase' {
     import Application from 'atma-server/HttpApplication/Application';
     import { class_Dfr } from 'atma-utils';
-    export default class HttpPageBase extends class_Dfr {
+    import HttpContext from 'atma-server/HttpPage/HttpContext';
+    export default abstract class HttpPageBase extends class_Dfr {
         route: any;
         app: Application;
         data: {
-            id: any;
-            env: any;
+            id: string;
+            env: {
+                both: any;
+                server: any;
+                client: any;
+            };
+            redirect: string;
+            rewrite: string;
+            secure: boolean | {
+                role: string;
+            };
         };
+        pattern: string;
         isHtmlPage: boolean;
         template: string;
         master: string;
-        ctx: any;
+        ctx: HttpContext;
         templatePath: string;
         masterPath: string;
         location: string;
@@ -685,6 +704,7 @@ declare module 'atma-server/HttpPage/HttpPageBase' {
         constructor(route: any, app: Application);
         getScripts(config: any): any;
         getStyles(config: any): any;
+        abstract _load(): any;
     }
 }
 
@@ -751,11 +771,12 @@ declare module 'atma-server/Business/Middleware' {
 }
 
 declare module 'atma-server/HttpRewrites/HttpRewriter' {
-    import { IncomingMessage } from 'http';
+    import { IncomingMessage, ServerResponse } from 'http';
     export default class Rewriter {
         rules: Rule[];
         addRules(rules: IRuleDefinition[]): void;
         rewrite(req: IncomingMessage): void;
+        redirect(req: IncomingMessage, res: ServerResponse): boolean;
     }
     export interface IRuleDefinition {
         rule: string;
@@ -769,6 +790,7 @@ declare module 'atma-server/HttpRewrites/HttpRewriter' {
         matcher: RegExp;
         constructor(cond: IRuleDefinition);
         rewrite(req: IncomingMessage): boolean;
+        redirect(req: IncomingMessage): string;
     }
     export class RuleCondition {
         textParts: string[];
@@ -817,7 +839,7 @@ declare module 'atma-server/HttpService/HttpEndpointExplorer' {
     }
     export namespace HttpEndpointExplorer {
         function getMeta<T extends (new (...args: any[]) => HttpEndpoint)>(Type: T): IApiMeta;
-        function find(path: string, base?: string): Promise<{
+        function find(path: string | string[], base?: string): Promise<{
             [urlPattern: string]: string;
         }>;
     }
@@ -919,6 +941,23 @@ declare module 'atma-server/HttpService/HttpEndpointParamUtils' {
         function resolveParam(req: IServerRequest, params: any, meta: IHttpEndpointMethodArgMeta): any;
     }
     export {};
+}
+
+declare module 'atma-server/HttpPage/HttpContext' {
+    export default class HttpContext {
+        page: any;
+        config: any;
+        req: any;
+        res: any;
+        _rewrite: string;
+        _redirect: string;
+        debug?: boolean | {
+            breakOn?: string;
+        };
+        constructor(page: any, config: any, req: any, res: any);
+        redirect(url: any, code?: number): void;
+        rewrite(url: any): void;
+    }
 }
 
 declare module 'atma-server/models/IServerRequest' {

@@ -1,4 +1,5 @@
-import { IncomingMessage } from 'http';
+import { IncomingMessage, ServerResponse } from 'http';
+import { send_REDIRECT } from '../util/send';
 
 export default class Rewriter {
     rules: Rule[] = []
@@ -11,7 +12,24 @@ export default class Rewriter {
     }
 
     rewrite (req: IncomingMessage) {
-        this.rules.forEach(x => x.rewrite(req));
+        let arr = this.rules;
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].rewrite(req)) {
+                return;
+            }
+        }
+    }
+    redirect (req: IncomingMessage, res: ServerResponse): boolean {
+        let arr = this.rules;
+        for (let i = 0; i < arr.length; i++) {
+            let path = arr[i].redirect(req)
+            if (path == null) {
+                continue;
+            }
+            send_REDIRECT(res, path);
+            return true;
+        }
+        return false;
     }
 }
 
@@ -43,6 +61,12 @@ export class Rule {
         }
         req.url = req.url.replace(this.matcher, this.rewriter);
         return true;
+    }
+    redirect (req: IncomingMessage): string {
+        if (this.isMatch(req) === false) {
+            return null;
+        }
+        return req.url.replace(this.matcher, this.rewriter);
     }
 }
 export class RuleCondition {

@@ -6,6 +6,7 @@ import MiddlewareRunner from '../Business/Middleware'
 import { send_Content } from '../util/send'
 import { mime_HTML, mime_PLAIN } from '../const/mime'
 import { parse } from 'ruta'
+import HttpPageBase from './HttpPageBase'
 
 export const page_Create = function (classProto) {
 
@@ -66,7 +67,7 @@ export const page_processRequestDelegate = function (page, req, res, config) {
     };
 };
 
-export const page_processRequest = function (page, req, res, config) {
+export const page_processRequest = function (page: HttpPageBase, req, res, config) {
     if (page.pattern) {
         let query = parse(page.pattern, req.url).params;
 
@@ -77,20 +78,20 @@ export const page_processRequest = function (page, req, res, config) {
     }
 
     page.ctx = new HttpContext(page, config, req, res);
-    if ('redirect' in page.data) {
+    if (page.data.redirect != null) {
         page.ctx.redirect(page.data.redirect);
         return page;
     }
-    if ('rewrite' in page.data) {
+    if (page.data.rewrite != null) {
         req.url = page.data.rewrite;
         page.app.handlers.get(page.app, req, page_rewriteDelegate(page));
         return page;
     }
-    if ('secure' in page.data) {
+    if (page.data.secure != null) {
 
         let user = req.user,
             secure = page.data.secure,
-            role = secure && secure.role
+            role = typeof secure === 'object' && secure.role || null
             ;
 
         if (user == null || (role && user.isInRole(role)) === false) {

@@ -5,6 +5,13 @@ import { HttpErrorUtil, RuntimeError } from '../HttpError/HttpError'
 import { cors_ensure } from '../util/cors'
 import Application from '../HttpApplication/Application';
 
+export function send_REDIRECT (res: ServerResponse, url: string, code = 302) {
+    res.statusCode = code;
+    res.setHeader('Location', url);
+    res.setHeader('Content-Length', '0');
+    res.end();
+}
+
 export function send_JSON (req: IncomingMessage, res: ServerResponse, json, statusCode, headers, app: Application, startedAt: number) {
     let str;
     try {

@@ -1,5 +1,5 @@
 import { File, env } from 'atma-io'
-import { class_Uri } from 'atma-utils'
+import { class_Uri, is_Array } from 'atma-utils'
 import alot from 'alot'
 import { fs_exploreFiles } from '../util/fs'
 import { HttpEndpoint } from './HttpEndpoint';
@@ -126,10 +126,25 @@ export namespace HttpEndpointExplorer {
         return schema;
     }
 
-    export async function find (path: string, base?: string): Promise< { [urlPattern: string]: string } > {
+    export async function find (path: string | string[], base?: string): Promise< { [urlPattern: string]: string } > {
         if (path == null || path === '') {
             return null;
         }
+
+        if (typeof path === 'string') {
+            return findByPath(path, base);
+        }
+        if (is_Array(path)) {
+            let arr = await Promise.all(path.map(x => findByPath(x)));
+
+            return arr.reduce((aggr, x) => {
+                return Object.assign(aggr, x);
+            }, Object.create(null));
+        }
+        return null;
+    }
+
+    async function findByPath (path: string, base?: string): Promise< { [urlPattern: string]: string } > {
         if (path.endsWith('/')) {
             path = `${path}**Endpoint*`;
         }
