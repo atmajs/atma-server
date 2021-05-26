@@ -54,13 +54,13 @@ export function send_Content (
 
     if (typeof content !== 'string' && content instanceof Buffer === false) {
 
-        if (is_Object(content)) {
-            send_JSON(req, res, content, statusCode, headers, app, startedAt);
+        if (content instanceof Error) {
+            send_Error(req, res, content, headers, app, startedAt);
             return;
         }
 
-        if (content instanceof Error) {
-            send_Error(req, res, content, headers, app, startedAt);
+        if (is_Object(content)) {
+            send_JSON(req, res, content, statusCode, headers, app, startedAt);
             return;
         }
 

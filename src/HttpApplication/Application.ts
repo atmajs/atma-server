@@ -298,16 +298,11 @@ class Application extends class_EventEmitter {
     private _loadConfig() {
 
         let definition = this._baseConfig;
-        this.config = Config(
-            definition
-            , this
-            , cfg_doneDelegate(this)
-            , function (error) {
-                logger
-                    .warn('Configuration Error')
-                    .error(error);
-            })
-            ;
+        Config(definition, this).then(cfg_doneDelegate(this), (error) => {
+            logger
+                .warn('Configuration Error')
+                .error(error);
+        });
         return this;
     }
 
@@ -523,13 +518,14 @@ function handler_processRaw(app: Application, handler, m_req, m_res) {
     handler.pipe(m_res);
 }
 function cfg_doneDelegate(app: Application) {
-    return function () {
+    return function (cfg) {
+        app.config = cfg;
+
         _emitter.trigger('configurate', app);
 
         Autoreload.prepare(app);
 
         initilizeEmbeddedComponents(app);
-        let cfg = app.config;
         app
             .handlers
             .registerPages(cfg.pages, cfg.page)

@@ -18,7 +18,7 @@ const PATH = 'server/config/**.yml';
 const BUILD_PATH = 'public/build/stats.json';
 
 
-export default function Config(params: IApplicationConfig, app?, done?, fail?) {
+export default function Config(params: IApplicationConfig, app?) {
     params = params || {};
 
     var path_base = params.base,
@@ -83,17 +83,9 @@ export default function Config(params: IApplicationConfig, app?, done?, fail?) {
 
     return AppConfig
         .fetch($sources)
-        .fail(function (error) {
-            if (fail != null) {
-                fail(error);
-                return;
-            }
-            error.message = '<app:configuration> ' + error.message;
-            throw error;
-        })
-        .done(function () {
-            var cfg = this;
-            Promise.all([
+        .then(function (cfg) {
+
+            return Promise.all([
                 configurate_Mask(cfg),
                 configurate_Include(cfg),
                 configurate_PageFiles(cfg, app),
@@ -101,13 +93,9 @@ export default function Config(params: IApplicationConfig, app?, done?, fail?) {
                 configurate_Plugins(cfg, app),
                 configurate_BowerAndCommonJS(cfg, app)
             ])
-                .then(
-                    function () {
-                        if (done != null) process.nextTick(done);
-                    },
-                    function (error) {
-                        if (fail != null) process.nextTick(() => fail(error));
-                    }
-                );
+                .then(() => Promise.resolve(cfg));
+        }, function (error) {
+            error.message = '<app:configuration> ' + error.message;
+            throw error;
         });
 };

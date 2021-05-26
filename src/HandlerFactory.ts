@@ -9,6 +9,7 @@ import { app_isDebug } from './util/app'
 import { class_Dfr } from 'atma-utils'
 import { IncomingMessage } from 'http'
 import { Collection } from 'ruta'
+import { obj_getProperty } from 'class-json/utils/obj'
 
 const fns_RESPONDERS = [
     'subapps',
@@ -309,7 +310,7 @@ var memory_canResolve,
             type = match[1],
             path = url.substring(match.index + match[0].length),
             memory = getContext(type),
-            Handler = mask.obj.get(memory, path);
+            Handler = obj_getProperty(memory, path);
 
         if (Handler == null) {
             logger.error('<handler> invalid route', url);
@@ -320,7 +321,7 @@ var memory_canResolve,
             callback(Handler);
             return;
         }
-        //is_Function
+
         callback(new Handler(route, factory.app));
     };
 

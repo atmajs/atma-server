@@ -1,7 +1,7 @@
 import Config from '../../src/Config/Config';
 
 UTest({
-    'should resolve imports from `both`'() {
+    async 'should resolve imports from `both`'() {
         var imports = {
             '/public': {
                 'foo/baz': [
@@ -9,7 +9,7 @@ UTest({
                 ]
             }
         };
-        var config = Config({
+        var config = await Config({
             configs: null,
             config: { env: { both: { imports: imports }, client: {} } },
             disablePackageJson: true
@@ -21,7 +21,7 @@ UTest({
             { path: '/public/foo/baz/b.mask', type: 'mask' },
         ]);
     },
-    'should resolve imports from `both` and `server`'() {
+    async 'should resolve imports from `both` and `server`'() {
         var both = {
             '/public': {
                 'foo/baz': [
@@ -36,7 +36,7 @@ UTest({
                 ]
             }
         };
-        var config = Config({
+        var config = await Config({
             configs: null,
             config: { env: { both: { imports: both }, server: { imports: server } } },
             disablePackageJson: true

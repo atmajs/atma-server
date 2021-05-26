@@ -5,7 +5,10 @@
 //   ../net
 //   ../atma-utils
 //   ../ruta/route/RouteCollection
+//   ../atma-utils/mixin
 //   ../class-json
+//   ../atma-logger
+//   ../appcfg
 
 declare module 'atma-server' {
     import { createStaticMidd } from 'atma-server/middleware/static'; 
@@ -262,7 +265,7 @@ declare module 'atma-server/HttpApplication/Application' {
     import { class_EventEmitter, class_Dfr } from 'atma-utils';
     import { LifecycleEvents } from 'atma-server/HttpApplication/LifecycleEvents';
     class Application extends class_EventEmitter {
-        promise: class_Dfr;
+        promise: class_Dfr<any>;
         lifecycle: LifecycleEvents;
         isRoot: boolean;
         isHttpsForced: boolean;
@@ -709,7 +712,7 @@ declare module 'atma-server/HttpPage/HttpPageBase' {
 }
 
 declare module 'atma-server/HttpApplication/Message' {
-    import { Statics } from 'atma-utils'; 
+    import { Statics } from 'atma-utils/mixin'; 
      /// <reference types="node" />
     import { class_Dfr, class_EventEmitter } from 'atma-utils';
     export class Request {
@@ -719,7 +722,7 @@ declare module 'atma-server/HttpApplication/Message' {
             headers: any;
             constructor(url: any, method: any, body: any, headers: any);
     }
-    const Response_base: Statics<typeof class_EventEmitter> & Statics<typeof class_Dfr> & (new () => class_EventEmitter<Record<string | number | symbol, (...args: any) => any>> & class_Dfr);
+    const Response_base: Statics<typeof class_EventEmitter> & Statics<typeof class_Dfr> & (new () => class_EventEmitter<Record<string | number | symbol, (...args: any) => any>> & class_Dfr<unknown>);
     export class Response extends Response_base {
             writable: boolean;
             finished: boolean;
@@ -756,8 +759,11 @@ declare module 'atma-server/WebSocket' {
 }
 
 declare module 'atma-server/Config/Config' {
+    import { AppConfig } from 'atma-server/dependency';
     import { IApplicationConfig } from 'atma-server/HttpApplication/IApplicationConfig';
-    export default function Config(params: IApplicationConfig, app?: any, done?: any, fail?: any): any;
+    export default function Config(params: IApplicationConfig, app?: any): Promise<AppConfig<any> & {
+        [key: string]: any;
+    }>;
 }
 
 declare module 'atma-server/Business/Middleware' {
@@ -958,6 +964,23 @@ declare module 'atma-server/HttpPage/HttpContext' {
         redirect(url: any, code?: number): void;
         rewrite(url: any): void;
     }
+}
+
+declare module 'atma-server/dependency' {
+    import logger = require('atma-logger');
+    import Utils = require('atma-utils');
+    import AppConfig = require('appcfg');
+    let $Class: any;
+    export const mask: any;
+    export const jmask: any;
+    export const Compo: any;
+    export const io: any;
+    export const Uri: typeof Utils.class_Uri;
+    export const is_String: typeof Utils.is_String, is_Function: typeof Utils.is_Function, is_Array: typeof Utils.is_Array, is_Object: typeof Utils.is_Object;
+    export const obj_extend: typeof Utils.obj_extend, obj_extendDefaults: typeof Utils.obj_extendDefaults;
+    export const include: any;
+    export const includeLib: any;
+    export { $Class as Class, AppConfig, logger };
 }
 
 declare module 'atma-server/models/IServerRequest' {

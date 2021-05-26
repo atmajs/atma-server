@@ -1,7 +1,7 @@
 import Config from '../../src/Config/Config';
 
 UTest({
-    '//should resolve pages and its rewrites from folder'() {
+    async 'should resolve pages and its rewrites from folder'() {
         var imports = {
             '/public': {
                 'foo/baz': [
@@ -9,7 +9,7 @@ UTest({
                 ]
             }
         };
-        var config = new Config({
+        var config = await Config({
             base: './examples/',
             configs: null,
             config: {
@@ -28,10 +28,5 @@ UTest({
             },
             disablePackageJson: true
         });
-
-
-        return config.then(config => {
-            console.log('OK');
-        })
     }
 })
