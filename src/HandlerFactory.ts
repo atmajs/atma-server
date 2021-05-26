@@ -2,14 +2,14 @@ import Application from './HttpApplication/Application'
 import HttpSubApplication from './HttpApplication/SubApp'
 import HttpPage from './HttpPage/HttpPage'
 import { IHttpHandler, IHttpHandlerDef } from './IHttpHandler'
-import { mask, include, logger, Uri, is_String, is_Function, is_Object } from './dependency'
+import { include, logger, Uri, is_String, is_Function, is_Object } from './dependency'
 import { page_flatternPageViewRoutes } from './util/page'
 import { path_hasProtocol } from './util/path'
 import { app_isDebug } from './util/app'
-import { class_Dfr } from 'atma-utils'
+import { class_Dfr, obj_getProperty } from 'atma-utils'
 import { IncomingMessage } from 'http'
 import { Collection } from 'ruta'
-import { obj_getProperty } from 'class-json/utils/obj'
+
 
 const fns_RESPONDERS = [
     'subapps',
@@ -33,7 +33,7 @@ export default class HandlerFactory {
     }
 
     registerPages(pages_, pageCfg) {
-        var pages = page_flatternPageViewRoutes(pages_, pageCfg),
+        let pages = page_flatternPageViewRoutes(pages_, pageCfg),
             id, page;
         for (id in pages) {
 
@@ -55,7 +55,7 @@ export default class HandlerFactory {
     }
 
     registerHandlers(routes, handlerCfg) {
-        for (var key in routes) {
+        for (let key in routes) {
             this.registerHandler(key, routes[key], handlerCfg);
         }
         return this;
@@ -75,14 +75,14 @@ export default class HandlerFactory {
     }
 
     registerSubApps(routes, subAppCfg) {
-        for (var key in routes) {
+        for (let key in routes) {
             this.registerSubApp(key, routes[key], subAppCfg);
         }
         return this;
     }
 
     registerSubApp(name, data, subAppCfg) {
-        var route = name;
+        let route = name;
 
         if (route[0] !== '^') {
             if (route[0] !== '/')
@@ -99,7 +99,7 @@ export default class HandlerFactory {
 
     registerServices(routes, serviceCfg) {
 
-        for (var key in routes) {
+        for (let key in routes) {
             this.registerService(key, routes[key], serviceCfg);
         }
 
@@ -130,16 +130,16 @@ export default class HandlerFactory {
     }
 
     registerWebsockets(routes, websocketCfg) {
-        for (var namespace in routes) {
+        for (let namespace in routes) {
             this.registerWebsocket(namespace, routes[namespace]);
         }
         return this;
     }
 
     registerWebsocket(namespace, handler, handlerCfg = null) {
-        var socket = this.app.webSockets;
+        let socket = this.app.webSockets;
         if (is_String(handler)) {
-            var path = handler_path(handler, handlerCfg);
+            let path = handler_path(handler, handlerCfg);
             include
                 .instance()
                 .js(handler + '::Handler')
@@ -153,7 +153,7 @@ export default class HandlerFactory {
     }
 
     get(app: Application, req: IncomingMessage & { body: any }, callback) {
-        var url = req.url,
+        let url = req.url,
             method = req.method,
             base = app.config.base,
             route;
@@ -162,7 +162,7 @@ export default class HandlerFactory {
             method = req.body._method;
         }
 
-        var imax = fns_RESPONDERS.length,
+        let imax = fns_RESPONDERS.length,
             i = -1;
         while (++i < imax) {
             let x = fns_RESPONDERS[i];
@@ -173,10 +173,10 @@ export default class HandlerFactory {
 
         if (this.app !== Application.current) {
             // check handlers of the root application
-            var factory = Application.current.handlers,
+            let factory = Application.current.handlers,
                 cfg = Application.current.config;
 
-            var hasHandler = processor_tryGet(
+            let hasHandler = processor_tryGet(
                 factory,
                 factory.handlers,
                 url,
@@ -194,7 +194,7 @@ export default class HandlerFactory {
 
     has(url, method) {
 
-        var imax = fns_RESPONDERS.length,
+        let imax = fns_RESPONDERS.length,
             i = -1
             ;
         while (++i < imax) {
@@ -235,7 +235,7 @@ function processor_tryGet(
     }
 
     if (is_String(controller)) {
-        var path = path_hasProtocol(controller)
+        let path = path_hasProtocol(controller)
             ? controller
             : Uri.combine(base, controller)
             ;
@@ -297,17 +297,17 @@ function processor_loadAndInit(factory, url, route, callback) {
         });
 }
 
-var memory_canResolve,
+let memory_canResolve,
     memory_resolve;
 (function () {
-    var rgx = /\/\{(self|global)\}.?/;
+    let rgx = /\/\{(self|global)\}.?/;
     memory_canResolve = function (url) {
         return rgx.test(url);
     };
     memory_resolve = function (factory, url, route, callback) {
-        var match = rgx.exec(url),
+        let match = rgx.exec(url),
             str = match[0],
-            type = match[1],
+            type = match[1] as 'self' | 'global',
             path = url.substring(match.index + match[0].length),
             memory = getContext(type),
             Handler = obj_getProperty(memory, path);
@@ -336,21 +336,6 @@ var memory_canResolve,
     }
 }());
 
-//function get_service(factory, path) {
-//	var services = factory.services,
-//		route = services.get(path);
-//
-//	return route;
-//}
-//
-//function get_handler(factory, path) {
-//
-//	return factory
-//		.handlers
-//		.get(path)
-//		;
-//}
-
 
 function handler_path(path, config) {
     if (path.charCodeAt(0) === 47) {
@@ -361,7 +346,7 @@ function handler_path(path, config) {
         return path;
     }
 
-    var location = config && config.location;
+    let location = config && config.location;
     if (location == null) {
         logger
             .error('<Handler> Path is relative but no location. Set handler: {location: X} in config')
@@ -370,38 +355,31 @@ function handler_path(path, config) {
         return path;
     }
 
-    var params,
-        route,
-        i,
-        length,
-        arr;
-
-    var template = path.split('/'),
-        route = location.split(/[\{\}]/g);
+    let template = path.split('/');
+    let route = location.split(/[\{\}]/g);
 
 
     path = route[0];
 
-    for (i = 1; i < route.length; i++) {
+    for (let i = 1; i < route.length; i++) {
         if (i % 2 === 0) {
             path += route[i];
-        } else {
-			/** if template provides less "breadcrumbs" than needed -
-			 * take always the last one for failed peaces */
+            continue;
+        }
 
-            var index = route[i] << 0;
-            if (index > template.length - 1) {
-                index = template.length - 1;
-            }
+        /** if template provides less "breadcrumbs" than needed -
+         * take always the last one for failed peaces */
 
+        let index = route[i] << 0;
+        if (index > template.length - 1) {
+            index = template.length - 1;
+        }
 
+        path += template[index];
 
-            path += template[index];
-
-            if (i === route.length - 2) {
-                for (index++; index < template.length; index++) {
-                    path += '/' + template[index];
-                }
+        if (i === route.length - 2) {
+            for (index++; index < template.length; index++) {
+                path += '/' + template[index];
             }
         }
     }
