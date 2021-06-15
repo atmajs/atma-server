@@ -103,9 +103,6 @@ class Application extends class_EventEmitter {
         this._baseConfig = proto;
         this._loadConfig();
 
-        if (this.isRoot && app_isDebug() !== true) {
-            logger.cfg('color', 'none');
-        }
     }
 
     //@obsolete
@@ -520,6 +517,11 @@ function handler_processRaw(app: Application, handler, m_req, m_res) {
 function cfg_doneDelegate(app: Application) {
     return function (cfg) {
         app.config = cfg;
+
+
+        if (app.isRoot && app_isDebug() !== true) {
+            logger.cfg('color', 'none');
+        }
 
         _emitter.trigger('configurate', app);
 
