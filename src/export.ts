@@ -14,7 +14,7 @@ import Middleware from './middleware/export'
 import './handlers/export';
 import { HttpEndpointDecos } from './HttpService/HttpEndpointDecos'
 import { LifecycleEvents, LifecycleEvent } from './HttpApplication/LifecycleEvents'
-
+import './env/overrides'
 
 export {
     HttpError,

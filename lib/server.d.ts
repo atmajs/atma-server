@@ -28,6 +28,7 @@ declare module 'atma-server' {
     
     import { HttpEndpointDecos } from 'atma-server/HttpService/HttpEndpointDecos';
     import { LifecycleEvents } from 'atma-server/HttpApplication/LifecycleEvents';
+    
     export { HttpError, NotFoundError, RequestError, RuntimeError, SecurityError, Application, HttpSubApplication, HttpErrorPage, HttpPage, HandlerFactory, HttpCrudEndpoints, HttpService, IHttpHandler, HttpResponse, HttpEndpoint, Middleware, LifecycleEvents };
     export const middleware: {
             query: typeof QueryMidd;
