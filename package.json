@@ -5,7 +5,7 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.5.5",
+    "version": "0.5.8",
     "main": "./lib/server.js",
     "types": "./lib/server.d.ts",
     "repository": {
@@ -14,19 +14,19 @@
     },
     "license": "MIT",
     "dependencies": {
-        "alot": "^0.2.80",
-        "appcfg": "^0.4.5",
+        "alot": "^0.2.96",
+        "appcfg": "^0.4.58",
         "atma-class": ">=1.1.79",
         "atma-io": "^1.2.31",
         "atma-logger": ">0.0.81",
-        "atma-utils": "^0.2.47",
-        "class-json": "^0.3.5",
+        "atma-utils": "^0.2.58",
+        "class-json": "^0.3.7",
         "includejs": "^0.15.50",
         "maskjs": "^0.71.57",
-        "memd": "^0.2.92",
+        "memd": "^0.3.9",
         "ruta": "^0.2.70",
         "socket.io": "^2.3.0",
-        "static-content": "^1.1.28"
+        "static-content": "^1.2.1"
     },
     "scripts": {
         "build": "app-bundler && npm run dts",
@@ -39,11 +39,11 @@
     },
     "devDependencies": {
         "@types/node": "^12.12.6",
-        "app-bundler": "0.0.82",
+        "app-bundler": "^0.1.2",
         "atma": "^0.12.17",
         "atma-io-middleware-importer": "^1.1.30",
         "atma-io-middleware-yml": "^1.1.25",
-        "atma-loader-ts": "^1.1.12",
+        "atma-loader-ts": "^1.1.17",
         "body-parser": "latest",
         "class-mongo": "^0.2.69",
         "dts-bundle": "^0.7.3",
