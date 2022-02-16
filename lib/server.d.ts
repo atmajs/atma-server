@@ -316,6 +316,8 @@ declare module 'atma-server/HttpApplication/Application' {
         listen(server: net.Server | {
             listen: Function;
         }): net.Server;
+        getHttpPort(): number;
+        getSslPort(): number;
         getSubApp(path: any): any;
         static current: Application;
         static on: any;

@@ -287,10 +287,12 @@ class Application extends class_EventEmitter {
         return this._server;
     }
     getHttpPort () {
-        return this._server?.address().port;
+        let address = this._server?.address();
+        return address != null && typeof address === 'object' ? address.port : null;
     }
     getSslPort () {
-        return this._sslServer?.address().port;
+        let address = this._sslServer?.address();
+        return address != null && typeof address === 'object' ? address.port : null;
     }
 
     getSubApp(path) {
