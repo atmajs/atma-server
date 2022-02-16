@@ -159,7 +159,7 @@ class Application extends class_EventEmitter {
             , this.config
         );
     }
-    execute(url, method, body, headers) {
+    execute(url: string, method: 'get' | 'post' | 'put' | 'delete' | 'options', body?, headers?) {
         let req = new Request(url, method, body, headers);
         let res = new Response;
 
@@ -194,10 +194,10 @@ class Application extends class_EventEmitter {
         this.promise.then(null, fn);
     }
 
-    listen()
-    listen(port: number)
-    listen(server: net.Server | { listen: Function })
-    listen(...args) {
+    listen(): net.Server
+    listen(port: number): net.Server
+    listen(server: net.Server | { listen: Function }): net.Server
+    listen(...args): net.Server {
         let port, server;
         let i = args.length;
         let mix;

@@ -2,8 +2,8 @@ import Application from '../../src/HttpApplication/Application'
 import { File } from 'atma-io'
 
 UTest({
-    'should load commonjs module'(done) {
-        Application.clean().create({
+    async 'should load commonjs module'() {
+        let app = await Application.clean().create({
             configs: null,
             config: {
                 env: {
@@ -16,19 +16,17 @@ UTest({
                     }
                 }
             }
-        })
-            .done(app => {
-                var scripts = app.config.env.server.scripts.npm;
+        });
 
-                has_(scripts, [
-                    '/node_modules/appcfg/lib/config.js'
-                ]);
-                is_(app.lib.config, 'Function');
-                done();
-            })
+        let scripts = app.config.env.server.scripts.npm;
+        has_(scripts, [
+            '/node_modules/appcfg/lib/appcfg.js'
+        ]);
+
+        is_(app.lib.appcfg, 'Function');
     },
-    'should load commonjs module with alias'(done) {
-        Application.create({
+    async 'should load commonjs module with alias'(done) {
+        let app = await Application.create({
             configs: null,
             config: {
                 env: {
@@ -41,16 +39,13 @@ UTest({
                     }
                 }
             }
-        })
-            .done(app => {
-                var scripts = app.config.env.server.scripts.npm;
+        });
+        let scripts = app.config.env.server.scripts.npm;
 
-                has_(scripts, [
-                    '/node_modules/appcfg/lib/config.js::Foo'
-                ]);
-                is_(app.lib.Foo, 'Function');
-                done();
-            })
+        has_(scripts, [
+            '/node_modules/appcfg/lib/appcfg.js::Foo'
+        ]);
+        is_(app.lib.Foo, 'Function');
     },
     'should support array as `main` property': {
         $before() {
@@ -78,8 +73,8 @@ UTest({
         $after() {
             File.getFactory().unregisterHandler(this.path.package, null);
         },
-        'javascripts and styles'(done) {
-            Application.create({
+        async 'javascripts and styles'() {
+            let app = await Application.create({
                 configs: null,
                 config: {
                     env: {
@@ -99,20 +94,18 @@ UTest({
                         }
                     }
                 }
-            })
-                .done(app => {
-                    var scripts = app.config.env.server.scripts.npm,
-                        styles = app.config.env.client.styles.npm
+            });
 
-                    has_(scripts, [
-                        '/node_modules/body-parser/foo.js',
-                        '/node_modules/body-parser/baz.js',
-                    ]);
-                    has_(styles, [
-                        '/node_modules/body-parser/quux.css'
-                    ]);
-                    done();
-                })
+            let scripts = app.config.env.server.scripts.npm,
+                styles = app.config.env.client.styles.npm
+
+            has_(scripts, [
+                '/node_modules/body-parser/foo.js',
+                '/node_modules/body-parser/baz.js',
+            ]);
+            has_(styles, [
+                '/node_modules/body-parser/quux.css'
+            ]);
         }
     }
 

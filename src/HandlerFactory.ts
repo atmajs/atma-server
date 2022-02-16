@@ -9,6 +9,8 @@ import { app_isDebug } from './util/app'
 import { class_Dfr, obj_getProperty } from 'atma-utils'
 import { IncomingMessage } from 'http'
 import { Collection } from 'ruta'
+import { HttpEndpointExplorer } from './HttpService/HttpEndpointExplorer'
+import { type HttpEndpoint } from './HttpService/HttpEndpoint'
 
 
 const fns_RESPONDERS = [
@@ -106,7 +108,7 @@ export default class HandlerFactory {
         return this;
     }
 
-    registerService(path, service, serviceCfg) {
+    registerService(path, service, serviceCfg?) {
         if (is_Function(service)) {
             service = {
                 controller: service
@@ -119,10 +121,9 @@ export default class HandlerFactory {
             };
         }
 
-        if (is_String(service.controller))
+        if (is_String(service.controller)) {
             service.controller = handler_path(service.controller, serviceCfg);
-
-
+        }
         this
             .services
             .add(path, service)
@@ -152,11 +153,19 @@ export default class HandlerFactory {
         socket.registerHandler(namespace, handler);
     }
 
+    registerEndpoint <T extends (new (...args) => HttpEndpoint)> (Type: T) {
+        let meta = HttpEndpointExplorer.getMeta(Type);
+        if (meta == null || meta.path == null) {
+            throw new Error(`Meta information not extracted from ${Type}`);
+        }
+        this.registerService(meta.path, Type);
+        return this;
+    }
+
     get(app: Application, req: IncomingMessage & { body: any }, callback) {
-        let url = req.url,
-            method = req.method,
-            base = app.config.base,
-            route;
+        let url = req.url;
+        let method = req.method;
+        let base = app.config.base;
 
         if (method === 'POST' && req.body && req.body._method) {
             method = req.body._method;
@@ -171,7 +180,7 @@ export default class HandlerFactory {
             }
         }
 
-        if (this.app !== Application.current) {
+        if (Application.current != null && this.app !== Application.current) {
             // check handlers of the root application
             let factory = Application.current.handlers,
                 cfg = Application.current.config;

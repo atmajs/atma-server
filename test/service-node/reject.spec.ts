@@ -1,6 +1,12 @@
 import HttpService from '../../src/HttpService/HttpService';
 import { HttpError } from '../../src/HttpError/HttpError';
 import Application from '../../src/HttpApplication/Application';
+import supertest from 'supertest'
+import * as http from 'http'
+
+let app: Application;
+let srv: supertest.SuperTest<any>;
+
 
 let rejectService = HttpService({
     '/string'() {
@@ -16,22 +22,19 @@ let rejectService = HttpService({
         this.reject({ error: 'FooError', baz: 'Lorem' });
     }
 });
-let app = Application.create({
-    configs: null,
-    config: {
-        debug: true,
-        services: {
-            '^/reject': rejectService
-        }
-    }
-});
-let srv = require('supertest')(
-    require('http').createServer(app.process)
-);
 
 UTest({
-    $before(done) {
-        app.done(() => done());
+    async $before() {
+        app = await Application.clean().create({
+            configs: null,
+            config: {
+                debug: true,
+                services: {
+                    '^/reject': rejectService
+                }
+            }
+        });
+        srv = supertest(http.createServer(app.process));
     },
 
     'string error'(done) {

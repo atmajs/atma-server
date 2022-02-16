@@ -5,7 +5,7 @@ import { HttpEndpointExplorer } from '../../src/HttpService/HttpEndpointExplorer
 
 
 UTest({
-    '!should resolve meta for the endpoint'() {
+    'should resolve meta for the endpoint'() {
         class User extends Serializable<User> {
             @Json.type(Date)
             date: Date

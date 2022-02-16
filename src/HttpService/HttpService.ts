@@ -16,7 +16,7 @@ let HttpServiceProto = Class({
         if (route == null)
             return;
 
-        var pathParts = route.path,
+        let pathParts = route.path,
             i = 0,
             imax = pathParts.length,
             count = 0;
@@ -35,12 +35,12 @@ let HttpServiceProto = Class({
 
     },
     help: function () {
-        var routes = this.routes.routes,
+        let routes = this.routes.routes,
             endpoints = []
             ;
 
 
-        var i = -1,
+        let i = -1,
             imax = routes.length,
             endpoint, info, meta;
         while (++i < imax) {
@@ -70,7 +70,7 @@ let HttpServiceProto = Class({
     },
     process: function (req, res) {
 
-        var iQuery = req.url.indexOf('?');
+        let iQuery = req.url.indexOf('?');
         if (iQuery !== -1
             && /\bhelp\b/.test(req.url.substring(iQuery))) {
 
@@ -81,11 +81,11 @@ let HttpServiceProto = Class({
             return this.reject(new SecurityError('Access Denied'));
         }
 
-        var path = req.url.substring(this.rootCharCount),
+        let path = req.url.substring(this.rootCharCount),
             entry = this.routes.get(path, req.method);
 
         if (entry == null && req.method === 'OPTIONS') {
-            var headers = this.getOptions(path, req, res);
+            let headers = this.getOptions(path, req, res);
             if (headers) {
                 res.writeHead(200, headers);
                 res.end();
@@ -95,7 +95,7 @@ let HttpServiceProto = Class({
         }
 
         if (entry == null) {
-            var name = this.name || '<service>',
+            let name = this.name || '<service>',
                 url = path || '/';
             return this
                 .reject(new NotFoundError(name
@@ -105,7 +105,7 @@ let HttpServiceProto = Class({
                     + url));
         }
 
-        var endpoint = entry.value,
+        let endpoint = entry.value,
             meta = endpoint.meta,
             args = meta && meta.arguments
             ;
@@ -116,15 +116,14 @@ let HttpServiceProto = Class({
         }
 
         if (args != null) {
-            var isGet = req.method === 'GET',
+            let isGet = req.method === 'GET',
                 isStrict = isGet === false && meta.strict,
                 body = isGet
                     ? entry.current.params
                     : req.body
                 ;
 
-            var error = service_validateArgs(body, args, isStrict);
-            console.log('ERROR', error);
+            let error = service_validateArgs(body, args, isStrict);
             if (error) {
                 return this.reject(new RequestError(error.message ?? error.toString()));
             }
@@ -139,7 +138,7 @@ let HttpServiceProto = Class({
         let promise = new class_Dfr();
 
         dfr.then((mix, statusCode, mimeType, headers) => {
-            var content = null;
+            let content = null;
             if (mix instanceof HttpResponse) {
                 content = mix.content;
                 statusCode = mix.statucCode;
@@ -183,7 +182,7 @@ let HttpServiceProto = Class({
                 let route = this.routes.get(path, method);
                 if (route != null) {
                     allowedMethods.push(method)
-                    var endpoint = route.value;
+                    let endpoint = route.value;
                     if (endpoint.meta) {
                         if (endpoint.meta.headers != null) {
                             headers = obj_extend(headers, endpoint.meta.headers);
@@ -223,7 +222,7 @@ let HttpServiceProto = Class({
 
 
 export default function HttpService(mix, ...params) {
-    var name, args;
+    let name, args;
 
     if (typeof mix === 'string') {
         name = mix;
@@ -232,9 +231,9 @@ export default function HttpService(mix, ...params) {
         args = [mix, ...params];
     }
 
-    var proto = endpoints_merge(args);
+    let proto = endpoints_merge(args);
 
-    var routes = new Collection,
+    let routes = new Collection,
         defs = proto.ruta || proto.routes || proto,
         path, responder, x
         ;
@@ -293,10 +292,10 @@ function endpoints_merge(array) {
     if (array.length === 1)
         return array[0];
 
-    var proto = array[0],
+    let proto = array[0],
         ruta = proto.ruta || proto.routes || proto;
 
-    var imax = array.length,
+    let imax = array.length,
         i = 0,
         x,
         xruta;
@@ -304,7 +303,7 @@ function endpoints_merge(array) {
         x = array[i];
         xruta = x.ruta || x.routes || x;
 
-        for (var key in xruta) {
+        for (let key in xruta) {
             if (xruta[key] != null) {
                 ruta[key] = xruta[key];
             }
@@ -313,7 +312,7 @@ function endpoints_merge(array) {
         if (x.ruta == null || x.routes) {
             continue;
         }
-        for (var key in x) {
+        for (let key in x) {
             if (key === 'ruta' || key === 'routes') {
                 continue;
             }

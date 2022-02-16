@@ -2,6 +2,9 @@
 import { HttpEndpoint } from '../../src/HttpService/HttpEndpoint'
 import { Serializable, Json } from 'class-json';
 import { Application } from '../../src/export';
+import supertest from 'supertest'
+import * as http from 'http'
+import axios from 'axios'
 
 
 function testMiddleware(req) {
@@ -38,24 +41,23 @@ class UriParserEndpoint extends HttpEndpoint {
     }
 }
 
-const app = Application.clean().create({
-    configs: null,
-    config: {
-        debug: true,
-        services: {
-            '^/tested': TestEndpoint,
-            '^/notallowed': SecuredEndpoint,
-            '^/params/uri': UriParserEndpoint,
-        }
-    }
-});
-const srv = require('supertest')(
-    require('http').createServer(app.process)
-);
+let app: Application;
+let srv: supertest.SuperTest<any>;
 
 UTest({
-    $before(done) {
-        app.done(done as any);
+    async $before() {
+        app = await Application.clean().create({
+            configs: null,
+            config: {
+                debug: true,
+                services: {
+                    '^/tested': TestEndpoint,
+                    '^/notallowed': SecuredEndpoint,
+                    '^/params/uri': UriParserEndpoint,
+                }
+            }
+        });
+        srv = supertest(http.createServer(app.process));
     },
 
     'get model': function (done) {
@@ -179,5 +181,24 @@ UTest({
             eq_(result.ticks, req.body.date.getTime());
             eq_(HttpEndpoint.prototype.meta, null, 'meta of the base class must be always null');
         }
+    },
+    async 'dynamic register' (done) {
+        @HttpEndpoint.route('/dynamic')
+        class Dynamic extends HttpEndpoint {
+            '$get /' () {
+                return { letter: 'A' }
+            }
+        }
+        const app = await Application.create({ configs: null });
+
+        app.handlers.registerEndpoint(Dynamic);
+
+        const server = app.listen(0);
+        const port = server.address().port;
+
+
+        let resp = await axios.get(`http://localhost:${port}/dynamic`);
+        eq_(resp.data?.letter, 'A');
+        server.close();
     }
 })

@@ -1,53 +1,54 @@
 import HttpPage from '../../src/HttpPage/HttpPage';
 import { StaticContent, Application } from '../../src/export';
+import supertest from 'supertest'
+import * as http from 'http'
 
 
-
+let app: Application;
+let srv: supertest.SuperTest<any>;
 
 class PageController extends HttpPage {
     master: string = 'layout:master #stab;'
     template = ':document'
 };
 
-const app = Application.clean().create({
-    base: __dirname,
-    configs: null,
-    config: {
-        debug: true,
-        page: {
-            errors: {
-                '404': {
-                    masterPath: '',
-                    templatePath: '~/error/404.mask'
-                }
-            }
-        },
-        pages: {
-            '/page': {
-                controller: PageController,
-                scripts: 'page-script.js',
-                styles: 'page-style.css',
-            }
-        },
-        env: {
-            client: {
-                styles: 'app-style.css',
-                scripts: 'app-scripts.js'
-            }
-        }
-    }
-});
-var srv = require('supertest')(
-    require('http').createServer(app.processor({
-        after: [
-            StaticContent.process
-        ]
-    }).process)
-);
 
 UTest({
-    $before(done) {
-        app.done(() => done());
+
+    async $before() {
+        app = await Application.clean().create({
+            base: __dirname,
+            configs: null,
+            config: {
+                debug: true,
+                page: {
+                    errors: {
+                        '404': {
+                            masterPath: '',
+                            templatePath: '~/error/404.mask'
+                        }
+                    }
+                },
+                pages: {
+                    '/page': {
+                        controller: PageController,
+                        scripts: 'page-script.js',
+                        styles: 'page-style.css',
+                    }
+                },
+                env: {
+                    client: {
+                        styles: 'app-style.css',
+                        scripts: 'app-scripts.js'
+                    }
+                }
+            }
+        });
+        srv = supertest(http.createServer(app.processor({
+            after: [
+                StaticContent.process
+            ]
+        }).process));
     },
     'find static'(done) {
         srv

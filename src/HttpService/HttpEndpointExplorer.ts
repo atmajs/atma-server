@@ -72,7 +72,7 @@ export namespace HttpEndpointExplorer {
                 continue;
             }
 
-            const methodParamsMeta = meta.endpointsParams[key];
+            const methodParamsMeta = meta.endpointsParams?.[key];
             const apiParams = methodParamsMeta?.map(methodParamMeta => {
                 return <IApiRouteParameterMeta> {
                     in: methodParamMeta.from === 'uri' ? 'query' : 'body',

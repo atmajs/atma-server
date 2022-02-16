@@ -203,6 +203,7 @@ declare module 'atma-server/HandlerFactory' {
     import { IHttpHandler, IHttpHandlerDef } from 'atma-server/IHttpHandler';
     import { IncomingMessage } from 'http';
     import { Collection } from 'ruta';
+    import { type HttpEndpoint } from 'atma-server/HttpService/HttpEndpoint';
     export default class HandlerFactory {
         app: Application;
         subapps: InstanceType<typeof Collection>;
@@ -216,9 +217,10 @@ declare module 'atma-server/HandlerFactory' {
         registerSubApps(routes: any, subAppCfg: any): this;
         registerSubApp(name: any, data: any, subAppCfg: any): void;
         registerServices(routes: any, serviceCfg: any): this;
-        registerService(path: any, service: any, serviceCfg: any): void;
+        registerService(path: any, service: any, serviceCfg?: any): void;
         registerWebsockets(routes: any, websocketCfg: any): this;
         registerWebsocket(namespace: any, handler: any, handlerCfg?: any): void;
+        registerEndpoint<T extends (new (...args: any[]) => HttpEndpoint)>(Type: T): this;
         get(app: Application, req: IncomingMessage & {
             body: any;
         }, callback: any): void;
@@ -305,15 +307,15 @@ declare module 'atma-server/HttpApplication/Application' {
             middleware?: Function[];
         }): this;
         process(req: IncomingMessage, res: ServerResponse, next?: any): void;
-        execute(url: any, method: any, body: any, headers: any): Response;
+        execute(url: string, method: 'get' | 'post' | 'put' | 'delete' | 'options', body?: any, headers?: any): Response;
         autoreload(httpServer?: net.Server): void;
         done(fn: any): void;
         fail(fn: any): void;
-        listen(): any;
-        listen(port: number): any;
+        listen(): net.Server;
+        listen(port: number): net.Server;
         listen(server: net.Server | {
             listen: Function;
-        }): any;
+        }): net.Server;
         getSubApp(path: any): any;
         static current: Application;
         static on: any;
