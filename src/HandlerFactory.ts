@@ -229,8 +229,9 @@ function processor_tryGet(
     callback: (ctr: IHttpHandler) => any) {
 
     let route = collection.get(url, method);
-    if (route == null)
+    if (route == null) {
         return false;
+    }
 
     let controller = route.value.controller || route.value;
     if (controller == null) {

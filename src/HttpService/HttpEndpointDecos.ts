@@ -59,6 +59,10 @@ export namespace HttpEndpointDecos {
     export function route (route: string) {
         return createDecorator({
             forCtor (Ctor, meta: IHttpEndpointMeta) {
+                // ensure we add ^ to the class, as the route is just a starting path for the methods
+                if (route.startsWith('^') === false) {
+                    route = '^' + route;
+                }
                 // files are dynamically parsed and the content resolved
                 meta.path = route;
             },

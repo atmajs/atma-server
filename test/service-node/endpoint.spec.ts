@@ -188,6 +188,9 @@ UTest({
             '$get /' () {
                 return { letter: 'A' }
             }
+            '$get /b' () {
+                return { letter: 'B' }
+            }
         }
         const app = await Application.create({ configs: null });
 
@@ -199,6 +202,10 @@ UTest({
 
         let resp = await axios.get(`http://localhost:${port}/dynamic`);
         eq_(resp.data?.letter, 'A');
+
+        let respB = await axios.get(`http://localhost:${port}/dynamic/b`);
+        eq_(respB.data?.letter, 'B');
+
         server.close();
     }
 })

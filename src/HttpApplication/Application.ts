@@ -286,6 +286,13 @@ class Application extends class_EventEmitter {
         }
         return this._server;
     }
+    getHttpPort () {
+        return this._server?.address().port;
+    }
+    getSslPort () {
+        return this._sslServer?.address().port;
+    }
+
     getSubApp(path) {
         let route = this.handlers.subapps.get(path);
         return route && route.value && route.value.app_;
