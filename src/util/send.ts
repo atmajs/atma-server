@@ -4,6 +4,7 @@ import { mime_HTML, mime_JSON } from '../const/mime'
 import { HttpErrorUtil, RuntimeError } from '../HttpError/HttpError'
 import { cors_ensure } from '../util/cors'
 import Application from '../HttpApplication/Application';
+import { HttpResponse } from '../IHttpHandler';
 
 export function send_REDIRECT (res: ServerResponse, url: string, code = 302) {
     res.statusCode = code;
@@ -12,14 +13,24 @@ export function send_REDIRECT (res: ServerResponse, url: string, code = 302) {
     res.end();
 }
 
-export function send_JSON (req: IncomingMessage, res: ServerResponse, json, statusCode, headers, app: Application, startedAt: number) {
+export function send_JSON (req: IncomingMessage, res: ServerResponse, response: HttpResponse, app: Application, startedAt: number) {
+    let { content } = response;
     let str;
     try {
-        str = JSON.stringify(json);
+        str = JSON.stringify(content);
     } catch (error) {
         return send_Error(req, res, new RuntimeError(`Json Serialization: ${error.message}`), null, app, startedAt);
     }
-    send_Content(req, res, str, statusCode || 200, mime_JSON, headers, app, startedAt);
+
+    response.content = str;
+    response.mimeType = mime_JSON;
+    send_Content(
+        req
+        , res
+        , response
+        , app
+        , startedAt
+    );
 };
 
 export function send_Error (req: IncomingMessage, res: ServerResponse, error, headers, app: Application, startedAt: number) {
@@ -27,13 +38,17 @@ export function send_Error (req: IncomingMessage, res: ServerResponse, error, he
         // indirect check if error is the HttpError instance
         error = HttpErrorUtil.create(error);
     }
+
+    let response = new HttpResponse({
+        content: JSON.stringify(error),
+        statusCode: error.statusCode ?? 500,
+        headers: headers,
+        mimeType: mime_JSON,
+    });
     send_Content(
-        req,
-        res
-        , JSON.stringify(error)
-        , error.statusCode || 500
-        , mime_JSON
-        , headers
+        req
+        , res
+        , response
         , app
         , startedAt
         , error
@@ -43,15 +58,13 @@ export function send_Error (req: IncomingMessage, res: ServerResponse, error, he
 export function send_Content (
     req: IncomingMessage,
     res: ServerResponse,
-    content: string | Buffer | any | Error,
-    statusCode: number,
-    mimeType,
-    headers,
+    response: HttpResponse,
     app: Application,
     startedAt: number,
     error?
 ) {
 
+    let { content, statusCode, mimeType, headers } = response;
     if (typeof content !== 'string' && content instanceof Buffer === false) {
 
         if (content instanceof Error) {
@@ -60,7 +73,7 @@ export function send_Content (
         }
 
         if (is_Object(content)) {
-            send_JSON(req, res, content, statusCode, headers, app, startedAt);
+            send_JSON(req, res, response, app, startedAt);
             return;
         }
 

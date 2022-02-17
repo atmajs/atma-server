@@ -31,7 +31,7 @@ UTest({
         }
 
         let meta = HttpEndpointExplorer.getMeta(Foo);
-        eq_(meta.path, '/foo/bar');
+        eq_(meta.path, '^/foo/bar');
         eq_(meta.paths.length, 2);
 
         has_(meta.paths[0], {

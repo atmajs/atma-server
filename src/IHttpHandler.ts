@@ -1,5 +1,5 @@
+import { class_Dfr } from 'atma-utils'
 import { IncomingMessage, ServerResponse } from 'http'
-import { Class } from './dependency'
 import { IApplicationConfig } from './HttpApplication/IApplicationConfig'
 
 export interface IHttpHandlerDef {
@@ -21,8 +21,8 @@ export interface IHttpHandler {
 };
 
 export class HttpResponse {
-    content: string | Buffer | any
-    statucCode: number
+    content: string | Buffer | Error | ReadableStream | any
+    statusCode: number
     mimeType: string
     headers: { [key: string]: string }
 
@@ -30,5 +30,38 @@ export class HttpResponse {
         if (json != null) {
             Object.assign(this, json);
         }
+    }
+
+    static ensure (result: string | Buffer | ReadableStream | HttpResponse | Error | any, statusCode?: number) {
+        if (result instanceof HttpResponse) {
+            if (result.statusCode == null) {
+                result.statusCode = 200;
+            }
+            return result;
+        }
+        if (result instanceof Error) {
+            return new HttpResponse({
+                content: result,
+                statusCode: statusCode ?? 500
+            });
+        }
+        return new HttpResponse({
+            content: result,
+            statusCode: 200
+        });
+    }
+    static pipe(dfr: class_Dfr, result: HttpResponse['content'] | HttpResponse) {
+        if (typeof result.then === 'function') {
+            result.then(
+                x => {
+                    dfr.resolve(HttpResponse.ensure(x))
+                },
+                err => {
+                    dfr.reject(HttpResponse.ensure(err))
+                },
+            );
+            return;
+        }
+        dfr.resolve(HttpResponse.ensure(result));
     }
 }

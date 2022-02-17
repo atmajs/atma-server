@@ -6,11 +6,15 @@ ts-temp/
 tools/
 
 .komodotools
-.npmignore
 .vscode
+.travis.yml
 .gitattributes
 *.komodoproject
 
 build.js
 tsconfig.json
 tsconfig-build.json
+
+typings-other/
+typings/
+bootstrap/

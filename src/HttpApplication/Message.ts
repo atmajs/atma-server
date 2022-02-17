@@ -19,7 +19,7 @@ export class Request {
         this.url = url;
         this.method = (method || 'GET').toUpperCase();
         this.body = body;
-        this.headers = headers;
+        this.headers = headers ?? {};
     }
 };
 

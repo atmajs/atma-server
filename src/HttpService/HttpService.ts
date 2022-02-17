@@ -6,6 +6,8 @@ import { class_Dfr } from 'atma-utils';
 import { HttpResponse } from '../IHttpHandler';
 import { cors_rewriteAllowedOrigins } from '../util/cors';
 import { Collection } from 'ruta'
+import type { ServerResponse } from 'http';
+import type { IServerRequest } from '../models/IServerRequest';
 
 let HttpServiceProto = Class({
     Extends: Class.Deferred,
@@ -68,17 +70,15 @@ let HttpServiceProto = Class({
 
         return endpoints;
     },
-    process: function (req, res) {
+    process (req: IServerRequest, res: ServerResponse): void | PromiseLike<HttpResponse> {
 
         let iQuery = req.url.indexOf('?');
-        if (iQuery !== -1
-            && /\bhelp\b/.test(req.url.substring(iQuery))) {
-
-            return this.resolve(this.help());
+        if (iQuery !== -1 && /\bhelp\b/.test(req.url.substring(iQuery))) {
+            return Promise.resolve(this.help());
         }
 
         if (secure_canAccess(req, this.secure) === false) {
-            return this.reject(new SecurityError('Access Denied'));
+            return Promise.reject(new SecurityError('Access Denied'));
         }
 
         let path = req.url.substring(this.rootCharCount),
@@ -95,14 +95,10 @@ let HttpServiceProto = Class({
         }
 
         if (entry == null) {
-            let name = this.name || '<service>',
-                url = path || '/';
-            return this
-                .reject(new NotFoundError(name
-                    + ': endpoint not Found: <'
-                    + req.method
-                    + '> '
-                    + url));
+            let name = this.name || '<service>';
+            let url = path || '/';
+            let message = `${name}: endpoint not Found: <${req.method}> ${url}`;
+            return Promise.reject(new NotFoundError(message));
         }
 
         let endpoint = entry.value,
@@ -111,8 +107,7 @@ let HttpServiceProto = Class({
             ;
 
         if (meta != null && secure_canAccess(req, meta.secure) === false) {
-            return this
-                .reject(new SecurityError('Access Denied'));
+            return Promise.reject(new SecurityError('Access Denied'));
         }
 
         if (args != null) {
@@ -125,36 +120,40 @@ let HttpServiceProto = Class({
 
             let error = service_validateArgs(body, args, isStrict);
             if (error) {
-                return this.reject(new RequestError(error.message ?? error.toString()));
+                return Promise.reject(new RequestError(error.message ?? error.toString()));
             }
-
         }
 
         let result = endpoint
             .process
             .call(this, req, res, entry.current.params);
 
-        let dfr = result || this;
-        let promise = new class_Dfr();
-
+        let dfr = result ?? this;
+        let promise = new class_Dfr<HttpResponse>();
         dfr.then((mix, statusCode, mimeType, headers) => {
-            let content = null;
-            if (mix instanceof HttpResponse) {
-                content = mix.content;
-                statusCode = mix.statucCode;
-                mimeType = mix.mimeType;
-                headers = mix.headers;
+            let response: HttpResponse;
+            if (mix instanceof HttpResponse === false) {
+                response = new HttpResponse({
+                    content: mix,
+
+                    //@Obsolete - this callback shouldn't support multiple arguments.
+                    statusCode: statusCode,
+                    mimeType: mimeType,
+                    headers: headers,
+                });
+            } else {
+                response = mix;
             }
-            else {
-                content = mix;
-            }
+
             if (meta != null && meta.origins) {
                 let corsHeaders = this.getOptions(path, req, res);
-                headers = headers == null ? corsHeaders : obj_extend(headers, corsHeaders);
+                response.headers = obj_extend(response.headers, corsHeaders);
             }
+            promise.resolve(response);
 
-            promise.resolve(content, statusCode, mimeType, headers);
-        }, error => promise.reject(error))
+        }, error => {
+            promise.reject(error)
+        });
 
         return promise;
     },

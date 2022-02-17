@@ -78,7 +78,7 @@ export abstract class HttpEndpoint {
         let entry = this.routes.get(path, req.method);
         if (entry == null) {
             if (req.method === 'OPTIONS') {
-                var headers = HttpEndpointUtils.getOptionsHeaders(this, path, req);
+                let headers = HttpEndpointUtils.getOptionsHeaders(this, path, req);
                 if (headers) {
                     res.writeHead(200, headers);
                     res.end();
@@ -111,7 +111,7 @@ export abstract class HttpEndpoint {
                     : req.body
                     ;
 
-                var error = service_validateArgs(body, args, isStrict);
+                let error = service_validateArgs(body, args, isStrict);
                 if (error) {
                     return Promise.reject(new RequestError(error.message));
                 }
@@ -202,22 +202,25 @@ export namespace HttpEndpointUtils {
         headers?
     ) {
 
-        let content = null;
-        if (mix instanceof HttpResponse) {
-            content = mix.content;
-            statusCode = mix.statucCode;
-            mimeType = mix.mimeType;
-            headers = mix.headers;
-        }
-        else {
-            content = mix;
-        }
-        if (endpoint.meta?.origins) {
-            let corsHeaders = getOptionsHeaders(endpoint, path, req);
-            headers = headers == null ? corsHeaders : obj_extend(headers, corsHeaders);
+        let response: HttpResponse;
+        if (mix instanceof HttpResponse === false) {
+            response = new HttpResponse({
+                content: mix,
+
+                //@Obsolete - this callback shouldn't support multiple arguments.
+                statusCode: statusCode,
+                mimeType: mimeType,
+                headers: headers,
+            });
+        } else {
+            response = mix;
         }
 
-        promise.resolve(content, statusCode, mimeType, headers);
+        if (endpoint.meta?.origins) {
+            let corsHeaders = getOptionsHeaders(endpoint, path, req);
+            response.headers = obj_extend(response.headers, corsHeaders);
+        }
+        promise.resolve(response);
     }
 
     export function getHelpModel(service: HttpEndpoint) {
@@ -337,15 +340,15 @@ export namespace RouteUtils {
     }
 
     function fillProtoHash(proto, hash) {
-        var keys = Object.getOwnPropertyNames(proto);
-        for (var i = 0; i < keys.length; i++) {
-          var key = keys[i];
+        let keys = Object.getOwnPropertyNames(proto);
+        for (let i = 0; i < keys.length; i++) {
+          let key = keys[i];
           if (null != hash[key]) {
             continue;
           }
           hash[key] = proto[key];
         }
-        var next = Object.getPrototypeOf(proto);
+        let next = Object.getPrototypeOf(proto);
         if (null == next || next === Object.prototype) {
           return hash;
         }

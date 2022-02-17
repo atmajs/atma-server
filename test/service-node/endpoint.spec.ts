@@ -126,7 +126,7 @@ UTest({
             let req = { url: '/?foo=f&bar=b', method: 'GET', headers: {} };
             let foo = new Foo(null, null);
 
-            let result = await foo.process(req as any, null);
+            let { content: result } = await foo.process(req as any, null);
             deepEq_(result, {
                 foo: 'f',
                 bar: 'b'
@@ -151,7 +151,7 @@ UTest({
             let req = { url: '/?foo=false&bar=12', method: 'GET', headers: {} };
             let foo = new Foo(null, null);
 
-            let result = await foo.process(req as any, null);
+            let { content: result } = await foo.process(req as any, null);
             deepEq_(result, {
                 foo: false,
                 bar: 12
@@ -177,7 +177,7 @@ UTest({
             let req = { url: '/', method: 'GET', headers: {}, body: { date: new Date() } };
             let foo = new Foo(null, null);
 
-            let result = await foo.process(req as any, null);
+            let { content: result } = await foo.process(req as any, null);
             eq_(result.ticks, req.body.date.getTime());
             eq_(HttpEndpoint.prototype.meta, null, 'meta of the base class must be always null');
         }

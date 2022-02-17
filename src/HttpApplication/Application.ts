@@ -374,7 +374,7 @@ function responder(app) {
         );
     }
 }
-export function respond_Raw(app, req, res) {
+export function respond_Raw(app, req: IncomingMessage, res: ServerResponse) {
     handler_resolve(
         app
         , req
@@ -386,6 +386,18 @@ export function respond_Raw(app, req, res) {
         , handler_processRaw
     );
 }
+// function handler_processRaw(app: Application, handler, m_req: Request, m_res: Response) {
+//     if (handler instanceof HttpSubApplication) {
+//         handler.execute(m_req, m_res);
+//         return;
+//     }
+
+//     handler.process(m_req, m_res, app.config)
+//     if (handler.done == null) {
+//         return;
+//     }
+//     handler.pipe(m_res);
+// }
 function middleware_processDelegate(middlewareRunner) {
     return function (app, handler: IHttpHandler, req, res) {
         const startedAt = Date.now();
@@ -434,7 +446,7 @@ function handler_process(app: Application, handler: IHttpHandler, req: http.Inco
             handler_await(app, handler, req, res, result, startedAt);
             return;
         }
-        handler_complete(app, handler, req, res, result, null, null, null, startedAt);
+        handler_complete(app, handler, req, res, result, startedAt);
         return;
     }
 
@@ -443,6 +455,27 @@ function handler_process(app: Application, handler: IHttpHandler, req: http.Inco
         return;
     }
     handler_await(app, handler, req, res, handler, startedAt);
+}
+function handler_processRaw(app: Application, handler, mockReq: Request, mockRes: Response) {
+    if (handler instanceof HttpSubApplication) {
+        handler.execute(mockReq, mockRes);
+        return;
+    }
+    let result = null;
+    try {
+        result = handler.process(mockReq, mockRes, app.config)
+    } catch (error) {
+        mockRes.reject(HttpResponse.ensure(error));
+        return;
+    }
+    if (result != null) {
+        HttpResponse.pipe(mockRes, result);
+        return;
+    }
+    if (handler.then == null) {
+        return;
+    }
+    handler.pipe(mockRes);
 }
 function handler_await(app: Application
     , handler: IHttpHandler
@@ -453,24 +486,26 @@ function handler_await(app: Application
 ) {
     dfr.then(
         function onSuccess(mix: string | Buffer | HttpResponse | any, statusCode, mimeType, headers) {
-            let content = null;
-            if (mix instanceof HttpResponse) {
-                content = mix.content;
-                statusCode = mix.statucCode;
-                mimeType = mix.mimeType;
-                headers = mix.headers;
+            let response: HttpResponse;
+            if (mix instanceof HttpResponse === false) {
+                response = new HttpResponse({
+                    content: mix,
+
+                    //@Obsolete - this callback shouldn't support multiple arguments.
+                    statusCode: statusCode,
+                    mimeType: mimeType,
+                    headers: headers,
+                });
             } else {
-                content = mix;
+                response = mix;
             }
+
             handler_complete(
                 app
                 , handler
                 , req
                 , res
-                , content
-                , statusCode
-                , mimeType
-                , headers
+                , response
                 , startedAt
             );
         },
@@ -495,15 +530,14 @@ function handler_complete(
     handler: IHttpHandler,
     req: IncomingMessage,
     res: ServerResponse,
-    content: string | Buffer | any,
-    statusCode: number,
-    mimeType: string,
-    headers,
+    response: HttpResponse,
     startedAt: number)
 {
     let send = handler.send ?? send_Content;
-    let allHeaders = handler_resolveHeaders(app, handler, headers);
-    send(req, res, content, statusCode, mimeType, allHeaders, app, startedAt);
+    let allHeaders = handler_resolveHeaders(app, handler, response.headers);
+
+    response.headers = allHeaders;
+    send(req, res, response, app, startedAt);
 }
 function handler_resolveHeaders(app, handler: IHttpHandler, overrides = null) {
     let headers_Handler = handler.meta?.headers;
@@ -513,16 +547,7 @@ function handler_resolveHeaders(app, handler: IHttpHandler, overrides = null) {
     }
     return obj_assign({}, headers_App, headers_Handler, overrides);
 }
-function handler_processRaw(app: Application, handler, m_req, m_res) {
-    if (handler instanceof HttpSubApplication) {
-        handler.execute(m_req, m_res);
-        return;
-    }
-    handler.process(m_req, m_res, app.config)
-    if (handler.done == null)
-        return;
-    handler.pipe(m_res);
-}
+
 function cfg_doneDelegate(app: Application) {
     return function (cfg) {
         app.config = cfg;

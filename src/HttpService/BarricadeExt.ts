@@ -3,7 +3,7 @@ import { class_Dfr } from 'atma-utils';
 import { HttpError } from '../HttpError/HttpError'
 
 
-var Runner = Class.Collection(Function, {
+const Runner = Class.Collection(Function, {
     Base: Class.Serializable,
     process: function (service, req, res, params) {
         let dfr = new class_Dfr;
@@ -77,8 +77,7 @@ function reject(service, error) {
 
 export const BarricadeExt = function (middlewares) {
 
-    var barricade = new Runner(middlewares);
-
+    let barricade = new Runner(middlewares);
     return function (req, res, params) {
         return barricade.process(this, req, res, params);
     };

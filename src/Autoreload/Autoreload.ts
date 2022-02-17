@@ -121,8 +121,7 @@ function reloadConfigDelegate(app) {
         app
             .defer()
             ._loadConfig()
-            .done(function () {
-
+            .then(function () {
                 Autoreload.fileChanged(path);
             })
             ;

@@ -7,6 +7,7 @@ import { send_Content } from '../util/send'
 import { mime_HTML, mime_PLAIN } from '../const/mime'
 import { parse } from 'ruta'
 import HttpPageBase from './HttpPageBase'
+import { HttpResponse } from '../IHttpHandler'
 
 export const page_Create = function (classProto) {
 
@@ -131,17 +132,19 @@ export const page_process = function (page, nodes, onSuccess) {
             null,
             page
         )
-        .done(function (html) {
-            if (page.ctx._rewrite != null) {
-                Application
-                    .current
-                    .handlers
-                    .get(page.ctx._rewrite, {} as any, page_rewriteDelegate(page));
-                return;
-            }
-            onSuccess(html);
-        })
-        .fail(page.rejectDelegate());
+        .then(
+            function (html) {
+                if (page.ctx._rewrite != null) {
+                    Application
+                        .current
+                        .handlers
+                        .get(page.ctx._rewrite, {} as any, page_rewriteDelegate(page));
+                    return;
+                }
+                onSuccess(html);
+            },
+            page.rejectDelegate()
+        );
 };
 
 let page_processPartial
@@ -211,7 +214,12 @@ export { page_processPartial }
 export const pageError_sendDelegate = function (req, res, error, app) {
 
     return function (html) {
-        send_Content(req, res, html, error.statusCode || 500, mime_HTML, null, app, 0);
+        let response = new HttpResponse({
+            content: html,
+            statusCode: error.statusCode ?? 500,
+            mimeType: mime_HTML,
+        });
+        send_Content(req, res, response, app, 0);
     };
 };
 
@@ -224,6 +232,11 @@ export const pageError_failDelegate = function (req, res, error, app) {
 
         str += '\nError: ' + error.message
 
-        send_Content(req, res, 'ErrorPage Failed: ' + str, 500, mime_PLAIN, null, app, 0);
+        let response = new HttpResponse({
+            content: 'ErrorPage Failed: ' + str,
+            statusCode: 500,
+            mimeType: mime_PLAIN,
+        });
+        send_Content(req, res, response, app, 0);
     }
 };
