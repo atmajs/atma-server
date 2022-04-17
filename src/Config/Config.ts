@@ -13,19 +13,21 @@ import ConfigUtils, {
 } from './ConfigUtils'
 import { IApplicationConfig } from '../HttpApplication/IApplicationConfig';
 import { ConfigDefaults } from './ConfigDefaults';
+import type Application from '../HttpApplication/Application';
 
 const PATH = 'server/config/**.yml';
 const BUILD_PATH = 'public/build/stats.json';
 
+declare let global;
 
-export default function Config(params: IApplicationConfig, app?) {
+export default function Config(params: IApplicationConfig, app?: Application) {
     params = params || {};
 
-    var path_base = params.base,
-        configPaths = params.configs,
-        disablePackageJson = params.disablePackageJson === true,
-        path_Build,
-        appConfig;
+    let path_base = params.base;
+    let configPaths = params.configs;
+    let disablePackageJson = params.disablePackageJson === true;
+    let path_Build;
+    let appConfig;
 
     path_base = path_base == null
         ? 'file://' + path_normalize(process.cwd()) + '/'
@@ -41,7 +43,7 @@ export default function Config(params: IApplicationConfig, app?) {
         appConfig = { config: params.config };
     }
 
-    var $sources = [
+    let $sources = [
         {
             config: ConfigDefaults
         },
@@ -81,9 +83,17 @@ export default function Config(params: IApplicationConfig, app?) {
         }
     });
 
+
     return AppConfig
         .fetch($sources)
         .then(function (cfg) {
+
+            // Setting current app to global, sothat plugins can read their configurations (if any)
+            if (global.app == null) {
+                global.app = app;
+            }
+            app.config = cfg as any;
+
 
             return Promise.all([
                 configurate_Mask(cfg),

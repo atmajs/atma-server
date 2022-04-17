@@ -5,7 +5,7 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.5.12",
+    "version": "0.5.13",
     "main": "./lib/server.js",
     "types": "./lib/server.d.ts",
     "repository": {
@@ -15,7 +15,7 @@
     "license": "MIT",
     "dependencies": {
         "alot": "^0.2.96",
-        "appcfg": "^0.4.58",
+        "appcfg": "^0.4.64",
         "atma-class": ">=1.1.79",
         "atma-io": "^1.2.31",
         "atma-logger": ">0.0.81",
