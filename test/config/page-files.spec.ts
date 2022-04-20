@@ -9,24 +9,24 @@ UTest({
                 ]
             }
         };
-        var config = await Config({
-            base: './examples/',
-            configs: null,
-            config: {
-                debug: true,
-                env: {
-                    both: {
-                        imports: imports
-                    },
-                    client: {}
-                },
-                page: {
-                    location: {
-                        pageFiles: 'pages/'
-                    }
-                }
-            },
-            disablePackageJson: true
-        });
+        // var config = await Config({
+        //     base: './examples/',
+        //     configs: null,
+        //     config: {
+        //         debug: true,
+        //         env: {
+        //             both: {
+        //                 imports: imports
+        //             },
+        //             client: {}
+        //         },
+        //         page: {
+        //             location: {
+        //                 pageFiles: 'pages/'
+        //             }
+        //         }
+        //     },
+        //     disablePackageJson: true
+        // });
     }
 })

@@ -88,12 +88,13 @@ export default function Config(params: IApplicationConfig, app?: Application) {
         .fetch($sources)
         .then(function (cfg) {
 
-            // Setting current app to global, sothat plugins can read their configurations (if any)
-            if (global.app == null) {
-                global.app = app;
+            if (app != null) {
+                // Setting current app to global, sothat plugins can read their configurations (if any)
+                if (global.app == null) {
+                    global.app = app;
+                }
+                app.config = cfg as any;
             }
-            app.config = cfg as any;
-
 
             return Promise.all([
                 configurate_Mask(cfg),

@@ -66,8 +66,29 @@ UTest({
                 exists = () => true
                 content = 'Foo'
             };
-            File.getFactory().registerHandler(
+
+            const factory = File.getFactory();
+            factory.registerHandler(
                 this.path.package, this.package
+            );
+
+            factory.registerHandler(
+                /body-parser\/foo\.js$/, class extends File {
+                    exists = () => true
+                    content = 'var foo = 1';
+                }
+            );
+            factory.registerHandler(
+                /body-parser\/baz\.js$/, class extends File {
+                    exists = () => true
+                    content = 'var baz = 1';
+                }
+            );
+            factory.registerHandler(
+                /body-parser\/quux\.css$/, class extends File {
+                    exists = () => true
+                    content = 'body {}';
+                }
             );
         },
         $after() {
@@ -75,8 +96,10 @@ UTest({
         },
         async 'javascripts and styles'() {
             let app = await Application.create({
+                debug: false,
                 configs: null,
                 config: {
+                    debug: false,
                     env: {
                         server: {
                             scripts: {

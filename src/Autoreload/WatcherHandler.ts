@@ -1,7 +1,7 @@
 import { path_normalize } from '../util/path'
 import { io, logger, mask, include, Uri } from '../dependency'
 import { class_EventEmitter } from 'atma-utils';
-
+import { type File } from 'atma-io';
 interface IWatcherEvents {
     fileChange(rel, absPath?, reqPath?)
 }
@@ -14,7 +14,7 @@ export class WatcherHandler extends class_EventEmitter<IWatcherEvents> {
         super();
         this.fileChanged = this.fileChanged.bind(this);
     }
-    watch (file){
+    watch (file: InstanceType<typeof File>){
         let path = file.uri.toString();
         if (_watchers[path] != null) {
             return;
