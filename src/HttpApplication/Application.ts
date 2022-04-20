@@ -374,7 +374,7 @@ function responder(app) {
         );
     }
 }
-export function respond_Raw(app, req: IncomingMessage, res: ServerResponse) {
+export function respond_Raw(app, req: Request, res: Response) {
     handler_resolve(
         app
         , req

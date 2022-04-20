@@ -49,7 +49,8 @@ export class Response  extends mixin(class_EventEmitter, class_Dfr) {
 
     writeHead (code: number, reason: string, headers: any)
     writeHead (code: number, headers: any)
-    writeHead (code: number) {
+    writeHead (code: number)
+    writeHead (code: number, arg1?: string | any, arg2?: any) {
         if (this.writable === false)
             return;
 
