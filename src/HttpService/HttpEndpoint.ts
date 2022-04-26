@@ -86,6 +86,17 @@ export abstract class HttpEndpoint {
                     return void 0;
                 }
             }
+            if (req.method === 'HEAD') {
+                entry = this.routes.get(path, 'GET')
+                if (entry) {
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json'
+                    });
+                    res.end();
+                    // Return nothing back to application
+                    return void 0;
+                }
+            }
 
             let name = this.constructor.name || '<service>';
             let url = path || '/';
