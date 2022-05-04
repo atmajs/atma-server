@@ -330,6 +330,7 @@ declare module 'atma-server/HttpApplication/Application' {
         static Config: typeof Config;
         static clean(): typeof Application;
         static create(config: IApplicationConfig): Promise<Application>;
+        static isApplication(app: any): app is Application;
     }
     export function respond_Raw(app: any, req: Request, res: Response): void;
     export default Application;

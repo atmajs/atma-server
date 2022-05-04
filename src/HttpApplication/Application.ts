@@ -121,11 +121,11 @@ class Application extends class_EventEmitter {
         this._outerPipe = new MiddlewareRunner(array);
     }
 
-	/**
-	 * :before - Array|Function - Middleware fns in OUTER pipe, before main responder
-	 * :middleware - Arrat|Function - Middleware fns in INNER pipe, before the Handler
-	 * :after - Array|Function - Middlewarefns in OUTER pipe, after the Handler
-	 */
+    /**
+     * :before - Array|Function - Middleware fns in OUTER pipe, before main responder
+     * :middleware - Arrat|Function - Middleware fns in INNER pipe, before the Handler
+     * :after - Array|Function - Middlewarefns in OUTER pipe, after the Handler
+     */
     processor(data: { before?: Function[], after?: Function[], middleware?: Function[] } = {}) {
 
         let before = data.before,
@@ -165,13 +165,13 @@ class Application extends class_EventEmitter {
 
         // @TODO ? middleware pipeline in RAW requests
         //this._responders.process(
-        //	req,
-        //	res,
-        //	respond,
-        //	this.config
+        //    req,
+        //    res,
+        //    respond,
+        //    this.config
         //);
         //function respond() {
-        //	responder_Raw(req, res);
+        //    responder_Raw(req, res);
         //}
         respond_Raw(this, req, res);
         return res;
@@ -346,6 +346,15 @@ class Application extends class_EventEmitter {
                 .promise
                 .then(resolve, reject);
         });;
+    }
+    static isApplication (app): app is Application {
+        if (app == null || typeof app !== 'object') {
+            return false;
+        }
+        if (typeof app.process === 'function') {
+            return true;
+        }
+        return false;
     }
 };
 
