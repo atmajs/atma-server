@@ -9,7 +9,7 @@ export namespace $network {
             .fromObject(dict)
             .mapMany(group => {
                 return alot(group.value as os.NetworkInterfaceInfo[])
-                    .filter(x => x.family === 'IPv4')
+                    .filter(x => x.family === 'IPv4' && x.address !== '127.0.0.1')
                     .map(x => {
                         return {
                             name: group.key,

@@ -337,7 +337,7 @@ class Application extends class_EventEmitter {
             .getHosts()
             .forEach(info => {
                 let url = `${protocol}://${info.host}:${port}`;
-                logger.log(`${info.name}: \t bold<${url}>`);
+                logger.log(`${info.name}: \t ${url}`);
             });
     }
 
