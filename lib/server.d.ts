@@ -259,6 +259,7 @@ declare module 'atma-server/HttpPage/HttpPage' {
 }
 
 declare module 'atma-server/HttpApplication/Application' {
+    import * as net from 'net';
     import { Request, Response } from 'atma-server/HttpApplication/Message';
     import HandlerFactory from 'atma-server/HandlerFactory';
     import WebSocket from 'atma-server/WebSocket';
@@ -267,7 +268,6 @@ declare module 'atma-server/HttpApplication/Application' {
     import { IApplicationDefinition, IApplicationConfig, IAppConfigExtended } from 'atma-server/HttpApplication/IApplicationConfig';
     import HttpRewriter from 'atma-server/HttpRewrites/HttpRewriter';
     import { ServerResponse, IncomingMessage } from 'http';
-    import * as net from 'net';
     import { class_EventEmitter, class_Dfr } from 'atma-utils';
     import { LifecycleEvents } from 'atma-server/HttpApplication/LifecycleEvents';
     class Application extends class_EventEmitter {

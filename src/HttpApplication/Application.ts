@@ -1,4 +1,8 @@
-import { include, logger, obj_extend } from '../dependency'
+import * as http from 'http'
+import * as https from 'https'
+import * as net from 'net'
+
+import { include, logger, obj_extend, io } from '../dependency'
 import { Request, Response } from './Message'
 import { cli_arguments } from '../util/cli'
 import { app_isDebug } from '../util/app'
@@ -18,15 +22,12 @@ import { obj_assign } from '../util/obj'
 import { ServerResponse, IncomingMessage } from 'http';
 import { IHttpHandler } from '../export';
 import { HttpResponse } from '../IHttpHandler';
-import { io } from '../dependency'
 
-import * as http from 'http'
-import * as https from 'https'
-import * as net from 'net'
 import { HttpEndpointExplorer } from '../HttpService/HttpEndpointExplorer'
 import { class_EventEmitter, class_Dfr, mixin } from 'atma-utils'
 import { LifecycleEvents } from './LifecycleEvents'
 import { HttpEndpointUtils } from '../HttpService/HttpEndpoint'
+import { $network } from '../util/$network'
 
 let _emitter = new class_EventEmitter();
 
@@ -217,15 +218,15 @@ class Application extends class_EventEmitter {
                     break;
             }
         }
-        if (port == null)
+        if (port == null) {
             port = this.config.$get('port');
-
-        if (port == null)
+        }
+        if (port == null) {
             throw Error('Port number is not defined');
-
-        if (server == null)
+        }
+        if (server == null) {
             server = http.createServer();
-
+        }
         if (this.webSockets.hasHandlers()) {
             this.webSockets.listen(this._server);
         }
@@ -270,12 +271,14 @@ class Application extends class_EventEmitter {
                     this.process(req, res, next);
                 };
             }
+            this._printServerInfo('http', port);
         }
 
         this._server = server
             .on('request', processFn)
             .listen(port)
             ;
+        this._printServerInfo('http', port);
 
         _emitter.trigger('listen', this);
 
@@ -327,6 +330,15 @@ class Application extends class_EventEmitter {
 
         // send json
         send_Error(req, res, error, null, this, Date.now());
+    }
+
+    private _printServerInfo (protocol: 'http' | 'https', port: number) {
+        $network
+            .getHosts()
+            .forEach(info => {
+                let url = `${protocol}://${info.host}:${port}`;
+                logger.log(`${info.name}: \t bold<${url}>`);
+            });
     }
 
     static current: Application = null
