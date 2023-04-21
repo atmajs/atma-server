@@ -5,7 +5,7 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.5.19",
+    "version": "0.5.20",
     "main": "./lib/server.js",
     "types": "./lib/server.d.ts",
     "repository": {
@@ -21,7 +21,7 @@
         "atma-logger": ">0.0.81",
         "atma-utils": "^0.2.58",
         "class-json": "^0.3.7",
-        "includejs": "^0.16.2",
+        "includejs": "^0.17.1",
         "maskjs": "^0.72.36",
         "memd": "^0.3.10",
         "ruta": "^0.2.70",
