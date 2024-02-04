@@ -3,7 +3,7 @@ version: 2.1
 
 orbs:
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/node
-  node: circleci/node@5.1.0
+  node: circleci/browser-tools@1.4.6
 
 jobs:
   build-and-test:
@@ -12,6 +12,8 @@ jobs:
     docker:
       - image: cimg/node:20.8.1-browsers
     steps:
+      - browser-tools/install-browser-tools
+      - firefox --version
       - checkout
       - run:
           name: Checkout submodules
