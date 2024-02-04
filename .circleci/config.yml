@@ -25,11 +25,13 @@ jobs:
       - run:
           name: Launch Server
           command: npm run server
+          background: true
       - run:
           command: sleep 5;
       - run:
           name: Launch Web
           command: firefox http://localhost:5777/utest/
+          background: true
       - run:
           command: sleep 5;
       - run:
