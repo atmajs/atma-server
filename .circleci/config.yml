@@ -13,7 +13,6 @@ jobs:
       - image: cimg/node:20.8.1-browsers
     steps:
       - browser-tools/install-browser-tools
-      - firefox --version
       - checkout
       - run:
           name: Checkout submodules
