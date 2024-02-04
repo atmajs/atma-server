@@ -3,7 +3,7 @@ version: 2.1
 
 orbs:
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/node
-  node: circleci/browser-tools@1.4.6
+  browser-tools: circleci/browser-tools@1.4.6
 
 jobs:
   build-and-test:
