@@ -1,9 +1,8 @@
 import alot from 'alot';
-import * as os from 'os';
 
 export namespace $network {
     export function getHosts (): { name: string, host: string }[] {
-
+        let os = require('os');
         let dict = os.networkInterfaces();
         let networks = alot
             .fromObject(dict)

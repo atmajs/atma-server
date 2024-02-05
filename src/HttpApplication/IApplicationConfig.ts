@@ -119,6 +119,12 @@ export interface IApplicationConfig {
     include?: {
         src?: string
     }
+
+    processor?: {
+        before?: Function[]
+        after?: Function[]
+        middleware?: Function[]
+    }
 }
 
 

@@ -14,7 +14,6 @@ let HttpServiceProto = Class({
     secure: null,
 
     Construct: function (route) {
-
         if (route == null)
             return;
 

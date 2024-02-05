@@ -65,7 +65,7 @@ export function send_Content (
 ) {
 
     let { content, statusCode, mimeType, headers } = response;
-    if (typeof content !== 'string' && content instanceof Buffer === false) {
+        if (typeof content !== 'string' && content instanceof Buffer === false) {
 
         if (content instanceof Error) {
             send_Error(req, res, content, headers, app, startedAt);

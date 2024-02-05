@@ -13,7 +13,7 @@ import Config from '../Config/Config'
 import MiddlewareRunner from '../Business/Middleware'
 import { Autoreload } from '../Autoreload/Autoreload'
 import HttpErrorPage from '../HttpPage/HttpErrorPage'
-import { initilizeEmbeddedComponents } from '../compos/exports'
+import { initializeEmbeddedComponents } from '../compos/exports'
 import { send_Error, send_Content } from '../util/send'
 import HttpSubApplication from './SubApp'
 import { IApplicationDefinition, IApplicationConfig, IAppConfigExtended } from './IApplicationConfig'
@@ -84,7 +84,7 @@ class Application extends class_EventEmitter {
         super();
 
         if (this instanceof Application === false) {
-            throw Error('Application must be created with the `new` keywoard');
+            throw Error('Application must be created with the `new` keyword');
         }
 
         this._loadConfig = this._loadConfig.bind(this);
@@ -124,14 +124,14 @@ class Application extends class_EventEmitter {
 
     /**
      * :before - Array|Function - Middleware fns in OUTER pipe, before main responder
-     * :middleware - Arrat|Function - Middleware fns in INNER pipe, before the Handler
-     * :after - Array|Function - Middlewarefns in OUTER pipe, after the Handler
+     * :middleware - Array|Function - Middleware fns in INNER pipe, before the Handler
+     * :after - Array|Function - Middleware fns in OUTER pipe, after the Handler
      */
-    processor(data: { before?: Function[], after?: Function[], middleware?: Function[] } = {}) {
+    processor(data: IApplicationConfig['processor'] = {}) {
 
-        let before = data.before,
-            after = data.after,
-            middleware = data.middleware;
+        let before = data.before;
+        let after = data.after;
+        let middleware = data.middleware;
 
         this._outerPipe = MiddlewareRunner.create(before || []);
         this._innerPipe = MiddlewareRunner.create(middleware);
@@ -578,11 +578,11 @@ function cfg_doneDelegate(app: Application) {
             logger.cfg('color', 'none');
         }
 
-        _emitter.trigger('configurate', app);
+        _emitter.trigger('configure', app);
 
         Autoreload.prepare(app);
 
-        initilizeEmbeddedComponents(app);
+        initializeEmbeddedComponents(app);
         app
             .handlers
             .registerPages(cfg.pages, cfg.page)
@@ -594,6 +594,10 @@ function cfg_doneDelegate(app: Application) {
 
         app.rewriter.addRules(cfg.rewriteRules);
         app.redirects.addRules(cfg.redirectRules);
+
+        if (app._baseConfig?.processor) {
+            app.processor(app._baseConfig.processor);
+        }
 
         Promise.all([
             HttpEndpointExplorer.find(app.config.service.endpoints, app.config.base),

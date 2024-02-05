@@ -14,8 +14,8 @@
     },
     "license": "MIT",
     "dependencies": {
-        "alot": "^0.2.99",
-        "appcfg": "^0.4.64",
+        "alot": "^0.3.9",
+        "appcfg": "^0.4.70",
         "atma-class": ">=1.1.79",
         "atma-io": "^1.2.60",
         "atma-logger": ">0.0.81",
@@ -40,16 +40,16 @@
     "devDependencies": {
         "@types/node": "^12.12.6",
         "@types/supertest": "^2.0.11",
-        "app-bundler": "^0.1.2",
-        "atma": "^0.15.15",
+        "app-bundler": "^0.1.16",
+        "atma": "^0.15.20",
         "atma-io-middleware-importer": "^1.1.38",
         "atma-io-middleware-yml": "^1.1.25",
-        "atma-loader-ts": "^1.1.18",
+        "atma-loader-ts": "^1.1.20",
         "body-parser": "latest",
         "class-mongo": "^0.2.69",
         "dts-bundle": "^0.7.3",
         "mongodb": "latest",
-        "supertest": "^6.2.2",
+        "supertest": "^6.3.4",
         "tslib": "^1.7.1"
     },
     "app-bundler": {

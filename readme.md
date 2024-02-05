@@ -21,7 +21,7 @@ Atma Node.js Server Module
 	- [Page](#httppage)
 		- [Master View](#master-view)
 		- [Page View](#page-view)
-		
+
 - [Preprocessors](#preprocessors)
 
 ## Overview
@@ -55,7 +55,7 @@ atma
 				]
 				// this pipeline is executed only if the application finds any endpoint
 				// (server, handler, page, subapp)
-				moddleware: [
+				middleware: [
 					// refer to connectjs middleware documentation
 					function(req, res, next){ next() },
 					require('body-parser').json(),
@@ -67,15 +67,15 @@ atma
 					atma.server.middleware.static
 				]
 			})
-			
+
 			// start server, portnumber is taken from the configuration
 			.listen();
-		
+
 		// or start the server manually:
 		var server = require('http')
 			.createServer(app.process)
 			.listen(app.config.$get('port'));
-			
+
 		if (app.config.debug)
 			app.autoreload(server);
 	});
@@ -89,18 +89,18 @@ The default configuration can be viewed here - [link](https://github.com/atmajs/
 #### Resources
 _scripts / styles_ for the NodeJS application itself and for the web pages. They are defined in:
 - `config.env.both.scripts<Object|Array>`
-	
+
 	`config/env/both.yml`   - shared resources
 - `config.env.server.scripts<Object|Array>`
-	
+
 	`config/env/server.yml` - resources for the nodejs application, e.g. server side components paths.
 - `config.env.client.scripts<Object|Array>`, `config.env.client.styles<Object|Array>`
-	
+
 	`config/env/client.yml` - resources, that should be loaded on the client.
-	
+
 	In the DEV Mode all client-side scripts/styles/components are served to browsers without concatenation.
 	For the production compile resources with `atma custom node_modules/atma-server/tools/compile`
-	
+
 - Define scripts and styles for a particular page in page routing.
 
 #### Routing
@@ -123,7 +123,7 @@ _scripts / styles_ for the NodeJS application itself and for the web pages. They
 		'/foo': 'baz'
 			# path is '/server/http/handler/baz.js'
 			# method is '*'
-		
+
 		'$post /qux': 'qux/postHandler'
 			# path is '/server/http/handler/quz/postHander.js'
 			# method is 'POST'
@@ -145,28 +145,28 @@ _scripts / styles_ for the NodeJS application itself and for the web pages. They
 	```yml
 	page:
 		# see default config to see the default page paths
-	
+
 	pages:
 		# route - Page Definition
-		
+
 		/:
 			id: index #optional, or is generated from the route
-				
+
 			template: quz #optional, or is equal to `id`
 				# path is `/server/http/page/quz/quz.mask
 			master: simple #optional, or is `default`
 				# path is `/server/http/master/simple.mask`
-			
+
 			# optional
 			secure:
 				# optional, default - any logged in user
 				role: 'admin'
-			
+
 			scripts:
 				# scripts for the page
 			styles:
 				# styles for the page
-			
+
 			# any other data, which then is accessable via javascript or mask
 			# `ctx.page.data.title`
 			title: String
@@ -177,7 +177,7 @@ _scripts / styles_ for the NodeJS application itself and for the web pages. They
 			# redirect the page request to some other route
 			redirect: String
 	```
-	
+
 ## Endpoints
 
 There are 4 types of endpoints _in route lookup order_
@@ -222,7 +222,7 @@ handlers:
 	'(\.es6(\.map)?$)': TraceurHandler
 ```
 
-Usually, this are the low level handlers, like 'less' preprocessor. 
+Usually, this are the low level handlers, like 'less' preprocessor.
 But the interface ``` (Deferred + process(req, res)) ``` is same also for HttpService and HttpPage
 
 ### HttpEndpoint
@@ -238,7 +238,7 @@ export default class MyEndpoint extends HttpEndpoint {
 
     @deco.isInRole('admin')
     async '$get /:id' (
-        @deco.fromUri('id', Number) id: number 
+        @deco.fromUri('id', Number) id: number
     ) {
         return service.fetch(id)
     }
@@ -290,7 +290,7 @@ atma.server.HttpService(/*endpoints*/ {
 		this.resolve(/*@see Handler*/);
 		this.reject(...);
 	},
-	
+
 	'route': {
 		process: function(){ ... }
 	}
@@ -305,32 +305,32 @@ atma.server.HttpService(/*endpoints*/ {
 		'/route': {
 			meta: {
 				description: 'Lorem...',
-				
+
 				/* For request validating and the documentation */
 				arguments: {
 					// required, not empty string
 					foo: 'string',
 					// required, validate with regexp
 					age: /^\d+$/,
-					
+
 					// optional, of type 'number'
 					'?baz': 'number',
-					
+
 					// unexpect
 					'-quz': null,
-					
+
 					// validate subobject
 					jokers: {
 						left: 'number',
 						right: 'number'
 					},
-					
+
 					// validate arrays
 					collection: [ {_id: 'string', username: 'string'} ]
 				},
 				// allow only properties which are listed in `arguments` object
 				strict: false,
-				
+
 				/* Documentation purpose only*/
 				response: {
 					baz: 'string',
@@ -367,11 +367,11 @@ atma.server.HttpService({
 				next('Name argument expected');
 				return;
 			}
-			
+
 			// continue
 			req.name = req.body.name;
 			next();
-			
+
 			// stop processing
 			this.resolve(...);
 			this.reject(...);
@@ -381,7 +381,7 @@ atma.server.HttpService({
 		},
 		...
 	],
-	
+
 	// same with `help`
 	'/other/route': {
 		meta: { ... }
@@ -394,7 +394,7 @@ atma.server.HttpService({
 })
 ```
 
-##### Service and the application routing example 
+##### Service and the application routing example
 
 ```javascript
 // server/http/service/time.js
@@ -452,18 +452,18 @@ so that the logic could be moved to each component. We wont explain what a compo
 Some things we remind:
 
 - **Context**
-	
+
 	```javascript
 	{ req: <Request>, res: <Response>, page: <HttpPage (current instance)> }
 	```
-	
+
 - **Render-mode**
-	
+
 	```javascript
 	mode: 'server' | 'client' | 'both' // @default is 'both'
 	modeModel: 'server' // if `server` is defined, the model wont be serialized
 	```
-	
+
 - **Cache**
 	Each components output could be cached and the conditions could be defined.
 	- `byProperty`: For each unique value from model or ct
@@ -494,7 +494,7 @@ Example:
 // server/http/master/default.mask
 layout:master #default {
 	:document {
-		
+
 		head {
 			meta http-equiv="Content-Type" content="text/html;charset=utf-8";
 			meta name="viewport" content="maximum-scale=1.5, minimum-scale=.8, initial-scale=1, user-scalable=1";
@@ -503,9 +503,9 @@ layout:master #default {
 			atma:styles;
 		}
 		body {
-			
+
 			@placeholder #body;
-			
+
 			atma:scripts;
 		}
 	}
@@ -529,8 +529,8 @@ The routing is also made via the configuration files
 ```yml
 # server/config/pages.yml
 
-pages: 
-	'/hello': 
+pages:
+	'/hello':
 		id: hello
 ```
 
