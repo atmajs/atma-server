@@ -1,4 +1,5 @@
 import alot from 'alot';
+import type { NetworkInterfaceInfo } from 'os';
 
 export namespace $network {
     export function getHosts (): { name: string, host: string }[] {
@@ -7,7 +8,7 @@ export namespace $network {
         let networks = alot
             .fromObject(dict)
             .mapMany(group => {
-                return alot(group.value as os.NetworkInterfaceInfo[])
+                return alot(group.value as NetworkInterfaceInfo[])
                     .filter(x => x.family === 'IPv4' && x.address !== '127.0.0.1')
                     .map(x => {
                         return {
