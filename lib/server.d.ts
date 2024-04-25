@@ -301,14 +301,10 @@ declare module 'atma-server/HttpApplication/Application' {
         responders(array: any): void;
         /**
           * :before - Array|Function - Middleware fns in OUTER pipe, before main responder
-          * :middleware - Arrat|Function - Middleware fns in INNER pipe, before the Handler
-          * :after - Array|Function - Middlewarefns in OUTER pipe, after the Handler
+          * :middleware - Array|Function - Middleware fns in INNER pipe, before the Handler
+          * :after - Array|Function - Middleware fns in OUTER pipe, after the Handler
           */
-        processor(data?: {
-            before?: Function[];
-            after?: Function[];
-            middleware?: Function[];
-        }): this;
+        processor(data?: IApplicationConfig['processor']): this;
         process(req: IncomingMessage, res: ServerResponse, next?: any): void;
         execute(url: string, method: 'get' | 'post' | 'put' | 'delete' | 'options', body?: any, headers?: any): Response;
         autoreload(httpServer?: net.Server): void;
@@ -416,6 +412,7 @@ declare module 'atma-server/HttpService/HttpEndpoint' {
                     'Access-Control-Allow-Credentials': string;
                     'Access-Control-Allow-Headers': string | string[];
                     'Access-Control-Allow-Origin': string;
+                    Vary: string;
             };
             function getOptionsHeaders(endpoint: HttpEndpoint, path: string, req: IncomingMessage): {};
     }
@@ -631,6 +628,11 @@ declare module 'atma-server/HttpApplication/IApplicationConfig' {
         sources?: object[];
         include?: {
             src?: string;
+        };
+        processor?: {
+            before?: Function[];
+            after?: Function[];
+            middleware?: Function[];
         };
     }
     export interface IPageConfiguration {

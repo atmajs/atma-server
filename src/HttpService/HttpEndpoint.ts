@@ -243,7 +243,8 @@ export namespace HttpEndpointUtils {
             'Access-Control-Allow-Methods': [ req.method ],
             'Access-Control-Allow-Credentials': 'true',
             'Access-Control-Allow-Headers': req.headers['access-control-request-headers'] || 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
-            'Access-Control-Allow-Origin': handler.meta?.origins ?? ''
+            'Access-Control-Allow-Origin': handler.meta?.origins ?? '',
+            'Vary': 'Origin',
         };
         cors_rewriteAllowedOrigins(req, headers);
         return headers;
@@ -294,7 +295,8 @@ export namespace HttpEndpointUtils {
             'Access-Control-Allow-Methods': methods,
             'Access-Control-Allow-Credentials': 'true',
             'Access-Control-Allow-Headers': req.headers['access-control-request-headers'] || 'Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers',
-            'Access-Control-Allow-Origin': allowedOrigins
+            'Access-Control-Allow-Origin': allowedOrigins,
+            'Vary': 'Origin',
         };
 
         obj_extendDefaults(headers, cors);
