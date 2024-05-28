@@ -46,7 +46,7 @@ export class HttpError extends Error {
             name: this.name,
             error: this.message,
             code: this.statusCode,
-            stack: app_isDebug ? this.stack : void 0
+            stack: app_isDebug() ? this.stack : void 0
         };
     }
 };
@@ -67,7 +67,7 @@ const Methods = {
             name: this.name,
             error: this.message,
             code: this.statusCode,
-            stack: app_isDebug ? this.stack : void 0
+            stack: app_isDebug() ? this.stack : void 0
         };
     }
 }
