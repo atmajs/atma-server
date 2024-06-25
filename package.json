@@ -26,7 +26,7 @@
         "memd": "^0.3.10",
         "ruta": "^0.2.70",
         "socket.io": "^4.4.1",
-        "static-content": "^1.2.1"
+        "static-content": "^1.2.2"
     },
     "scripts": {
         "build": "app-bundler && npm run dts",

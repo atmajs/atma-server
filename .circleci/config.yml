@@ -3,20 +3,17 @@ version: 2.1
 
 orbs:
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/node
-  browser-tools: circleci/browser-tools@1.4.6
+  browser-tools: circleci/browser-tools@1.4.8
 
 jobs:
   build-and-test:
     # These next lines define a Docker executor: https://circleci.com/docs/2.0/executor-types/
     # https://circleci.com/developer/images/image/cimg/node
     docker:
-      - image: cimg/node:20.8.1-browsers
+      - image: cimg/node:20.4.0-browsers
     steps:
-      - browser-tools/install-browser-tools
+      - browser-tools/install-firefox
       - checkout
-      - run:
-          name: Checkout submodules
-          command: git submodule update --init --recursive
       - run:
           name: NPM Install
           command: npm install --force
@@ -28,16 +25,12 @@ jobs:
           command: npm run server
           background: true
       - run:
-          command: sleep 5;
-      - run:
           name: Launch Web
-          command: firefox http://localhost:5777/utest/
+          command: sleep 10 && firefox "http://127.0.0.1:5777/utest/"
           background: true
       - run:
-          command: sleep 5;
-      - run:
           name: Run tests
-          command: npm run test
+          command: sleep 15 && npm run test
 
 workflows:
   # Inside the workflow, you provide the jobs you want to run, e.g this workflow runs the build-and-test job above.
