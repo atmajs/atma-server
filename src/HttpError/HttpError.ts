@@ -1,4 +1,4 @@
-import { Class, is_String, is_Object } from '../dependency'
+import { is_String, is_Object } from '../dependency'
 import { app_isDebug } from '../util/app';
 
 export class HttpError extends Error {
