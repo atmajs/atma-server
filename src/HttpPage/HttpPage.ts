@@ -1,4 +1,4 @@
-import { include, mask, logger, Class, is_Function } from '../dependency'
+import { include, mask, logger, is_Function } from '../dependency'
 import { HttpError } from '../HttpError/HttpError'
 import { LIB_DIR } from '../vars'
 import { fn_delegate, fn_proxy } from '../util/fn'
@@ -9,9 +9,6 @@ import {
     page_process,
     page_resolve,
     page_pathAddAlias,
-    page_Create,
-    pageError_sendDelegate,
-    pageError_failDelegate,
     page_processRequest,
     page_processRequestDelegate,
     page_processPartial
@@ -178,10 +175,4 @@ export default class HttpPage extends HttpPageBase {
             , fn_delegate(page_resolve, this)
         );
     }
-
-
-    static create(mix) {
-        return page_Create(mix);
-    }
-
 }

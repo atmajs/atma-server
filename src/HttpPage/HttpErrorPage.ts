@@ -1,4 +1,4 @@
-import { include, mask, logger, Class } from '../dependency'
+import { include, mask  } from '../dependency'
 import { HttpError } from '../HttpError/HttpError'
 import { LIB_DIR } from '../vars'
 import { fn_delegate, fn_proxy } from '../util/fn'

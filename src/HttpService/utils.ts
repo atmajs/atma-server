@@ -1,5 +1,5 @@
-import { Class } from '../dependency'
 import { IServerRequest } from '../models/IServerRequest';
+import { obj_validate } from '../util/obj';
 
 type ISecureObj = boolean | {
     role?: (string | IRequestCheck)
@@ -117,9 +117,10 @@ function hasClaimAny (req, user, claims: (string | IRequestCheck)[]) {
 }
 
 export const service_validateArgs = function(body, args, isStrict?) {
-	if (body == null)
-		return new Error('Message Body is not defined');
+    if (body == null) {
+        return new Error('Message Body is not defined');
+    }
 
-	return Class.validate(body, args, isStrict);
+    return obj_validate(body, args, isStrict);
 };
 

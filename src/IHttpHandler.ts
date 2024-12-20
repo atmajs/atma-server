@@ -18,6 +18,8 @@ export interface IHttpHandler {
     send? (req, res, content, statusCode, mimeType, allHeaders)
     sendError? (error, req, res, config)
     then? (ok, error)
+    resolve?
+    reject?
 };
 
 export class HttpResponse {

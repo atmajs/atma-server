@@ -1,5 +1,4 @@
 
-import Class = require('atma-class');
 import logger = require('atma-logger');
 import Utils = require('atma-utils');
 import AppConfig = require('appcfg');
@@ -8,9 +7,6 @@ let root = <any> global;
 if (root.include == null) {
     require('includejs');
 }
-
-let $anyClass: any = Class;
-let $Class = $anyClass.default ?? $anyClass.Class ?? $anyClass;
 
 
 export const mask        = root.mask  || require('maskjs');
@@ -25,4 +21,4 @@ export const include     = root.include;
 export const includeLib  = root.includeLib;
 
 
-export { $Class as Class, AppConfig, logger }
+export { AppConfig, logger }

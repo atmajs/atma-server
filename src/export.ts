@@ -6,7 +6,6 @@ import HttpErrorPage from './HttpPage/HttpErrorPage'
 import HttpPage from './HttpPage/HttpPage'
 import Application from './HttpApplication/Application'
 import HttpSubApplication from './HttpApplication/SubApp'
-import HttpCrudEndpoints from './HttpService/CrudWrapper'
 import HttpService from './HttpService/HttpService'
 import { HttpEndpoint } from './HttpService/HttpEndpoint'
 import Middleware from './middleware/export'
@@ -27,7 +26,6 @@ export {
     HttpErrorPage,
     HttpPage,
     HandlerFactory,
-    HttpCrudEndpoints,
     HttpService,
     IHttpHandler,
     HttpResponse,

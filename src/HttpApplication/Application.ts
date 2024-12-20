@@ -24,7 +24,7 @@ import { IHttpHandler } from '../export';
 import { HttpResponse } from '../IHttpHandler';
 
 import { HttpEndpointExplorer } from '../HttpService/HttpEndpointExplorer'
-import { class_EventEmitter, class_Dfr, mixin } from 'atma-utils'
+import { class_EventEmitter, class_Dfr } from 'atma-utils'
 import { LifecycleEvents } from './LifecycleEvents'
 import { HttpEndpointUtils } from '../HttpService/HttpEndpoint'
 import { $network } from '../util/$network'

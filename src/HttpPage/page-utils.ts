@@ -1,34 +1,11 @@
 import Application from '../HttpApplication/Application'
-import HttpPage from './HttpPage'
 import HttpContext from './HttpContext'
-import { logger, Class, mask, is_Object } from '../dependency'
-import MiddlewareRunner from '../Business/Middleware'
+import { logger, mask, is_Object } from '../dependency'
 import { send_Content } from '../util/send'
 import { mime_HTML, mime_PLAIN } from '../const/mime'
 import { parse } from 'ruta'
 import HttpPageBase from './HttpPageBase'
 import { HttpResponse } from '../IHttpHandler'
-
-export const page_Create = function (classProto) {
-
-    if (classProto.middleware) {
-        classProto.middleware = new MiddlewareRunner(
-            classProto.middleware
-        );
-    }
-
-    if (classProto.Base == null) {
-        classProto.Base = HttpPage;
-    } else if (classProto.Extends == null) {
-        classProto.Extends = HttpPage;
-    } else if (Array.isArray(classProto.Extends)) {
-        classProto.Extends.push(HttpPage);
-    } else {
-        classProto.Extends = [HttpPage, classProto.Extends];
-    }
-
-    return Class(classProto);
-};
 
 
 export const page_rewriteDelegate = function (page) {

@@ -1,7 +1,7 @@
 Atma Node.js Server Module
 ----
-[![Build Status](https://travis-ci.org/atmajs/atma-server.svg?branch=master)](https://travis-ci.org/atmajs/atma-server)
 [![NPM version](https://badge.fury.io/js/atma-server.svg)](http://badge.fury.io/js/atma-server)
+[![CircleCI](https://dl.circleci.com/status-badge/img/gh/atmajs/atma-server/tree/master.svg?style=svg)](https://dl.circleci.com/status-badge/redirect/gh/atmajs/atma-server/tree/master)
 
 - [Overview](#overview)
 - [Application](#httpapplication)

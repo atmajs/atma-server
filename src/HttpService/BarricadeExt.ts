@@ -1,21 +1,28 @@
-import { Class } from '../dependency'
 import { class_Dfr } from 'atma-utils';
 import { HttpError } from '../HttpError/HttpError'
+import { IHttpHandler } from '../IHttpHandler';
 
 
-const Runner = Class.Collection(Function, {
-    Base: Class.Serializable,
-    process: function (service, req, res, params) {
+type TMiddleware = (this: IHttpHandler, req, res, params, next) => void | HttpError | Promise<void | HttpError>;
+
+class Runner {
+
+    constructor (public middlewares: TMiddleware[]) {
+
+    }
+
+    process (service: IHttpHandler, req, res, params) {
+
         let dfr = new class_Dfr;
         next(this, dfr, service, req, res, params, 0)
         return dfr;
     }
-});
+}
 
-function next(runner, dfr, service, req, res, params, index) {
+function next(runner: Runner, dfr: class_Dfr, service: IHttpHandler, req, res, params, index: number) {
 
 
-    let middlewareFn = runner[index];
+    let middlewareFn = runner.middlewares[index];
     let nextFn = nextDelegate(runner, dfr, service, req, res, params, index);
 
     let result;
@@ -44,7 +51,7 @@ function next(runner, dfr, service, req, res, params, index) {
 }
 
 
-function nextDelegate(runner, dfr, service, req, res, params, index) {
+function nextDelegate(runner: Runner, dfr: class_Dfr, service: IHttpHandler, req, res, params, index: number) {
 
     return function (error, ...args) {
 
@@ -52,7 +59,7 @@ function nextDelegate(runner, dfr, service, req, res, params, index) {
             reject(dfr, error);
             return;
         }
-        if (index >= runner.length - 1) {
+        if (index >= runner.middlewares.length - 1) {
             dfr.resolve(...args);
             return;
         }
