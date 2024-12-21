@@ -20,7 +20,7 @@ UTest({
 
         let scripts = app.config.env.server.scripts.npm;
         has_(scripts, [
-            '/node_modules/appcfg/lib/appcfg.js'
+            '/node_modules/appcfg/lib/umd/node/appcfg.js'
         ]);
 
         is_(app.lib.appcfg, 'Function');
@@ -43,7 +43,7 @@ UTest({
         let scripts = app.config.env.server.scripts.npm;
 
         has_(scripts, [
-            '/node_modules/appcfg/lib/appcfg.js::Foo'
+            '/node_modules/appcfg/lib/umd/node/appcfg.js::Foo'
         ]);
         is_(app.lib.Foo, 'Function');
     },
@@ -52,7 +52,8 @@ UTest({
             this.path = {
                 package: /body-parser\/package\.json$/
             };
-            this.package = class extends File {
+
+            this.package = class PackageFile extends File {
                 exists = () => true
                 content = <any>{
                     main: [
@@ -62,7 +63,9 @@ UTest({
                     ]
                 }
             };
-            this.file = class extends File {
+
+
+            this.file = class FileFoo extends File {
                 exists = () => true
                 content = 'Foo'
             };
@@ -73,19 +76,19 @@ UTest({
             );
 
             factory.registerHandler(
-                /body-parser\/foo\.js$/, class extends File {
+                /body-parser\/foo\.js$/, class BpFoo extends File {
                     exists = () => true
                     content = 'var foo = 1';
                 }
             );
             factory.registerHandler(
-                /body-parser\/baz\.js$/, class extends File {
+                /body-parser\/baz\.js$/, class BpBaz extends File {
                     exists = () => true
                     content = 'var baz = 1';
                 }
             );
             factory.registerHandler(
-                /body-parser\/quux\.css$/, class extends File {
+                /body-parser\/quux\.css$/, class BpQuux extends File {
                     exists = () => true
                     content = 'body {}';
                 }

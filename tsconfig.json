@@ -11,7 +11,7 @@
         ],
         "types": ["node", "assertion", "atma-utest", "string", "jquery", "mask", "ruta"],
         "declaration": true,
-        "target": "es5",
+        "target": "es2020",
         "module": "commonjs",
         "sourceMap": false,
         "experimentalDecorators": true,
