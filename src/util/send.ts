@@ -17,7 +17,8 @@ export function send_JSON (req: IncomingMessage, res: ServerResponse, response: 
     let { content } = response;
     let str;
     try {
-        str = JSON.stringify(content);
+        let formatted = app.config.debug || app.config.serializer?.json?.formatted;
+        str = JSON.stringify(content, null, formatted ? 2 : 0);
     } catch (error) {
         return send_Error(req, res, new RuntimeError(`Json Serialization: ${error.message}`), null, app, startedAt);
     }

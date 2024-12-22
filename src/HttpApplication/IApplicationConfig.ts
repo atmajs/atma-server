@@ -14,6 +14,11 @@ export interface IApplicationConfig {
     base?: string
     static?: string
     debug?: boolean
+    serializer?: {
+        json?: {
+            formatted?: boolean
+        }
+    }
     env?: {
         both?: {
             include?: {
