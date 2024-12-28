@@ -106,22 +106,20 @@ abstract class HttpServiceProto extends class_Dfr {
             return Promise.reject(new NotFoundError(message));
         }
 
-        let endpoint = entry.value,
-            meta = endpoint.meta,
-            args = meta && meta.arguments
-            ;
+        let endpoint = entry.value;
+        let meta = endpoint.meta;
+        let args = meta && meta.arguments;
 
         if (meta != null && secure_canAccess(req, meta.secure) === false) {
             return Promise.reject(new SecurityError('Access Denied'));
         }
 
         if (args != null) {
-            let isGet = req.method === 'GET',
-                isStrict = isGet === false && meta.strict,
-                body = isGet
-                    ? entry.current.params
-                    : req.body
-                ;
+            let isGet = req.method === 'GET';
+            let isStrict = isGet === false && meta.strict;
+            let body = isGet
+                ? entry.current.params
+                : req.body;
 
             let error = service_validateArgs(body, args, isStrict);
             if (error) {

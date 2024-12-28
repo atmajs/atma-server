@@ -1,4 +1,6 @@
-export const ConfigDefaults = {
+import { IApplicationConfig } from '../HttpApplication/IApplicationConfig';
+
+export const ConfigDefaults = <IApplicationConfig> {
     env: {
         both: {
             include: {
@@ -83,9 +85,9 @@ export const ConfigDefaults = {
         },
         urls: {
             login: '/login'
-        },  
+        },
         pattern: '/:view/:category/:section'
-        
+
     },
     pages: {},
     server: {

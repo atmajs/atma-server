@@ -2,7 +2,7 @@ import { _ } from 'ruta';
 
 const deserialize = _.query.deserialize;
 
-export function QueryMidd (req, res, next){
+export function QueryMid (req, res, next){
 
     const url = req.url;
     const qIdx = url.indexOf('?');

@@ -99,6 +99,16 @@ export interface IApplicationConfig {
     websockets?: {
 
     }
+    server?: {
+        ssl?: {
+            forced?: boolean
+            enabled?: boolean
+            port?: number
+            keyFile?: string
+            certFile?: string
+            caFile?: string
+        }
+    }
     rewriteRules?: Array<{
         rule: string
         conditions: Array<{ condition: string }>

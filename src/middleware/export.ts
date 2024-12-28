@@ -1,8 +1,10 @@
-import { QueryMidd } from './query'
-import { StaticMidd, createStaticMidd } from './static'
+import { BodyJsonMid } from './bodyJson';
+import { QueryMid } from './query'
+import { StaticMid, createStaticMid } from './static'
 
 export default {
-    query: QueryMidd,
-    static: StaticMidd,
-    files: createStaticMidd
+    query: QueryMid,
+    bodyJson: BodyJsonMid,
+    static: StaticMid,
+    files: createStaticMid
 };

@@ -1,14 +1,6 @@
 import StaticContent from '../Plugins/Static';
 
-export function StaticMidd(req, res, next, config) {
-    if (responder == null) {
-        responder = StaticContent.respond
-    }
-
-    responder(req, res, next, config);
-};
-
-export interface IStaticServConfig {
+export interface IStaticServerConfig {
     base?: string
 
     // Add or overwrite some mimeTypes
@@ -30,11 +22,17 @@ export interface IStaticServConfig {
     headers?: any
 }
 
-export function createStaticMidd(config: IStaticServConfig) {
+
+export function StaticMid(config: IStaticServerConfig) {
+    return StaticContent.create(config);
+};
+
+
+export function createStaticMid(config: IStaticServerConfig) {
     return (responder = StaticContent.create(config));
 }
 
-(<any>StaticMidd).config = function (config) {
+(<any>StaticMid).config = function (config) {
     return (responder = StaticContent.create(config));
 };
 
