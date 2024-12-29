@@ -17,11 +17,14 @@ export namespace $format {
                 // no parsing required
                 return fmt;
             }
-            let match = /^(?<value>[\d\.]+)(?<unit>)$/i.exec(fmt.trim());
+            let match = /^(?<value>[\d\.]+)(?<unit>[a-z]+)$/i.exec(fmt.trim());
             if (match == null) {
                 throw new Error(`Invalid format: ${fmt}`);
             }
-            let unitAmount = SIZES[match.groups.unit].toUpperCase();
+            if (SIZES[match.groups.unit] == null) {
+                throw new Error(`Unsupported unit: ${match.groups.unit}`);
+            }
+            let unitAmount = SIZES[match.groups.unit];
             let amount = parseFloat(match.groups.value);
             return amount * unitAmount;
         }
