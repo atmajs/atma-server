@@ -12,7 +12,7 @@ export function BodyJsonMid (config?: TBodyConfig) {
 
     return function (req: IncomingMessage & { body?}, res: ServerResponse, next) {
         const method = req.method;
-        if (method !== 'post' && method !== 'put') {
+        if (method !== 'POST' && method !== 'PUT') {
             next();
             return;
         }
