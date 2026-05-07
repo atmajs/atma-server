@@ -6,21 +6,21 @@ Atma Node.js Server Module
 - [Overview](#overview)
 - [Application](#httpapplication)
 - [Configuration](#configuration)
-	- [Resources](#resources)
-	- [Routing](#routing)
+    - [Resources](#resources)
+    - [Routing](#routing)
 - [Endpoints](#endpoints)
-	- [Sub-Application](#subapplication)
-	- [Handler](#handler)
+    - [Sub-Application](#subapplication)
+    - [Handler](#handler)
     - [Endpoint](#httpendpoint)
-	- [Service](#httpservice)
-		- [Routes](#service-routes)
-		- [Endpoints](#service-endpoints)
-		- [Help & Validation](#meta---help--validation)
-		- [Barricade](#barricades-middlewares)
-		- [Example](#service-and-the-application-routing-example)
-	- [Page](#httppage)
-		- [Master View](#master-view)
-		- [Page View](#page-view)
+    - [Service](#httpservice)
+        - [Routes](#service-routes)
+        - [Endpoints](#service-endpoints)
+        - [Help & Validation](#meta---help--validation)
+        - [Barricade](#barricades-middlewares)
+        - [Example](#service-and-the-application-routing-example)
+    - [Page](#httppage)
+        - [Master View](#master-view)
+        - [Page View](#page-view)
 
 - [Preprocessors](#preprocessors)
 
@@ -40,45 +40,45 @@ To setup a bootstrap project use Atma.Toolkit - ``` $ atma gen server ```
 ```javascript
 var atma = require('atma-server');
 atma
-	.server
-	.Application({
-		base:__dirname,
-		configs: '/server/config/**.yml'
-	})
-	.done(function(app){
-		// configuration and resources are loaded
-		app
-			.processor({
-				// pipeline is executed on every request
-				before: [
-					function(req, res, next){ next() },
-				]
-				// this pipeline is executed only if the application finds any endpoint
-				// (server, handler, page, subapp)
-				middleware: [
-					// refer to connectjs middleware documentation
-					function(req, res, next){ next() },
-					require('body-parser').json(),
-				],
-				// otherwise, if response was not completed by any middleware or any endpoint before
-				// continue with this middleware pipeline.
-				after: [
-					function(req, res, next){ next() },
-					atma.server.middleware.static
-				]
-			})
+    .server
+    .Application({
+        base:__dirname,
+        configs: '/server/config/**.yml'
+    })
+    .done(function(app){
+        // configuration and resources are loaded
+        app
+            .processor({
+                // pipeline is executed on every request
+                before: [
+                    function(req, res, next){ next() },
+                ]
+                // this pipeline is executed only if the application finds any endpoint
+                // (server, handler, page, subapp)
+                middleware: [
+                    // refer to connectjs middleware documentation
+                    function(req, res, next){ next() },
+                    require('body-parser').json(),
+                ],
+                // otherwise, if response was not completed by any middleware or any endpoint before
+                // continue with this middleware pipeline.
+                after: [
+                    function(req, res, next){ next() },
+                    atma.server.middleware.static
+                ]
+            })
 
-			// start server, portnumber is taken from the configuration
-			.listen();
+            // start server, portnumber is taken from the configuration
+            .listen();
 
-		// or start the server manually:
-		var server = require('http')
-			.createServer(app.process)
-			.listen(app.config.$get('port'));
+        // or start the server manually:
+        var server = require('http')
+            .createServer(app.process)
+            .listen(app.config.$get('port'));
 
-		if (app.config.debug)
-			app.autoreload(server);
-	});
+        if (app.config.debug)
+            app.autoreload(server);
+    });
 ```
 
 ## Configuration
@@ -90,16 +90,16 @@ The default configuration can be viewed here - [link](https://github.com/atmajs/
 _scripts / styles_ for the NodeJS application itself and for the web pages. They are defined in:
 - `config.env.both.scripts<Object|Array>`
 
-	`config/env/both.yml`   - shared resources
+    `config/env/both.yml`   - shared resources
 - `config.env.server.scripts<Object|Array>`
 
-	`config/env/server.yml` - resources for the nodejs application, e.g. server side components paths.
+    `config/env/server.yml` - resources for the nodejs application, e.g. server side components paths.
 - `config.env.client.scripts<Object|Array>`, `config.env.client.styles<Object|Array>`
 
-	`config/env/client.yml` - resources, that should be loaded on the client.
+    `config/env/client.yml` - resources, that should be loaded on the client.
 
-	In the DEV Mode all client-side scripts/styles/components are served to browsers without concatenation.
-	For the production compile resources with `atma custom node_modules/atma-server/tools/compile`
+    In the DEV Mode all client-side scripts/styles/components are served to browsers without concatenation.
+    For the production compile resources with `atma custom node_modules/atma-server/tools/compile`
 
 - Define scripts and styles for a particular page in page routing.
 
@@ -107,76 +107,76 @@ _scripts / styles_ for the NodeJS application itself and for the web pages. They
 
 - **subapps** ` config/app.yml `
 
-	```yml
-	subapps:
-		// all `rest/*` requests are piped to the Api Application
-		// `Api.js` should export the `atma.server.Application` instance
-		'rest': '/../Api.js'
-	```
+    ```yml
+    subapps:
+        # all `rest/*` requests are piped to the Api Application
+        # `Api.js` should export the `atma.server.Application` instance
+        'rest': '/../Api.js'
+    ```
 - **handlers** ` config/handlers.yml `
-	```yml
-	handler:
-		location: /server/http/handler/{0}.js
-		#< default
-	handlers:
-		# route - resource that exports a HttpHandler
-		'/foo': 'baz'
-			# path is '/server/http/handler/baz.js'
-			# method is '*'
+    ```yml
+    handler:
+        location: /server/http/handler/{0}.js
+        #< default
+    handlers:
+        # route - resource that exports a HttpHandler
+        '/foo': 'baz'
+            # path is '/server/http/handler/baz.js'
+            # method is '*'
 
-		'$post /qux': 'qux/postHandler'
-			# path is '/server/http/handler/quz/postHander.js'
-			# method is 'POST'
-	```
+        '$post /qux': 'qux/postHandler'
+            # path is '/server/http/handler/quz/postHander.js'
+            # method is 'POST'
+    ```
 
 - **services** ` config/services.yml `
-	```yml
-	service:
-		location: /server/http/service/{0}.js
-		#< default
-	services:
-		# route - resource that exports a HttpService @see HttpService
-		'/user': 'User'
-			# path is '/server/http/service/User.js'
-			# method is '*'
-			# futher routing is handled by the service, like '/user/:id'
-	```
+    ```yml
+    service:
+        location: /server/http/service/{0}.js
+        #< default
+    services:
+        # route - resource that exports a HttpService @see HttpService
+        '/user': 'User'
+            # path is '/server/http/service/User.js'
+            # method is '*'
+            # futher routing is handled by the service, like '/user/:id'
+    ```
 - **pages** ` config/pages.yml `
-	```yml
-	page:
-		# see default config to see the default page paths
+    ```yml
+    page:
+        # see default config to see the default page paths
 
-	pages:
-		# route - Page Definition
+    pages:
+        # route - Page Definition
 
-		/:
-			id: index #optional, or is generated from the route
+        /:
+            id: index #optional, or is generated from the route
 
-			template: quz #optional, or is equal to `id`
-				# path is `/server/http/page/quz/quz.mask
-			master: simple #optional, or is `default`
-				# path is `/server/http/master/simple.mask`
+            template: quz #optional, or is equal to `id`
+                # path is `/server/http/page/quz/quz.mask
+            master: simple #optional, or is `default`
+                # path is `/server/http/master/simple.mask`
 
-			# optional
-			secure:
-				# optional, default - any logged in user
-				role: 'admin'
+            # optional
+            secure:
+                # optional, default - any logged in user
+                role: 'admin'
 
-			scripts:
-				# scripts for the page
-			styles:
-				# styles for the page
+            scripts:
+                # scripts for the page
+            styles:
+                # styles for the page
 
-			# any other data, which then is accessable via javascript or mask
-			# `ctx.page.data.title`
-			title: String
+            # any other data, which then is accessable via javascript or mask
+            # `ctx.page.data.title`
+            title: String
 
-			# rewrite the page request to some other route
-			rewrite: String
+            # rewrite the page request to some other route
+            rewrite: String
 
-			# redirect the page request to some other route
-			redirect: String
-	```
+            # redirect the page request to some other route
+            redirect: String
+    ```
 
 ## Endpoints
 
@@ -198,28 +198,28 @@ To declare a Handler is as simple as to define a Class/Constructor with Deferred
 ```javascript
 // server/http/handler/hello.js
 module.exports = Class({
-	Base: Class.Deferred,
-	process: function(req, res){
-		this.resolve(
-			data String | Object | Buffer,
-			?statusCode Number,
-			?mimeType String,
-			?headers Object
-		);
-		this.reject(error)
-	}
+    Base: Class.Deferred,
+    process: function(req, res){
+        this.resolve(
+            data String | Object | Buffer,
+            ?statusCode Number,
+            ?mimeType String,
+            ?headers Object
+        );
+        this.reject(error)
+    }
 });
 ```
 
 To bind for a route(`server/config/handlers.yml`):
 ```yml
 handler:
-	location: '/server/http/handler/{0}.js'
-	# <- default
+    location: '/server/http/handler/{0}.js'
+    # <- default
 handlers:
-	'/say/hello': Hello
-	'(\.less(\.map)?$)': LessHandler
-	'(\.es6(\.map)?$)': TraceurHandler
+    '/say/hello': Hello
+    '(\.less(\.map)?$)': LessHandler
+    '(\.es6(\.map)?$)': TraceurHandler
 ```
 
 Usually, this are the low level handlers, like 'less' preprocessor.
@@ -273,10 +273,10 @@ _For the route docs refer to [RutaJS](http://github.com/atmajs/ruta)_
 Sample:
 ```javascript
 module.exports = atma.server.HttpService({
-	'$get /': Function | Endpoint
-	'$post /': ...
-	'$get /:name(foo|bar|qux)': ...
-	'$put /user': ...
+    '$get /': Function | Endpoint
+    '$post /': ...
+    '$get /:name(foo|bar|qux)': ...
+    '$put /user': ...
 })
 ```
 
@@ -285,112 +285,112 @@ module.exports = atma.server.HttpService({
 
 ```javascript
 atma.server.HttpService(/*endpoints*/ {
-	// route:handler
-	'route': function(req, res, params){
-		this.resolve(/*@see Handler*/);
-		this.reject(...);
-	},
+    // route:handler
+    'route': function(req, res, params){
+        this.resolve(/*@see Handler*/);
+        this.reject(...);
+    },
 
-	'route': {
-		process: function(){ ... }
-	}
+    'route': {
+        process: function(){ ... }
+    }
 })
 ```
 
 ##### Meta - help & validation
  - **help** - list all endpoints of a service with there meta information. `http://127.0.0.1/rest/user?help`
  - **validation** - when sending data with `post`/`put`, httpservice will validate it before processing
-	```javascript
-	atma.server.HttpService({
-		'/route': {
-			meta: {
-				description: 'Lorem...',
+    ```javascript
+    atma.server.HttpService({
+        '/route': {
+            meta: {
+                description: 'Lorem...',
 
-				/* For request validating and the documentation */
-				arguments: {
-					// required, not empty string
-					foo: 'string',
-					// required, validate with regexp
-					age: /^\d+$/,
+                /* For request validating and the documentation */
+                arguments: {
+                    // required, not empty string
+                    foo: 'string',
+                    // required, validate with regexp
+                    age: /^\d+$/,
 
-					// optional, of type 'number'
-					'?baz': 'number',
+                    // optional, of type 'number'
+                    '?baz': 'number',
 
-					// unexpect
-					'-quz': null,
+                    // unexpect
+                    '-quz': null,
 
-					// validate subobject
-					jokers: {
-						left: 'number',
-						right: 'number'
-					},
+                    // validate subobject
+                    jokers: {
+                        left: 'number',
+                        right: 'number'
+                    },
 
-					// validate arrays
-					collection: [ {_id: 'string', username: 'string'} ]
-				},
-				// allow only properties which are listed in `arguments` object
-				strict: false,
+                    // validate arrays
+                    collection: [ {_id: 'string', username: 'string'} ]
+                },
+                // allow only properties which are listed in `arguments` object
+                strict: false,
 
-				/* Documentation purpose only*/
-				response: {
-					baz: 'string',
-					...
-				}
-			},
-			process: function(req, res, params) { ... }
-		}
-	})
-	```
-	- *Headers* Set default headers for the service
-	```javascript
-	atma.server.HttpService({
-		'/route': {
-			meta: {
-				headers: {
-					'Access-Control-Allow-Origin': '*',
-					'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
-				}
-			},
-			process: function(req, res, params) { ... }
-		}
-	});
-	```
+                /* Documentation purpose only*/
+                response: {
+                    baz: 'string',
+                    ...
+                }
+            },
+            process: function(req, res, params) { ... }
+        }
+    })
+    ```
+    - *Headers* Set default headers for the service
+    ```javascript
+    atma.server.HttpService({
+        '/route': {
+            meta: {
+                headers: {
+                    'Access-Control-Allow-Origin': '*',
+                    'Access-Control-Allow-Headers': 'Origin, X-Requested-With, Content-Type, Accept'
+                }
+            },
+            process: function(req, res, params) { ... }
+        }
+    });
+    ```
 
 ###### Barricades (_Middlewares_)
 ```javascript
 atma.server.HttpService({
-	// route - Barricade (Middleware pattern)
-	'/route': [
-		function(req, res, params, next){
-			// error example
-			if (req.body.name == null){
-				next('Name argument expected');
-				return;
-			}
+    // route - Barricade (Middleware pattern)
+    '/route': [
+        function(req, res, params, next){
+            // error example
+            if (req.body.name == null){
+                next('Name argument expected');
+                return;
+            }
 
-			// continue
-			req.name = req.body.name;
-			next();
+            // continue
+            req.name = req.body.name;
+            next();
 
-			// stop processing
-			this.resolve(...);
-			this.reject(...);
-		},
-		function(req, res, params, next){
-			...
-		},
-		...
-	],
+            // stop processing
+            this.resolve(...);
+            this.reject(...);
+        },
+        function(req, res, params, next){
+            ...
+        },
+        ...
+    ],
 
-	// same with `help`
-	'/other/route': {
-		meta: { ... }
-		process: [
-			fooFunction,
-			bazFunction,
-			...
-		]
-	}
+    // same with `help`
+    '/other/route': {
+        meta: { ... }
+        process: [
+            fooFunction,
+            bazFunction,
+            ...
+        ]
+    }
 })
 ```
 
@@ -399,31 +399,31 @@ atma.server.HttpService({
 ```javascript
 // server/http/service/time.js
 module.exports = atma.server.HttpService({
-	'/': function(req, res){
-		this.resolve('This is a time service');
-	},
-	'/:transport(console|file|client)': function(req, res, params){
-		var time = new Date().toString(),
-			that = this;
-		switch(params.transport){
-			case 'console':
-				console.log(' > time', time);
-				this.resolve('Pushed to console');
-				return;
-			case 'file':
-				io
-					.File
-					.writeAsync('someFile.txt')
-					.pipe(this, 'fail')
-					.done(() => {
-						this.resolve('Saved to file');
-					});
-				return;
-			case 'client':
-				this.resolve(time);
-				return;
-		}
-	}
+    '/': function(req, res){
+        this.resolve('This is a time service');
+    },
+    '/:transport(console|file|client)': function(req, res, params){
+        var time = new Date().toString(),
+            that = this;
+        switch(params.transport){
+            case 'console':
+                console.log(' > time', time);
+                this.resolve('Pushed to console');
+                return;
+            case 'file':
+                io
+                    .File
+                    .writeAsync('someFile.txt')
+                    .pipe(this, 'fail')
+                    .done(() => {
+                        this.resolve('Saved to file');
+                    });
+                return;
+            case 'client':
+                this.resolve(time);
+                return;
+        }
+    }
 })
 ```
 
@@ -431,11 +431,11 @@ module.exports = atma.server.HttpService({
 # server/config/services.yml
 
 service:
-	location: /server/http/service/{0}.js'
-	# <- default
+    location: /server/http/service/{0}.js'
+    # <- default
 
 services:
-	'/time': time
+    '/time': time
 ```
 
 
@@ -453,33 +453,33 @@ Some things we remind:
 
 - **Context**
 
-	```javascript
-	{ req: <Request>, res: <Response>, page: <HttpPage (current instance)> }
-	```
+    ```javascript
+    { req: <Request>, res: <Response>, page: <HttpPage (current instance)> }
+    ```
 
 - **Render-mode**
 
-	```javascript
-	mode: 'server' | 'client' | 'both' // @default is 'both'
-	modeModel: 'server' // if `server` is defined, the model wont be serialized
-	```
+    ```javascript
+    mode: 'server' | 'client' | 'both' // @default is 'both'
+    modeModel: 'server' // if `server` is defined, the model wont be serialized
+    ```
 
 - **Cache**
-	Each components output could be cached and the conditions could be defined.
-	- `byProperty`: For each unique value from model or ct
+    Each components output could be cached and the conditions could be defined.
+    - `byProperty`: For each unique value from model or ct
 
 _Example_
 ```javascript
 mask.registerHandler(':requestedUrl', Compo({
-	mode: 'server:all'
-	modelMode: 'server:all'
-	cache: {
-		byProperty: 'ctx.req.url'
-	},
+    mode: 'server:all'
+    modelMode: 'server:all'
+    cache: {
+        byProperty: 'ctx.req.url'
+    },
 
-	onRenderStart: function(model, ctx){
-		this.nodes = jmask('h4').text(ctx.req.url);
-	}
+    onRenderStart: function(model, ctx){
+        this.nodes = jmask('h4').text(ctx.req.url);
+    }
 }))
 ```
 
@@ -493,22 +493,22 @@ Example:
 ```sass
 // server/http/master/default.mask
 layout:master #default {
-	:document {
+    :document {
 
-		head {
-			meta http-equiv="Content-Type" content="text/html;charset=utf-8";
-			meta name="viewport" content="maximum-scale=1.5, minimum-scale=.8, initial-scale=1, user-scalable=1";
-			title > "Atma.js"
+        head {
+            meta http-equiv="Content-Type" content="text/html;charset=utf-8";
+            meta name="viewport" content="maximum-scale=1.5, minimum-scale=.8, initial-scale=1, user-scalable=1";
+            title > "Atma.js"
 
-			atma:styles;
-		}
-		body {
+            atma:styles;
+        }
+        body {
 
-			@placeholder #body;
+            @placeholder #body;
 
-			atma:scripts;
-		}
-	}
+            atma:scripts;
+        }
+    }
 }
 ```
 
@@ -518,9 +518,9 @@ layout:master #default {
 ```sass
 // server/http/page/hello.mask
 layout:view master=default {
-	@content #body {
-		'Hello World'
-	}
+    @content #body {
+        'Hello World'
+    }
 }
 ```
 
@@ -530,8 +530,8 @@ The routing is also made via the configuration files
 # server/config/pages.yml
 
 pages:
-	'/hello':
-		id: hello
+    '/hello':
+        id: hello
 ```
 
 
