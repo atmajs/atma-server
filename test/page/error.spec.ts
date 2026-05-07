@@ -78,7 +78,7 @@ UTest({
     'default error'(done) {
         app.config.page = {};
         srv
-            .get('/foo')
+            .get('/foo?__proto__.foo')
             .expect('Content-Type', 'text/html;charset=utf-8')
             .expect(404)
             .end(function (err, res) {

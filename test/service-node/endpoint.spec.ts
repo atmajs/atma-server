@@ -41,6 +41,13 @@ class UriParserEndpoint extends HttpEndpoint {
     }
 }
 
+@HttpEndpoint.route('/lorem')
+class LoremEndpoint extends HttpEndpoint {
+    '$get /ipsum' () {
+        return { lorem: 'ipsum' };
+    }
+}
+
 let app: Application;
 let srv: supertest.SuperTest<any>;
 
@@ -49,13 +56,16 @@ UTest({
         app = await Application.clean().create({
             configs: null,
             config: {
-                debug: true,
+                debug: false,
                 services: {
                     '^/tested': TestEndpoint,
                     '^/notallowed': SecuredEndpoint,
                     '^/params/uri': UriParserEndpoint,
                 }
-            }
+            },
+            endpoints: [
+                LoremEndpoint
+            ]
         });
         srv = supertest(http.createServer(app.process));
     },
@@ -68,7 +78,7 @@ UTest({
             .end(function (err, res) {
                 eq_(err, null);
 
-                var json = JSON.parse(res.text);
+                let json = JSON.parse(res.text);
                 deepEq_(json, {
                     foo: 'Foo',
                     middleware: 'Bar'
@@ -84,10 +94,24 @@ UTest({
             .end(function (err, res) {
                 eq_(err, null);
 
-                var json = JSON.parse(res.text);
+                let json = JSON.parse(res.text);
                 has_(json, {
                     code: 403,
                     error: 'Access Denied'
+                });
+                done();
+            });
+    },
+    'endpoint constructor' (done) {
+        srv
+            .get('/lorem/ipsum')
+            .expect('Content-Type', 'application/json;charset=utf-8')
+            .expect(200)
+            .end(function (err, res) {
+                eq_(err, null);
+                let json = JSON.parse(res.text);
+                has_(json, {
+                    lorem: 'ipsum'
                 });
                 done();
             });

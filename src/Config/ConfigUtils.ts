@@ -310,7 +310,7 @@ let configurate_BowerAndCommonJS;
             try {
                 let pckg = await io.File.readAsync(pckgPath);
                 var pckgbase = '/' + dirName + '/' + name + '/',
-                    main = pckg.main;
+                    main = (pckg as any)?.main;
                 if (main == null) {
                     main = 'index.js';
                 }

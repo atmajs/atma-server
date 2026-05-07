@@ -1,3 +1,4 @@
+import { TEndpointConstructor } from '../HandlerFactory';
 import { IHttpHandlerConstructor } from '../IHttpHandler';
 
 export interface IApplicationDefinition {
@@ -8,6 +9,7 @@ export interface IApplicationDefinition {
     disablePackageJson?: boolean
     config?: IApplicationConfig
     configs?: string | string[]
+    endpoints?: TEndpointConstructor[]
 }
 
 export interface IApplicationConfig {
@@ -140,6 +142,8 @@ export interface IApplicationConfig {
         after?: Function[]
         middleware?: Function[]
     }
+
+    endpoints?: TEndpointConstructor[]
 }
 
 

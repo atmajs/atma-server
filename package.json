@@ -5,7 +5,7 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.5.29",
+    "version": "0.5.32",
     "main": "./lib/server.js",
     "types": "./lib/server.d.ts",
     "repository": {
@@ -23,7 +23,7 @@
         "includejs": "^0.17.4",
         "maskjs": "^0.72.36",
         "memd": "^0.3.10",
-        "ruta": "^0.2.70",
+        "ruta": "^0.2.73",
         "socket.io": "^4.4.1",
         "static-content": "^1.2.2"
     },
@@ -31,8 +31,9 @@
         "build": "app-bundler && npm run dts",
         "dts": "tsc -p tsconfig-build.json && atma run tools/build-dts",
         "watch": "app-bundler -watch",
-        "release": "echo \"Run atma pub -m \"message\"\"",
+        "release": "atma bump && npm run build && git add -A && git commit -am 'bump' && git push && git push origin master:release",
         "test": "atma test",
+        "test-node": "atma test service-node",
         "server": "atma server",
         "test-server": "atma server --TEST"
     },

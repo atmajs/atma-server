@@ -100,6 +100,10 @@ class Application extends class_EventEmitter {
         this.handlers = new HandlerFactory(this);
         this.webSockets = new WebSocket(this);
 
+        if (proto.endpoints) {
+            this.handlers.registerEndpoints(proto.endpoints);
+        }
+
         this.args = obj_extend(proto.args, cli_arguments());
         this._baseConfig = proto;
         this._loadConfig();
@@ -239,7 +243,7 @@ class Application extends class_EventEmitter {
             this.isHttpsForced = forced == null ? false : forced;
 
             let readFile = path => {
-                return path && io.File.exists(path) && io.File.read(path, { encoding: 'buffer' }) || void 0;
+                return path && io.File.exists(path) && io.File.read(path, { encoding: 'binary' }) || void 0;
             };
             let options = {
                 key: readFile(keyFile),

@@ -15,6 +15,10 @@
         "module": "commonjs",
         "sourceMap": false,
         "experimentalDecorators": true,
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "strictPropertyInitialization": false,
+        "strictNullChecks": false,
+        "useUnknownInCatchVariables": false,
+        "noImplicitAny": false
     }
 }

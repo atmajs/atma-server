@@ -115,7 +115,7 @@ class FileWatcher extends class_EventEmitter {
 
         io
             .watcher
-            .watch(this.file.uri.toLocalFile(), this.fileChanged);
+            .watch(this.file.uri.toLocalFile(), {}, this.fileChanged);
 
         this.active = true;
     }

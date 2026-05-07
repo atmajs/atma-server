@@ -20,6 +20,8 @@ const fns_RESPONDERS = [
     'pages'
 ];
 
+export type TEndpointConstructor = new (...args) => HttpEndpoint;
+
 export default class HandlerFactory {
     subapps: InstanceType<typeof Collection>
     handlers: InstanceType<typeof Collection>
@@ -153,7 +155,10 @@ export default class HandlerFactory {
         socket.registerHandler(namespace, handler);
     }
 
-    registerEndpoint <T extends (new (...args) => HttpEndpoint)> (Type: T) {
+    registerEndpoints(endpoints: TEndpointConstructor[]) {
+        endpoints?.forEach(Ctor => this.registerEndpoint(Ctor));
+    }
+    registerEndpoint <T extends TEndpointConstructor> (Type: T) {
         let meta = HttpEndpointExplorer.getMeta(Type);
         if (meta == null || meta.path == null) {
             throw new Error(`Meta information not extracted from ${Type}`);

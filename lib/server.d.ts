@@ -221,6 +221,7 @@ declare module 'atma-server/HandlerFactory' {
     import { IncomingMessage } from 'http';
     import { Collection } from 'ruta';
     import { type HttpEndpoint } from 'atma-server/HttpService/HttpEndpoint';
+    export type TEndpointConstructor = new (...args: any[]) => HttpEndpoint;
     export default class HandlerFactory {
         app: Application;
         subapps: InstanceType<typeof Collection>;
@@ -237,7 +238,8 @@ declare module 'atma-server/HandlerFactory' {
         registerService(path: any, service: any, serviceCfg?: any): void;
         registerWebsockets(routes: any, websocketCfg: any): this;
         registerWebsocket(namespace: any, handler: any, handlerCfg?: any): void;
-        registerEndpoint<T extends (new (...args: any[]) => HttpEndpoint)>(Type: T): this;
+        registerEndpoints(endpoints: TEndpointConstructor[]): void;
+        registerEndpoint<T extends TEndpointConstructor>(Type: T): this;
         get(app: Application, req: IncomingMessage & {
             body: any;
         }, callback: any): void;
@@ -517,6 +519,7 @@ declare module 'atma-server/HttpApplication/LifecycleEvents' {
 }
 
 declare module 'atma-server/HttpApplication/IApplicationConfig' {
+    import { TEndpointConstructor } from 'atma-server/HandlerFactory';
     import { IHttpHandlerConstructor } from 'atma-server/IHttpHandler';
     export interface IApplicationDefinition {
         base?: string;
@@ -526,6 +529,7 @@ declare module 'atma-server/HttpApplication/IApplicationConfig' {
         disablePackageJson?: boolean;
         config?: IApplicationConfig;
         configs?: string | string[];
+        endpoints?: TEndpointConstructor[];
     }
     export interface IApplicationConfig {
         base?: string;
@@ -659,6 +663,7 @@ declare module 'atma-server/HttpApplication/IApplicationConfig' {
             after?: Function[];
             middleware?: Function[];
         };
+        endpoints?: TEndpointConstructor[];
     }
     export interface IPageConfiguration {
         location?: {
@@ -1026,7 +1031,7 @@ declare module 'atma-server/dependency' {
     export const mask: any;
     export const jmask: any;
     export const Compo: any;
-    export const io: any;
+    export const io: typeof import('atma-io');
     export const Uri: typeof Utils.class_Uri;
     export const is_String: typeof Utils.is_String, is_Function: typeof Utils.is_Function, is_Array: typeof Utils.is_Array, is_Object: typeof Utils.is_Object;
     export const obj_extend: typeof Utils.obj_extend, obj_extendDefaults: typeof Utils.obj_extendDefaults;

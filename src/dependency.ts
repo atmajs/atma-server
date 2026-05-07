@@ -12,7 +12,7 @@ if (root.include == null) {
 export const mask        = root.mask  || require('maskjs');
 export const jmask       = mask.jmask;
 export const Compo       = mask.Compo;
-export const io          = root.io && root.io.File ? root.io : require('atma-io');
+export const io: typeof import('atma-io') = root.io && root.io.File ? root.io : require('atma-io');
 export const { class_Uri: Uri } = Utils;
 export const { is_String, is_Function, is_Array, is_Object } = Utils;
 export const { obj_extend, obj_extendDefaults } = Utils;
