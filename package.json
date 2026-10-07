@@ -5,7 +5,7 @@
         "name": "Alexander Kit",
         "email": "alex.kit@atmajs.com"
     },
-    "version": "0.5.33",
+    "version": "0.6.1",
     "main": "./lib/server.js",
     "types": "./lib/server.d.ts",
     "repository": {
@@ -104,7 +104,17 @@
         },
         "prebuild": [
             "tools/cfg-defaults.js"
-        ]
+        ],
+        "settings": {
+            "atma-loader-ts": {
+                "typescript": {
+                    "compilerOptions": {
+                        "module": "CommonJS",
+                        "target": "ES2020"
+                    }
+                }
+            }
+        }
     },
     "atma": {
         "settings": {

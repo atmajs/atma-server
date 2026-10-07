@@ -164,8 +164,13 @@ class Application extends class_EventEmitter {
             , this.config
         );
     }
-    execute(url: string, method: 'get' | 'post' | 'put' | 'delete' | 'options', body?, headers?) {
-        let req = new Request(url, method, body, headers);
+    execute <T extends Response | PromiseLike<HttpResponse> = PromiseLike<HttpResponse>> (
+        url: string,
+        method: 'get' | 'post' | 'put' | 'delete' | 'options' | string,
+        body?,
+        headers?
+    ): T {
+        let req = new Request(url, method.toLowerCase(), body, headers);
         let res = new Response;
 
         // @TODO ? middleware pipeline in RAW requests
@@ -179,7 +184,7 @@ class Application extends class_EventEmitter {
         //    responder_Raw(req, res);
         //}
         respond_Raw(this, req, res);
-        return res;
+        return res as any;
     }
     autoreload(httpServer?: net.Server) {
         this._server = this._server || httpServer;
@@ -594,6 +599,7 @@ function cfg_doneDelegate(app: Application) {
             .registerHandlers(cfg.handlers, cfg.handler)
             .registerServices(cfg.services, cfg.service)
             .registerWebsockets(cfg.websockets, cfg.websocket)
+            .registerEndpoints(cfg.endpoints)
             ;
 
         app.rewriter.addRules(cfg.rewriteRules);

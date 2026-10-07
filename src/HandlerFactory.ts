@@ -157,6 +157,7 @@ export default class HandlerFactory {
 
     registerEndpoints(endpoints: TEndpointConstructor[]) {
         endpoints?.forEach(Ctor => this.registerEndpoint(Ctor));
+        return this;
     }
     registerEndpoint <T extends TEndpointConstructor> (Type: T) {
         let meta = HttpEndpointExplorer.getMeta(Type);

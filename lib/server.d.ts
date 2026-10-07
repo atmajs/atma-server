@@ -238,7 +238,7 @@ declare module 'atma-server/HandlerFactory' {
         registerService(path: any, service: any, serviceCfg?: any): void;
         registerWebsockets(routes: any, websocketCfg: any): this;
         registerWebsocket(namespace: any, handler: any, handlerCfg?: any): void;
-        registerEndpoints(endpoints: TEndpointConstructor[]): void;
+        registerEndpoints(endpoints: TEndpointConstructor[]): this;
         registerEndpoint<T extends TEndpointConstructor>(Type: T): this;
         get(app: Application, req: IncomingMessage & {
             body: any;
@@ -283,6 +283,7 @@ declare module 'atma-server/HttpApplication/Application' {
     import { IApplicationDefinition, IApplicationConfig, IAppConfigExtended } from 'atma-server/HttpApplication/IApplicationConfig';
     import HttpRewriter from 'atma-server/HttpRewrites/HttpRewriter';
     import { ServerResponse, IncomingMessage } from 'http';
+    import { HttpResponse } from 'atma-server/IHttpHandler';
     import { class_EventEmitter, class_Dfr } from 'atma-utils';
     import { LifecycleEvents } from 'atma-server/HttpApplication/LifecycleEvents';
     class Application extends class_EventEmitter {
@@ -321,7 +322,7 @@ declare module 'atma-server/HttpApplication/Application' {
           */
         processor(data?: IApplicationConfig['processor']): this;
         process(req: IncomingMessage, res: ServerResponse, next?: any): void;
-        execute(url: string, method: 'get' | 'post' | 'put' | 'delete' | 'options', body?: any, headers?: any): Response;
+        execute<T extends Response | PromiseLike<HttpResponse> = PromiseLike<HttpResponse>>(url: string, method: 'get' | 'post' | 'put' | 'delete' | 'options' | string, body?: any, headers?: any): T;
         autoreload(httpServer?: net.Server): void;
         done(fn: any): void;
         fail(fn: any): void;
